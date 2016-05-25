@@ -1,0 +1,35 @@
+
+# Defina aqui os principais parametros da análise
+
+# Caminho do sistema para as pastas do projeto
+export path="/home/brain/Desktop/PROJETO CIRCOS"
+export pathp="/home/brain/Desktop/PROJETO CIRCOS/PREPROCESSING"
+export pathpi="/home/brain/Desktop/PROJETO CIRCOS/PREPROCESSING/images"
+
+# SLICE TIMING CORRECTION
+export ssa="seq+z" # Alterar de acordo com a sequencia de aquisição de cortes (sequential vs. interleaved; ascending vs. descending)
+
+# MOTION CORRECTION
+export vr=100 
+
+# HOMOGENIZE GRID
+export gRL=90
+export gAP=90
+export gIS=60
+
+# REORIENT IMAGES TO TEMPLATE
+export orient="rpi"
+
+# ALIGN CENTER TO TEMPLATE
+export template="MNI152_1mm_uni+tlrc"
+
+# GAUSSEAN FILTER
+export blur=6
+
+
+
+
+
+
+
+

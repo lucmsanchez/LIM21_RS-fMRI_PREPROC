@@ -131,12 +131,13 @@
 						"selection":
 						[
 							[
-								549,
-								549
+								366,
+								366
 							]
 						],
 						"settings":
 						{
+							"spell_check": false,
 							"syntax": "Packages/ShellScript/Shell-Unix-Generic.sublime-syntax"
 						},
 						"translation.x": 0.0,

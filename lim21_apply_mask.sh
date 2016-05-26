@@ -1,7 +1,7 @@
 #!bin/bash
 
 source config
-lista=(`cat "$pathpi"/subs.txt`)	
+lista=(`cat "$pathpi"/subs.txt`)
 
 cd "$pathpi"
 echo
@@ -10,18 +10,18 @@ echo "=========== Aplicando a mascara do SKULL STRIPPING ================="
 echo "===================================================================="
 echo
 for i in "${lista[@]}"
-do
-echo "Aplicando em $i..."
+  do
+  echo "Aplicando em $i..."
 
-3dcalc \
--a urd_T1_"$i".nii \
--b lurd_T1_"$i".nii.gz \
--expr 'a*abs(b-1)' \
--prefix SS_T1_"$i"
+  3dcalc \
+    -a        urd_T1_"$i".nii \
+    -b        lurd_T1_"$i".nii.gz \
+    -expr     'a*abs(b-1)' \
+    -prefix   SS_T1_"$i"
 
-echo
-echo
-done 
+  echo
+  echo
+done
 
 # The command 3dcalc performs the following calculation: 'a*abs(b-1)'. This means that:
 # a = T1 image before skull stripping

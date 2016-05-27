@@ -49,7 +49,7 @@ for i in "${lista[@]}"
   -TR 2s \
   -Fourier \
   RS_$i.nii
-  done
+done
 
 ## MOTION CORRECTION + QC
 
@@ -71,7 +71,7 @@ for i in "${lista[@]}"
   -Fourier \
   -1Dfile motioncorrection_"$i".1d \
   t_RS_"$i"+orig
-  done
+done
 
 ### MOTION CORRECTION QUALITY CONTROL
 cd "$pathpi"
@@ -85,7 +85,7 @@ for i in "${lista[@]}"
   echo "Aplicando CMC em $i..."
   1dplot motioncorrection_"$i".1d
   #read -p "Aperte enter para continuar..."
-  done
+done
 
 ## DEOBLIQUE: T1 e RS
 cd "$pathpi"
@@ -102,7 +102,7 @@ for i in "${lista[@]}"
   -deoblique \
   -prefix  d_T1_"$i" \
   T1_"$i".nii
-  done
+done
 
 ### Deoblique fMRI
 for i in "${lista[@]}"
@@ -112,7 +112,7 @@ for i in "${lista[@]}"
   -deoblique \
   -prefix  drt_RS_"$i" \
   rt_RS_"$i"+orig
-  done
+done
 
 ## HOMOGENIZE GRID
 cd "$pathpi"
@@ -130,7 +130,7 @@ for i in "${lista[@]}"
   -IS "$gIS" \
   -prefix pdrt_RS_"$i" \
   drt_RS_"$i"+orig
-  done
+done
 
 ## REORIENT TO TEMPLATE
 cd "$pathpi"
@@ -147,7 +147,7 @@ for i in "${lista[@]}"
   -orient "$orient" \
   -prefix rd_T1_"$i" \
   -inset d_T1_"$i"+orig
-  done
+done
 
 ### Reorient fMRI
 for i in "${lista[@]}"
@@ -157,7 +157,7 @@ for i in "${lista[@]}"
   -orient "$orient" \
   -prefix rpdrt_RS_"$i" \
   -inset pdrt_RS_"$i"+orig
-  done
+done
 
 ## ALIGN CENTER T1 TO TEMPLATE
 cd "$pathpi"
@@ -172,7 +172,7 @@ for i in "${lista[@]}"
   @Align_Centers \
   -base "$template" \
   -dset rd_T1_"$i"+orig
-  done
+done
 
 ## UNIFORMIZE T1
 cd "$pathpi"
@@ -187,7 +187,7 @@ for i in "${lista[@]}"
   3dUnifize \
   -prefix urd_T1_"$i" \
   -input rd_T1_"$i"_shft+orig
-  done
+done
 
 ## SKULL STRIPPING: Nesse pipeline deve ser realizado manualmente
 cd "$pathpi"

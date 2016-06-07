@@ -26,7 +26,7 @@ fi
 # fi
 
 # Implementando fases no script
-p=1
+p=0
 
 until [ "$p" -eq "32" ]; do
 
@@ -47,7 +47,7 @@ AFNI - Version AFNI_2011_12_21_1014       ...$(check afni)
 FSL 5.0.9                                 ...$(check fsl5.0-fast)
 EOF
 
-if command -v bash && command -v afni && command -v fsl5.0-fast > /dev/null ; then
+if (command -v bash && command -v afni && command -v fsl5.0-fast) > /dev/null ; then
 	printf "\nTodos os prorgamas necessários estão instalados, prosseguindo...\n\n"
 else
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
@@ -57,16 +57,36 @@ fi
 # Checando diretórios em busca das imagens
 fold -s <<-EOF
 Esse pipeline usa o diretório atual ($PWD) como diretório base para o processamento. Irá reconhecer apenas imagens no formato NIFTI que estejam dentro da pasta atual e irá movê-las para a pasta DATA, contanto que respeitem a regra de denominação abaixo:
+
   RS_<ID>.nii - para a imagem de Resting State
   T1_<ID>.nii - para a imagem T1 estrutural
   ID - código idenificador uníco do indivíduo
 
-  Exemplo do resultado final:
+  Exemplo da estrutura básica:
   DATA/<ID>/RS_<ID>.nii
   DATA/<ID>/T1_<ID>.nii
+
+  .
+  ├── DATA
+  │   ├── T000328
+  │   │   ├── RS_T000328.nii
+  │   │   └── T1_T000328.nii
+  │   └── T000329
+  │       ├── RS_T000329.nii
+  │       └── T1_T000329.nii
+  ├── OUTPUT
+  │   ├── T000328
+  │   └── T000329
+  ├── WORK
+  │   ├── T000328
+  │   └── T000329
+  ├── manual.md
+  ├── preproc.graphml
+  └── preproc.sh
 EOF
 
 # Procurar imagens na pasta atual
+printf "\nBuscando no diretório atual as imagens:\n\n"
 if [[ ! -z $(find . -name "T1_*.nii") && ! -z $(find . -name "RS_*.nii") ]]; then
 	printf "\nForam encontradas as imagens T1 abaixo:\n"
 	find . -name "T1_*.nii"

@@ -58,7 +58,8 @@ fold -s <<-EOF
 
 Protocolo de pré-processamento de fMRI
 --------------------------------------
-Autor: Luis Kobuti Ferreira <emaildoluis@gmail.com>
+Autores: Luis Kobuti Ferreira <emaildoluis@gmail.com>
+         Luciano M. Sanchez <lucmsanchez@gmail.com>
 
 Checando se todos os programas necessários estão instalados e estão disponíveis na variável de ambiente \$PATH
 
@@ -86,23 +87,6 @@ Esse pipeline usa o diretório atual ($PWD) como diretório base para o processa
   DATA/<ID>/RS_<ID>.nii
   DATA/<ID>/T1_<ID>.nii
 
-  .
-  ├── DATA
-  │   ├── T000328
-  │   │   ├── RS_T000328.nii
-  │   │   └── T1_T000328.nii
-  │   └── T000329
-  │       ├── RS_T000329.nii
-  │       └── T1_T000329.nii
-  ├── OUTPUT
-  │   ├── T000328
-  │   └── T000329
-  ├── WORK
-  │   ├── T000328
-  │   └── T000329
-  ├── manual.md
-  ├── preproc.graphml
-  └── preproc.sh
 EOF
 
 # Procurar imagens na pasta atual
@@ -139,7 +123,7 @@ for i in $ID; do
 	wfp_RS=$(find . -name "RS_$i.nii")
 	rfp_T1=DATA/$i/T1_$i.nii
 	rfp_RS=DATA/$i/RS_$i.nii
-	for f in DATA WORK OUTPUT; do
+	for f in DATA OUTPUT; do
 		if [ ! -d $f/$i ]; then
 		    mkdir -p $f/$i
 	 	fi
@@ -156,7 +140,7 @@ for i in $ID; do
   in=RS_$i.nii
   out=$prefix$i.nii
   inpath=DATA/$i/
-  outpath=WORK/$i/slice_correction/
+  outpath=DATA/$i/slice_correction/
   echo -n "$i> "
   node "3dTshift \
     -verbose \
@@ -174,8 +158,8 @@ for i in $ID; do
   in=t_RS_$i.nii
   out=$prefix$i.nii
   out2="$prefix"mc_$i.1d
-  inpath=WORK/$i/slice_correction/
-  outpath=WORK/$i/motion_correction/
+  inpath=DATA/$i/slice_correction/
+  outpath=DATA/$i/motion_correction/
   echo -n "$i> "
   node "3dvolreg \
   -prefix $out \

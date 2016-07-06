@@ -21,7 +21,34 @@ check () {
     echo "Não encontrado em \$PATH"
 fi
 }
-
+node () {
+  while true; do
+  if [ ! -d $outpath ]; then
+    mkdir $outpath
+  fi
+  if [ -e $inpath$in ]; then
+    if [ ! -e $outpath$out1 ] || [ ! -e $outpath$out2 ]; then
+      cd $inpath
+      $1 &> $prefix$i.log \
+        && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
+        || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
+      cd $pwd
+      mv $inpath$prefix* $outpath
+      break
+    else
+      if [ $outpath$out1 -ot $inpath$in ] || [ $outpath$out2 -ot $inpath$in ]; then
+        printf "INPUT MODIFICADO. REFAZENDO ANÁLISE DA IMAGEM\n         "
+        rm $outpath$out1
+        rm $outpath$out2
+      else
+      echo JÁ EXISTE O OUTPUT $out1 $out2; break
+      fi
+    fi
+  else
+  echo NÃO ENCONTRADO O INPUT $in; break
+  fi
+done
+}
 # ==============================================================================
 
 # # Checar em qual fase está o pipeline
@@ -48,9 +75,9 @@ Autor: Luis Kobuti Ferreira <emaildoluis@gmail.com>
 
 Checando se todos os programas necessários estão instalados e estão disponíveis na variável de ambiente \$PATH
 
-GNU bash, version 4.3.30                  ...$(check bash)
-AFNI - Version AFNI_2011_12_21_1014       ...$(check afni)
-FSL 5.0.9                                 ...$(check fsl5.0-fast)
+GNU bash, version                         ...$(check bash)
+AFNI                                      ...$(check afni)
+FSL                                       ...$(check fsl5.0-fast)
 EOF
 
 if (command -v bash && command -v afni && command -v fsl5.0-fast) > /dev/null ; then
@@ -150,36 +177,53 @@ for i in $ID; do
   inpath=DATA/$i/
   outpath=WORK/$i/slice_correction/
   echo -n "$i> "
-  if [ ! -d $outpath ]; then
-    mkdir $outpath
-  fi
-  if [ -e $inpath$in ]; then
-    if [ ! -e $outpath$out1 ] && [ ! -e $outpath$out2 ]; then
-    cd $inpath
-    3dTshift \
+  node "3dTshift \
     -verbose \
     -tpattern $ptn \
     -prefix $prefix$i \
     -Fourier \
-    $in &> $prefix$i.log \
-      && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
-      || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
-    cd $pwd
-    mv $inpath$prefix* $outpath
-    else
-    echo JÁ EXISTE O OUTPUT $out1 $out2
-    fi
-  else
-  echo NÃO ENCONTRADO O INPUT $in
-  fi
+    $in"
+#   while true; do
+#   if [ ! -d $outpath ]; then
+#     mkdir $outpath
+#   fi
+#   if [ -e $inpath$in ]; then
+#     if [ ! -e $outpath$out1 ] || [ ! -e $outpath$out2 ]; then
+#       cd $inpath
+      # 3dTshift \
+      # -verbose \
+      # -tpattern $ptn \
+      # -prefix $prefix$i \
+      # -Fourier \
+      # $in &> $prefix$i.log \
+#         && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
+#         || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
+#       cd $pwd
+#       mv $inpath$prefix* $outpath
+#       break
+#     else
+#       if [ $outpath$out1 -ot $inpath$in ] || [ $outpath$out2 -ot $inpath$in ]; then
+#         echo INPUT MODIFICADO. REFAZENDO ANÁLISE DA IMAGEM
+#         rm $outpath$out1
+#         rm $outpath$out2
+#       else
+#       echo JÁ EXISTE O OUTPUT $out1 $out2; break
+#       fi
+#     fi
+#   else
+#   echo NÃO ENCONTRADO O INPUT $in; break
+#   fi
+# done
 done
-echo
+exit
 # Avança para próxima fase
 p="$(( $p + 1 ))"
 ;;
 
+
+
 * ) # EM CASO DE ERRO RETORNAR À PRIMEIRA FASE
-p=0
+exit
 ;;
 esac
 done

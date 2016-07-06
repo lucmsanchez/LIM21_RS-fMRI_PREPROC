@@ -51,21 +51,8 @@ done
 }
 # ==============================================================================
 
-# # Checar em qual fase está o pipeline
-# if find . "DATA/*/T1_*.nii" -a "DATA/*/RS_*.nii" 1> dev/null; then
-# 	p=1
-# else
-# 	p=0
-# fi
 
-# Implementando fases no script
-p=0
-
-until [ "$p" -eq "32" ]; do
-
-case $p in
-
-0 ) # INÍCIO ===================================================================
+# INÍCIO =======================================================================
 
 fold -s <<-EOF
 
@@ -161,12 +148,7 @@ for i in $ID; do
 	mv $wfp_RS $rfp_RS 2> /dev/null
 done
 
-# Avança para próxima fase
-p="$(( $p + 1 ))"
-;;
-
-1 ) # SLICE TIMING CORRECTION===================================================
-#
+# SLICE TIMING CORRECTION=======================================================
 printf "================INCIANDO A ETAPA SLICE TIMING CORRECTION================\n\n"
 pwd=($PWD)
 for i in $ID; do
@@ -183,47 +165,4 @@ for i in $ID; do
     -prefix $prefix$i \
     -Fourier \
     $in"
-#   while true; do
-#   if [ ! -d $outpath ]; then
-#     mkdir $outpath
-#   fi
-#   if [ -e $inpath$in ]; then
-#     if [ ! -e $outpath$out1 ] || [ ! -e $outpath$out2 ]; then
-#       cd $inpath
-      # 3dTshift \
-      # -verbose \
-      # -tpattern $ptn \
-      # -prefix $prefix$i \
-      # -Fourier \
-      # $in &> $prefix$i.log \
-#         && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
-#         || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
-#       cd $pwd
-#       mv $inpath$prefix* $outpath
-#       break
-#     else
-#       if [ $outpath$out1 -ot $inpath$in ] || [ $outpath$out2 -ot $inpath$in ]; then
-#         echo INPUT MODIFICADO. REFAZENDO ANÁLISE DA IMAGEM
-#         rm $outpath$out1
-#         rm $outpath$out2
-#       else
-#       echo JÁ EXISTE O OUTPUT $out1 $out2; break
-#       fi
-#     fi
-#   else
-#   echo NÃO ENCONTRADO O INPUT $in; break
-#   fi
-# done
-done
-exit
-# Avança para próxima fase
-p="$(( $p + 1 ))"
-;;
-
-
-
-* ) # EM CASO DE ERRO RETORNAR À PRIMEIRA FASE
-exit
-;;
-esac
 done

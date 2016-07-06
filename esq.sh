@@ -27,7 +27,7 @@ node () {
     mkdir $outpath
   fi
   if [ -e $inpath$in ]; then
-    if [ ! -e $outpath$out1 ] || [ ! -e $outpath$out2 ]; then
+    if [ ! -e $outpath$out ] || [ ! -e $outpath$out2 ]; then
       cd $inpath
       $1 &> $prefix$i.log \
         && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
@@ -36,12 +36,12 @@ node () {
       mv $inpath$prefix* $outpath
       break
     else
-      if [ $outpath$out1 -ot $inpath$in ] || [ $outpath$out2 -ot $inpath$in ]; then
+      if [ $outpath$out -ot $inpath$in ] || [ $outpath$out2 -ot $inpath$in ]; then
         printf "INPUT MODIFICADO. REFAZENDO ANÁLISE DA IMAGEM\n         "
-        rm $outpath$out1
+        rm $outpath$out
         rm $outpath$out2
       else
-      echo JÁ EXISTE O OUTPUT $out1 $out2; break
+      echo JÁ EXISTE O OUTPUT $out $out2; break
       fi
     fi
   else
@@ -149,41 +149,42 @@ for i in $ID; do
 done
 
 # SLICE TIMING CORRECTION=======================================================
-printf "================INCIANDO A ETAPA SLICE TIMING CORRECTION================\n\n"
+printf "=======================SLICE TIMING CORRECTION====================\n\n"
 pwd=($PWD)
 for i in $ID; do
   prefix=t_RS_
   in=RS_$i.nii
-  out1=t_RS_$i+orig.HEAD
-  out2=t_RS_$i+orig.BRIK
+  out=$prefix$i.nii
   inpath=DATA/$i/
   outpath=WORK/$i/slice_correction/
   echo -n "$i> "
   node "3dTshift \
     -verbose \
     -tpattern $ptn \
-    -prefix $prefix$i \
+    -prefix $out \
     -Fourier \
     $in"
 done
-exit
+
 # MOTION CORRECTION============================================================
-printf "================INCIANDO A ETAPA MOTION CORRECTION================\n\n"
+printf "\n=========================MOTION CORRECTION=======================\n\n"
 pwd=($PWD)
 for i in $ID; do
   prefix=rt_RS_
-  in=$out2
-  out1=rt_RS_$i+orig.HEAD
-  out2=rt_RS_$i+orig.BRIK
-  inpath=$outpath
+  in=t_RS_$i.nii
+  out=$prefix$i.nii
+  out2="$prefix"mc_$i.1d
+  inpath=WORK/$i/slice_correction/
   outpath=WORK/$i/motion_correction/
   echo -n "$i> "
-  node "dvolreg \
-  -prefix rt_RS_"$i" \
-  -base "$vr" \
+  node "3dvolreg \
+  -prefix $out \
+  -base 100 \
   -zpad 2 \
   -twopass \
   -Fourier \
-  -1Dfile motioncorrection_"$i".1d \
-  t_RS_"$i"+orig
+  -verbose \
+  -1Dfile $out2 \
+  $in"
 done
+exit

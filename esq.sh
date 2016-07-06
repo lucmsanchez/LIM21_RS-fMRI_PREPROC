@@ -166,3 +166,24 @@ for i in $ID; do
     -Fourier \
     $in"
 done
+exit
+# MOTION CORRECTION============================================================
+printf "================INCIANDO A ETAPA MOTION CORRECTION================\n\n"
+pwd=($PWD)
+for i in $ID; do
+  prefix=rt_RS_
+  in=$out2
+  out1=rt_RS_$i+orig.HEAD
+  out2=rt_RS_$i+orig.BRIK
+  inpath=$outpath
+  outpath=WORK/$i/motion_correction/
+  echo -n "$i> "
+  node "dvolreg \
+  -prefix rt_RS_"$i" \
+  -base "$vr" \
+  -zpad 2 \
+  -twopass \
+  -Fourier \
+  -1Dfile motioncorrection_"$i".1d \
+  t_RS_"$i"+orig
+done

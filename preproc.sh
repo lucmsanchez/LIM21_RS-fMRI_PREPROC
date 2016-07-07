@@ -8,9 +8,93 @@
 # trap 'echo "VARIABLE-TRACE> \$variable = \"$variable\""' DEBUG
 # ==============================================================================
 
+# PROCESSANDO OS ARGUMENTOS ====================================================
+usage() {
+    echo "Argumentos:"
+    echo " $0 [ --stcpattern=<value> | --stcpattern <value> ]"
+    echo " $0 [ --mcbase=<value> | --mcbase <value> ]"
+    echo " $0 [ --grid <value> <value> <value> ]"
+    echo " $0 [ h | help ]"
+    echo
+}
+
+# set defaults
+ptn=seq+z
+mcbase=100
+gRL=90
+gAP=90
+gIS=60
+
+i=$(($# + 1)) # index of the first non-existing argument
+declare -A longoptspec
+longoptspec=( [loglevel]=1 [range]=2 )
+optspec=":l:h-:"
+while getopts "$optspec" opt; do
+while true; do
+    case "${opt}" in
+        -) #OPTARG is name-of-long-option or name-of-long-option=value
+            if [[ ${OPTARG} =~ .*=.* ]] # with this --key=value format only one argument is possible
+            then
+                opt=${OPTARG/=*/}
+                ((${#opt} <= 1)) && {
+                    echo "Syntax error: Invalid long option '$opt'" >&2
+                    exit 2
+                }
+                if (($((longoptspec[$opt])) != 1))
+                then
+                    echo "Syntax error: Option '$opt' does not support this syntax." >&2
+                    exit 2
+                fi
+                OPTARG=${OPTARG#*=}
+            else #with this --key value1 value2 format multiple arguments are possible
+                opt="$OPTARG"
+                ((${#opt} <= 1)) && {
+                    echo "Syntax error: Invalid long option '$opt'" >&2
+                    exit 2
+                }
+                OPTARG=(${@:OPTIND:$((longoptspec[$opt]))})
+                ((OPTIND+=longoptspec[$opt]))
+                echo $OPTIND
+                ((OPTIND > i)) && {
+                    echo "Syntax error: Not all required arguments for option '$opt' are given." >&2
+                    exit 3
+                }
+            fi
+
+            continue #now that opt/OPTARG are set we can process them as
+            # if getopts would've given us long options
+            ;;
+        stcpattern)
+            ptn=$OPTARG
+            ;;
+        mcbase)
+            mcbase=$OPTARG
+            ;;
+        grid)
+            gRL=${OPTARG[0]}
+            gAP=${OPTARG[1]}
+            gIS=${OPTARG[2]}
+            ;;
+        h|help)
+            usage
+            exit 0
+            ;;
+        ?)
+            echo "Syntax error: Unknown short option '$OPTARG'" >&2
+            exit 2
+            ;;
+        *)
+            echo "Syntax error: Unknown long option '$opt'" >&2
+            exit 2
+            ;;
+    esac
+break; done
+done
+# End of file
+# ==============================================================================
+
 # DECLARANDO VARIÁVEIS =========================================================
 ptn=seq+z
-#
 # ==============================================================================
 
 # DECLARANDO FUNÇÕES ===========================================================

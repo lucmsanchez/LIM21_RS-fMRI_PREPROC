@@ -19,15 +19,15 @@ usage() {
 }
 
 # set defaults
-ptn=seq+z
-mcbase=100
-gRL=90
-gAP=90
-gIS=60
+ptn=x
+mcbase=0
+gRL=0
+gAP=0
+gIS=0
 
 i=$(($# + 1)) # index of the first non-existing argument
 declare -A longoptspec
-longoptspec=( [loglevel]=1 [range]=2 )
+longoptspec=( [stcpattern]=1 [mcbase]=1 [grid]=3 )
 optspec=":l:h-:"
 while getopts "$optspec" opt; do
 while true; do
@@ -38,26 +38,26 @@ while true; do
                 opt=${OPTARG/=*/}
                 ((${#opt} <= 1)) && {
                     echo "Syntax error: Invalid long option '$opt'" >&2
-                    exit 2
+                    exit
                 }
                 if (($((longoptspec[$opt])) != 1))
                 then
                     echo "Syntax error: Option '$opt' does not support this syntax." >&2
-                    exit 2
+                    exit
                 fi
                 OPTARG=${OPTARG#*=}
             else #with this --key value1 value2 format multiple arguments are possible
                 opt="$OPTARG"
                 ((${#opt} <= 1)) && {
                     echo "Syntax error: Invalid long option '$opt'" >&2
-                    exit 2
+                    exit
                 }
                 OPTARG=(${@:OPTIND:$((longoptspec[$opt]))})
                 ((OPTIND+=longoptspec[$opt]))
-                echo $OPTIND
+                #echo $OPTIND
                 ((OPTIND > i)) && {
                     echo "Syntax error: Not all required arguments for option '$opt' are given." >&2
-                    exit 3
+                    exit
                 }
             fi
 
@@ -80,21 +80,37 @@ while true; do
             exit 0
             ;;
         ?)
-            echo "Syntax error: Unknown short option '$OPTARG'" >&2
-            exit 2
+            echo "Erro de sintaxe:'$OPTARG' desconhecida" >&2
+            usage
+            exit
             ;;
         *)
-            echo "Syntax error: Unknown long option '$opt'" >&2
-            exit 2
+            echo "Erro de sintaxe:'$opt' desconhecida'" >&2
+            usage
+            exit
             ;;
     esac
 break; done
 done
-# End of file
+
+# Checar se os argumentos obrigatórios estão definidos
+# outra idéia é chcar se eles estão vazios
+# if [ $mcbase -eq 0 ] || [ $gRL -eq 0  ] || [ $gAP -eq 0 ] || [ $gIS -eq 0 ]; then
+#   echo É obrigatório definir os argumentos.
+#   usage
+#   exit
+# fi
+
+ptn=seq+z
+mcbase=100
+gRL=90
+gAP=90
+gIS=60
+
 # ==============================================================================
 
 # DECLARANDO VARIÁVEIS =========================================================
-ptn=seq+z
+
 # ==============================================================================
 
 # DECLARANDO FUNÇÕES ===========================================================
@@ -158,6 +174,18 @@ else
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit
 fi
+
+# informando os usuários das variáveis definidas ou defaults
+fold -s <<-EOF
+As variáveis que serão usadas como parametros para as análises são:
+
+Slice timing correction - sequência de aquisição => $ptn
+Motion correction       - valor base             => $mcbase
+Homogenize Grid         - tamanho da grade       => $gRL $gAP $gIS
+
+EOF
+
+
 
 # Checando diretórios em busca das imagens
 fold -s <<-EOF

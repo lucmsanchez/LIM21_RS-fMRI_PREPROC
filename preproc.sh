@@ -95,11 +95,12 @@ done
 
 # Checar se os argumentos obrigatórios estão definidos
 # outra idéia é chcar se eles estão vazios
-# if [ $mcbase -eq 0 ] || [ $gRL -eq 0  ] || [ $gAP -eq 0 ] || [ $gIS -eq 0 ]; then
-#   echo É obrigatório definir os argumentos.
-#   usage
-#   exit
-# fi
+
+if [ $ptn = "x" ] || [ $mcbase -eq 0 ] || [ $gRL -eq 0  ] || [ $gAP -eq 0 ] || [ $gIS -eq 0 ]; then
+  echo É obrigatório definir os argumentos.
+  usage
+  exit
+fi
 
 ptn=seq+z
 mcbase=100

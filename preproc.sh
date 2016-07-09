@@ -122,32 +122,73 @@ check () {
 fi
 }
 node () {
-  while true; do
   if [ ! -d $outpath ]; then
     mkdir $outpath
   fi
-  if [ -e $inpath$in ]; then
-    if [ ! -e $outpath$out ] || [ ! -e $outpath$out2 ]; then
+  local a=0; local b=0; local c=0
+  for i in ${in[@]}; do
+    if [ ! -e $inpath$i ]; then  a=$((a + 1)); fi
+    for ii in ${out[@]};do
+      if [ -e $outpath$ii ]; then b=$((b + 1)); fi
+      if [ $outpath$ii -ot $inpath$i ]; then c=$((c + 1)); fi
+    done
+  done
+  # echo $a $b $c
+  if [ ! $a -eq 0 ]; then
+    echo -n "INPUT não encontrado: "
+    for i in ${in[@]}; do
+      if [ ! -e $inpath$i ]; then echo -n $i; fi
+    done
+    echo
+  else
+    if [ $b -eq 0 ]; then
       cd $inpath
       $1 &> $prefix$i.log \
         && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
         || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
       cd $pwd
       mv $inpath$prefix* $outpath
-      break
     else
-      if [ $outpath$out -ot $inpath$in ] || [ $outpath$out2 -ot $inpath$in ]; then
+      if [ ! $c -eq 0 ]; then
         printf "INPUT MODIFICADO. REFAZENDO ANÁLISE DA IMAGEM\n         "
-        rm $outpath$out
-        rm $outpath$out2
+        for i in ${out[@]}; do rm $outpath$i; done
+        cd $inpath
+        $1 &> $prefix$i.log \
+          && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
+          || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
+        cd $pwd
+        mv $inpath$prefix* $outpath
       else
-      echo JÁ EXISTE O OUTPUT $out $out2; break
+        echo JÁ EXISTE O OUTPUT ${out[*]};
       fi
     fi
-  else
-  echo NÃO ENCONTRADO O INPUT $in; break
   fi
-done
+
+
+
+#   while true; do
+#   if [ -e $inpath$in ]; then
+#     if [ ! -e $outpath$out ] || [ ! -e $outpath$out2 ]; then
+#       cd $inpath
+#       $1 &> $prefix$i.log \
+#         && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
+#         || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
+#       cd $pwd
+#       mv $inpath$prefix* $outpath
+#       break
+#     else
+#       if [ $outpath$out -ot $inpath$in ] || [ $outpath$out2 -ot $inpath$in ]; then
+#         printf "INPUT MODIFICADO. REFAZENDO ANÁLISE DA IMAGEM\n         "
+#         rm $outpath$out
+#         rm $outpath$out2
+#       else
+#       echo JÁ EXISTE O OUTPUT $out $out2; break
+#       fi
+#     fi
+#   else
+#   echo NÃO ENCONTRADO O INPUT $in; break
+#   fi
+# done
 }
 # ==============================================================================
 
@@ -229,7 +270,7 @@ done
 
 # Estruturar corretamente as imagens
 printf "\nEstruturando as imagens encontradas de acordo com o padrão descrito acima...\n\n"
-ID=$(find . -name "T1_*.nii" -type f -printf "%f\n" | cut -d "_" -f 2 | cut -d "." -f 1)
+ID=$(find . -name "RS_*.nii" -type f -printf "%f\n" | cut -d "_" -f 2 | cut -d "." -f 1)
 for i in $ID; do
   wfp_T1=$(find . -name "T1_$i.nii")
 	wfp_RS=$(find . -name "RS_$i.nii")
@@ -269,7 +310,7 @@ for i in $ID; do
   prefix=rt_RS_
   in=t_RS_$i.nii
   out=$prefix$i.nii
-  out2="$prefix"mc_$i.1d
+  out[2]="$prefix"mc_$i.1d
   inpath=DATA/$i/slice_correction/
   outpath=DATA/$i/motion_correction/
   echo -n "$i> "
@@ -280,7 +321,7 @@ for i in $ID; do
   -twopass \
   -Fourier \
   -verbose \
-  -1Dfile $out2 \
+  -1Dfile ${out[2]} \
   $in"
 done
 exit # <<=======================================================================

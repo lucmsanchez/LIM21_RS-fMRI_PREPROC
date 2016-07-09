@@ -96,11 +96,11 @@ done
 # Checar se os argumentos obrigatórios estão definidos
 # outra idéia é chcar se eles estão vazios
 
-if [ $ptn = "x" ] || [ $mcbase -eq 0 ] || [ $gRL -eq 0  ] || [ $gAP -eq 0 ] || [ $gIS -eq 0 ]; then
-  echo É obrigatório definir os argumentos.
-  usage
-  exit
-fi
+# if [ $ptn = "x" ] || [ $mcbase -eq 0 ] || [ $gRL -eq 0  ] || [ $gAP -eq 0 ] || [ $gIS -eq 0 ]; then
+#   echo É obrigatório definir os argumentos.
+#   usage
+#   exit
+# fi
 
 ptn=seq+z
 mcbase=100
@@ -164,32 +164,6 @@ node () {
       fi
     fi
   fi
-
-
-
-#   while true; do
-#   if [ -e $inpath$in ]; then
-#     if [ ! -e $outpath$out ] || [ ! -e $outpath$out2 ]; then
-#       cd $inpath
-#       $1 &> $prefix$i.log \
-#         && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
-#         || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
-#       cd $pwd
-#       mv $inpath$prefix* $outpath
-#       break
-#     else
-#       if [ $outpath$out -ot $inpath$in ] || [ $outpath$out2 -ot $inpath$in ]; then
-#         printf "INPUT MODIFICADO. REFAZENDO ANÁLISE DA IMAGEM\n         "
-#         rm $outpath$out
-#         rm $outpath$out2
-#       else
-#       echo JÁ EXISTE O OUTPUT $out $out2; break
-#       fi
-#     fi
-#   else
-#   echo NÃO ENCONTRADO O INPUT $in; break
-#   fi
-# done
 }
 # ==============================================================================
 

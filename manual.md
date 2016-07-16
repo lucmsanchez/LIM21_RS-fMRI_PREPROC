@@ -1,19 +1,17 @@
 ---
 title: Manual de uso do Script preproc.sh
-author: Luciano Sanchez
-date: May 25, 2016
+author: Luciano M. Sanchez
+email: lucmsanchez@gmail.com
+date: 14 de julho, 2016
+lang: pt
 ---
 
-# Section 1
+\newpage
 
-## Subsection 1.1
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+# Introdução
 
-Next paragraph should start like this. Do not indent.
+ <!-- incluir aqui imagem do fluxograma -->
 
-## Subsection 1.2
-Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque  ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+# Etapas do pré-processamento
 
-# Section 2
-
-## Subsection 2.1
+## Slice timing correction

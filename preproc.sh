@@ -102,11 +102,21 @@ done
 #   exit
 # fi
 
+
+### SLICE TIMING CORRECTION
 ptn=seq+z
+### MOTION CORRECTION
 mcbase=100
+### HOMOGENIZE GRID
 gRL=90
 gAP=90
 gIS=60
+### REORIENT IMAGES TO TEMPLATE
+orient="rpi"
+### ALIGN CENTER TO TEMPLATE
+template="MNI152_1mm_uni+tlrc"
+### GAUSSEAN FILTER
+blur=6
 
 # ==============================================================================
 
@@ -304,78 +314,6 @@ exit # <<=======================================================================
 #===============================================================================
 #===============================================================================
 
-# Variáveis
-## Declarar todas as variáveis que serão usadas no processamento
-### Caminho do sistema para as pastas do projeto
-path="/home/brain/Desktop/PROJETO CIRCOS"
-pathp="/home/brain/Desktop/PROJETO CIRCOS/PREPROCESSING"
-pathpi="/home/brain/Desktop/PROJETO CIRCOS/PREPROCESSING/images"
-### SLICE TIMING CORRECTION
-ssa="seq+z"
-### MOTION CORRECTION
-vr=100
-### HOMOGENIZE GRID
-gRL=90
-gAP=90
-gIS=60
-### REORIENT IMAGES TO TEMPLATE
-orient="rpi"
-### ALIGN CENTER TO TEMPLATE
-template="MNI152_1mm_uni+tlrc"
-### GAUSSEAN FILTER
-blur=6
-
-# Etapas
-
-## DATA SELECT: confere e adiciona os dados necessários para o processamento
-if [ -f "$pathpi"/subs.txt ]
-	then echo "A lista já existe"
-	else
-		source config
-		cd "$pathpi"
-		ls | grep -P '(?<=RS_)\w*(?<=.)' -o > subs.txt
-fi
-lista=(`cat "$pathpi"/subs.txt`)
-
-## SLICE TIMING CORRECTION
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Aplicando Slice Timing Correction às imagens ==========="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando STC em $i..."
-  3dTshift \
-  -tpattern "$ssa" \
-  -prefix t_RS_$i \
-  -TR 2s \
-  -Fourier \
-  RS_$i.nii
-done
-
-## MOTION CORRECTION + QC
-
-### MOTION CORRECTION
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Aplicando Motion Correction às imagens ==========="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando MC em $i..."
-  3dvolreg \
-  -prefix rt_RS_"$i" \
-  -base "$vr" \
-  -zpad 2 \
-  -twopass \
-  -Fourier \
-  -1Dfile motioncorrection_"$i".1d \
-  t_RS_"$i"+orig
-done
 
 ### MOTION CORRECTION QUALITY CONTROL
 cd "$pathpi"

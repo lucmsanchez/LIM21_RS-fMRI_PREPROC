@@ -4,4 +4,4 @@
 Reference-style:
 ![Etapas do protocolo][chart]
 
-[chart]: images/flowchart.jpg "Logo Title Text 2"
+[chart]: images/flowchart.jpg "Etapas do protocolo"

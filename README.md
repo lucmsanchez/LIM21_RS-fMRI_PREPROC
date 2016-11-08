@@ -1,5 +1,4 @@
-
-# Protocolo de Pré-processamento de RS-fMRI
+# Protocolo automatizado de Pré-processamento de RS-fMRI
 
 ![Etapas do protocolo][chart]
 

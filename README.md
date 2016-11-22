@@ -4,7 +4,7 @@ Essa é a pagina inicial do repositório de scripts do protocolo Pré-processame
 
 Esse protocolo ainda está em desenvolvimento.
 
-## Etapa atual:  %1
+## Arquivo principal: [preproc.sh](preproc.sh)
 
 ## Pré-requisitos
 
@@ -14,9 +14,9 @@ Esse protocolo ainda está em desenvolvimento.
 
 ## Atalhos
 
-- Repositório
-- Manual de uso (Wiki)
-- Reporte um bug!
+- [Repositório](https://gitlab.com/LIM21/RS-fMRI_PREPROC/tree/master)
+- [Manual de uso (Wiki)](https://gitlab.com/LIM21/RS-fMRI_PREPROC/wikis/home)
+- [Bugs/Issues](https://gitlab.com/LIM21/RS-fMRI_PREPROC/issues)
 
 ## Visão Geral do protocolo  
   

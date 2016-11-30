@@ -1,33 +1,38 @@
 #!/usr/bin/env bash
 
-# Debug options ================================================================
-# export PS4='(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]} - [${SHLVL},${BASH_SUBSHELL}, $?]
-# export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-# set -x
-# trap 'echo Variable Listing --- a = $a  b = $b' EXIT
-# trap 'echo "VARIABLE-TRACE> \$variable = \"$variable\""' DEBUG
-# ==============================================================================
+if [ ! -f preproc.cfg ]; then
+echo TESTE
+cat > preproc.cfg << EOL
+# Variáveis RS-fMRI Preprocessing:
+
+ptn=seq+z
+mcbase=100
+gRL=90
+gAP=90
+gIS=60
+orient="rpi"
+template="MNI152_1mm_uni+tlrc"
+blur=6
+EOL
+  exit
+fi
+
+
 
 # PROCESSANDO OS ARGUMENTOS ====================================================
 usage() {
     echo "Argumentos:"
-    echo " $0 [ --stcpattern=<value> | --stcpattern <value> ]"
-    echo " $0 [ --mcbase=<value> | --mcbase <value> ]"
-    echo " $0 [ --grid <value> <value> <value> ]"
-    echo " $0 [ h | help ]"
+    echo " $0 [ --var <txt com variáveis para análise> | --subs <ID das imagens> ]"
+    echo " $0 [ -h | --help ]"
     echo
 }
 
-# set defaults
-ptn=x
-mcbase=0
-gRL=0
-gAP=0
-gIS=0
+config=0
+subs=0
 
 i=$(($# + 1)) # index of the first non-existing argument
 declare -A longoptspec
-longoptspec=( [stcpattern]=1 [mcbase]=1 [grid]=3 )
+longoptspec=( [var]=1 [subs]=1 )
 optspec=":l:h-:"
 while getopts "$optspec" opt; do
 while true; do
@@ -64,16 +69,23 @@ while true; do
             continue #now that opt/OPTARG are set we can process them as
             # if getopts would've given us long options
             ;;
-        stcpattern)
-            ptn=$OPTARG
+        c|config)
+            config=$OPTARG
+            
+            if [ ! config -eq 0 ]; then  
+              if [ -f $config ]; then
+              source $config
+              var="ptn"
+              if [ -z ${$var+x} ]; then
+              echo TESTE
+              fi
+              
+
+
+            
             ;;
-        mcbase)
-            mcbase=$OPTARG
-            ;;
-        grid)
-            gRL=${OPTARG[0]}
-            gAP=${OPTARG[1]}
-            gIS=${OPTARG[2]}
+        s|subs)
+            subs=$OPTARG
             ;;
         h|help)
             usage
@@ -93,34 +105,7 @@ while true; do
 break; done
 done
 
-# Checar se os argumentos obrigatórios estão definidos
-# outra idéia é chcar se eles estão vazios
-
-# if [ $ptn = "x" ] || [ $mcbase -eq 0 ] || [ $gRL -eq 0  ] || [ $gAP -eq 0 ] || [ $gIS -eq 0 ]; then
-#   echo É obrigatório definir os argumentos.
-#   usage
-#   exit
-# fi
-
-
-### SLICE TIMING CORRECTION
-ptn=seq+z
-### MOTION CORRECTION
-mcbase=100
-### HOMOGENIZE GRID
-gRL=90
-gAP=90
-gIS=60
-### REORIENT IMAGES TO TEMPLATE
-orient="rpi"
-### ALIGN CENTER TO TEMPLATE
-template="MNI152_1mm_uni+tlrc"
-### GAUSSEAN FILTER
-blur=6
-
-# ==============================================================================
-
-# DECLARANDO VARIÁVEIS =========================================================
+exit
 
 # ==============================================================================
 

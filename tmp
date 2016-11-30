@@ -1,0 +1,4 @@
+var="ptn"
+if [ -z `$var` ]; then
+echo TESTE
+fi

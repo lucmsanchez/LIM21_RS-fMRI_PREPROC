@@ -1,4 +1,2 @@
-./preproc.sh                \
-    --config preproc.cfg    \
-    --subs preproc.sbj      \  
-
+bash -vx ./preproc.sh  --subs preproc.sbj &> log
+#./preproc.sh --config preproc.cfg --subs preproc.sbj

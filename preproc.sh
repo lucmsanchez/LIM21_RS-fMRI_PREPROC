@@ -1,21 +1,6 @@
 #!/usr/bin/env bash
 
-if [ ! -f preproc.cfg ]; then
-echo TESTE
-cat > preproc.cfg << EOL
-# Variáveis RS-fMRI Preprocessing:
 
-ptn=seq+z
-mcbase=100
-gRL=90
-gAP=90
-gIS=60
-orient="rpi"
-template="MNI152_1mm_uni+tlrc"
-blur=6
-EOL
-  exit
-fi
 
 
 
@@ -27,12 +12,11 @@ usage() {
     echo
 }
 
-config=0
-subs=0
+
 
 i=$(($# + 1)) # index of the first non-existing argument
 declare -A longoptspec
-longoptspec=( [var]=1 [subs]=1 )
+longoptspec=( [config]=1 [subs]=1 )
 optspec=":l:h-:"
 while getopts "$optspec" opt; do
 while true; do
@@ -70,19 +54,7 @@ while true; do
             # if getopts would've given us long options
             ;;
         c|config)
-            config=$OPTARG
-            
-            if [ ! config -eq 0 ]; then  
-              if [ -f $config ]; then
-              source $config
-              var="ptn"
-              if [ -z ${$var+x} ]; then
-              echo TESTE
-              fi
-              
-
-
-            
+          config=$OPTARG
             ;;
         s|subs)
             subs=$OPTARG
@@ -105,7 +77,53 @@ while true; do
 break; done
 done
 
+if [ ! -z $config ]; then  
+  if [ -f $config ]; then
+    source $config
+    a=0
+    for var in ptn mcbase gRL gAP gIS orient template blur; do
+      if [[ -z "${!var:-}" ]]; then
+      echo "Variável $var não encontrada"
+      a=$(($a + 1))
+      fi
+    done
+    if [ ! $a -eq 0 ]; then
+      echo "Erro: Não é possível executar o script sem as variáveis acima estarem definidas no arquivo de configuração. Encerrando"
+      exit
+    fi
+    unset a
+  else
+  echo "Arquivo de configuração especificado não encontrado"
+  exit
+  fi
+else 
+  echo "O arquivo de configuração não foi especificado"
+  if [ ! -f preproc.cfg ]; then
+    echo "Será criado um arquivo de configuração com valores padrão: preproc.cfg"
+    cat > preproc.cfg << EOL
+# Variáveis RS-fMRI Preprocessing:
+
+ptn=seq+z
+mcbase=100
+gRL=90
+gAP=90
+gIS=60
+orient="rpi"
+template="MNI152_1mm_uni+tlrc"
+blur=6
+EOL
 exit
+  else
+    echo "Será usado o arquivo local preproc.cfg"
+    source preproc.cfg
+  fi
+fi  
+ 
+
+
+exit
+
+
 
 # ==============================================================================
 

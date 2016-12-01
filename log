@@ -1,0 +1,169 @@
+#!/usr/bin/env bash
+
+
+
+
+
+# PROCESSANDO OS ARGUMENTOS ====================================================
+usage() {
+    echo "Argumentos:"
+    echo " $0 [ --var <txt com variáveis para análise> | --subs <ID das imagens> ]"
+    echo " $0 [ -h | --help ]"
+    echo
+}
+
+
+
+i=$(($# + 1)) # index of the first non-existing argument
++ i=3
+declare -A longoptspec
++ declare -A longoptspec
+longoptspec=( [config]=1 [subs]=1 )
++ longoptspec=([config]=1 [subs]=1)
+optspec=":l:h-:"
++ optspec=:l:h-:
+while getopts "$optspec" opt; do
+while true; do
+    case "${opt}" in
+        -) #OPTARG is name-of-long-option or name-of-long-option=value
+            if [[ ${OPTARG} =~ .*=.* ]] # with this --key=value format only one argument is possible
+            then
+                opt=${OPTARG/=*/}
+                ((${#opt} <= 1)) && {
+                    echo "Syntax error: Invalid long option '$opt'" >&2
+                    exit
+                }
+                if (($((longoptspec[$opt])) != 1))
+                then
+                    echo "Syntax error: Option '$opt' does not support this syntax." >&2
+                    exit
+                fi
+                OPTARG=${OPTARG#*=}
+            else #with this --key value1 value2 format multiple arguments are possible
+                opt="$OPTARG"
+                ((${#opt} <= 1)) && {
+                    echo "Syntax error: Invalid long option '$opt'" >&2
+                    exit
+                }
+                OPTARG=(${@:OPTIND:$((longoptspec[$opt]))})
+                ((OPTIND+=longoptspec[$opt]))
+                #echo $OPTIND
+                ((OPTIND > i)) && {
+                    echo "Syntax error: Not all required arguments for option '$opt' are given." >&2
+                    exit
+                }
+            fi
+
+            continue #now that opt/OPTARG are set we can process them as
+            # if getopts would've given us long options
+            ;;
+        c|config)
+          config=$OPTARG
+            ;;
+        s|subs)
+            subs=$OPTARG
+            ;;
+        h|help)
+            usage
+            exit 0
+            ;;
+        ?)
+            echo "Erro de sintaxe:'$OPTARG' desconhecida" >&2
+            usage
+            exit
+            ;;
+        *)
+            echo "Erro de sintaxe:'$opt' desconhecida'" >&2
+            usage
+            exit
+            ;;
+    esac
+break; done
+done
++ getopts :l:h-: opt
++ true
++ case "${opt}" in
++ [[ subs =~ .*=.* ]]
++ opt=subs
++ (( 4 <= 1 ))
++ OPTARG=(${@:OPTIND:$((longoptspec[$opt]))})
++ (( OPTIND+=longoptspec[subs] ))
++ (( OPTIND > i ))
++ continue
++ true
++ case "${opt}" in
++ subs=preproc.sbj
++ break
++ getopts :l:h-: opt
+
+if [ ! -z $config ]; then  
+  if [ -f $config ]; then
+    source $config
+    a=0
+    for var in ptn mcbase gRL gAP gIS orient template blur; do
+      if [[ -z "${!var:-}" ]]; then
+      echo "Variável $var não encontrada"
+      a=$(($a + 1))
+      fi
+    done
+    if [ ! $a -eq 0 ]; then
+      echo "Erro: Não é possível executar o script sem as variáveis acima estarem definidas no arquivo de configuração. Encerrando"
+      exit
+    fi
+    unset a
+  else
+  echo "Arquivo de configuração especificado não encontrado"
+  exit
+  fi
+else 
+  echo "O arquivo de configuração não foi especificado"
+  if [ ! -f preproc.cfg ]; then
+    echo "Será criado um arquivo de configuração com valores padrão: preproc.cfg"
+    cat > preproc.cfg << EOL
+# Variáveis RS-fMRI Preprocessing:
+
+ptn=seq+z
+mcbase=100
+gRL=90
+gAP=90
+gIS=60
+orient="rpi"
+template="MNI152_1mm_uni+tlrc"
+blur=6
+EOL
+exit
+  else
+    echo "Será usado o arquivo local preproc.cfg"
+    source preproc.cfg
+  fi
+fi  
++ '[' '!' -z ']'
++ echo 'O arquivo de configuração não foi especificado'
+O arquivo de configuração não foi especificado
++ '[' '!' -f preproc.cfg ']'
++ echo 'Será usado o arquivo local preproc.cfg'
+Será usado o arquivo local preproc.cfg
++ source preproc.cfg
+# Variáveis RS-fMRI Preprocessing:
+
+ptn=seq+z
+++ ptn=seq+z
+mcbase=100
+++ mcbase=100
+gRL=90
+++ gRL=90
+gAP=90
+++ gAP=90
+gIS=60
+++ gIS=60
+orient="rpi"
+++ orient=rpi
+template="MNI152_1mm_uni+tlrc"
+++ template=MNI152_1mm_uni+tlrc
+blur=6
+++ blur=6
+ 
+
+
+exit
++ exit

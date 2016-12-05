@@ -77,54 +77,6 @@ while true; do
 break; done
 done
 
-if [ ! -z $config ]; then  
-  if [ -f $config ]; then
-    source $config
-    a=0
-    for var in ptn mcbase gRL gAP gIS orient template blur; do
-      if [[ -z "${!var:-}" ]]; then
-      echo "Variável $var não encontrada"
-      a=$(($a + 1))
-      fi
-    done
-    if [ ! $a -eq 0 ]; then
-      echo "Erro: Não é possível executar o script sem as variáveis acima estarem definidas no arquivo de configuração. Encerrando"
-      exit
-    fi
-    unset a
-  else
-  echo "Arquivo de configuração especificado não encontrado"
-  exit
-  fi
-else 
-  echo "O arquivo de configuração não foi especificado"
-  if [ ! -f preproc.cfg ]; then
-    echo "Será criado um arquivo de configuração com valores padrão: preproc.cfg"
-    cat > preproc.cfg << EOL
-# Variáveis RS-fMRI Preprocessing:
-
-ptn=seq+z
-mcbase=100
-gRL=90
-gAP=90
-gIS=60
-orient="rpi"
-template="MNI152_1mm_uni+tlrc"
-blur=6
-EOL
-exit
-  else
-    echo "Será usado o arquivo local preproc.cfg"
-    source preproc.cfg
-  fi
-fi  
- 
-
-
-exit
-
-
-
 # ==============================================================================
 
 # DECLARANDO FUNÇÕES ===========================================================
@@ -135,6 +87,7 @@ check () {
     echo "Não encontrado em \$PATH"
 fi
 }
+
 node () {
   if [ ! -d $outpath ]; then
     mkdir $outpath
@@ -187,22 +140,61 @@ fold -s <<-EOF
 
 Protocolo de pré-processamento de fMRI
 --------------------------------------
-Autores: Luis Kobuti Ferreira <emaildoluis@gmail.com>
-         Luciano M. Sanchez <lucmsanchez@gmail.com>
 
-Checando se todos os programas necessários estão instalados e estão disponíveis na variável de ambiente \$PATH
-
-GNU bash, version                         ...$(check bash)
-AFNI                                      ...$(check afni)
-FSL                                       ...$(check fsl5.0-fast)
+GNU bash                              ...$(check bash)
+AFNI                                  ...$(check afni)
+FSL                                   ...$(check fsl5.0-fast)
 EOF
 
 if (command -v bash && command -v afni && command -v fsl5.0-fast) > /dev/null ; then
-	printf "\nTodos os prorgamas necessários estão instalados, prosseguindo...\n\n"
+	continue
 else
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit
 fi
+
+if [ ! -z $config ]; then  
+  if [ -f $config ]; then
+    source $config
+    a=0
+    for var in ptn mcbase gRL gAP gIS orient template blur; do
+      if [[ -z "${!var:-}" ]]; then
+      echo "Variável $var não encontrada"
+      a=$(($a + 1))
+      fi
+    done
+    if [ ! $a -eq 0 ]; then
+      echo "Erro: Não é possível executar o script sem as variáveis acima estarem definidas no arquivo de configuração. Encerrando"
+      exit
+    fi
+    unset a
+  else
+  echo "Arquivo de configuração especificado não encontrado"
+  exit
+  fi
+else 
+  echo "O arquivo de configuração não foi especificado"
+  if [ ! -f preproc.cfg ]; then
+    echo "Será criado um arquivo de configuração com valores padrão: preproc.cfg"
+    cat > preproc.cfg << EOL
+# Variáveis RS-fMRI Preprocessing:
+
+ptn=seq+z
+mcbase=100
+gRL=90
+gAP=90
+gIS=60
+orient="rpi"
+template="MNI152_1mm_uni+tlrc"
+blur=6
+EOL
+exit
+  else
+    echo "Será usado o arquivo local preproc.cfg"
+    source preproc.cfg
+  fi
+fi  
+
 
 # informando os usuários das variáveis definidas ou defaults
 fold -s <<-EOF
@@ -213,7 +205,6 @@ Motion correction       - valor base             => $mcbase
 Homogenize Grid         - tamanho da grade       => $gRL $gAP $gIS
 
 EOF
-
 
 
 # Checando diretórios em busca das imagens

@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-
-
-
-
 # PROCESSANDO OS ARGUMENTOS ====================================================
 usage() {
     echo "Argumentos:"
@@ -205,6 +201,8 @@ Motion correction       - valor base             => $mcbase
 Homogenize Grid         - tamanho da grade       => $gRL $gAP $gIS
 
 EOF
+
+
 
 
 # Checando diretórios em busca das imagens

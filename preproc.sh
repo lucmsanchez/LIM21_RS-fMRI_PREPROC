@@ -137,14 +137,13 @@ fold -s <<-EOF
 Protocolo de pré-processamento de fMRI
 --------------------------------------
 
-GNU bash                              ...$(check bash)
-AFNI                                  ...$(check afni)
-FSL                                   ...$(check fsl5.0-fast)
+GNU bash           ...$(check bash)
+AFNI               ...$(check afni)
+FSL                ...$(check fsl5.0-fast)
+
 EOF
 
-if (command -v bash && command -v afni && command -v fsl5.0-fast) > /dev/null ; then
-	continue
-else
+if ( ! command -v bash || ! command -v afni || ! command -v fsl5.0-fast) > /dev/null ; then
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit
 fi
@@ -195,72 +194,67 @@ fi
 # informando os usuários das variáveis definidas ou defaults
 fold -s <<-EOF
 As variáveis que serão usadas como parametros para as análises são:
-
 Slice timing correction - sequência de aquisição => $ptn
 Motion correction       - valor base             => $mcbase
 Homogenize Grid         - tamanho da grade       => $gRL $gAP $gIS
 
 EOF
 
+# Checando arquivo com nome dos indivíduos
+if [ ! -z $subs ]; then  
+  if [ ! -f $subs ]; then
+    echo "Arquivo com ID dos indivíduos especificado não encontrado"
+    exit
+  fi
+else 
+  if [ -f preproc.sbj ]; then
+    subs=preproc.sbj
+  else
+    echo "O arquivo com ID dos indivíduos não foi especificado" 
+    exit
+  fi
+fi  
 
-
-
-# Checando diretórios em busca das imagens
-fold -s <<-EOF
-Esse pipeline usa o diretório atual ($PWD) como diretório base para o processamento. Irá reconhecer apenas imagens no formato NIFTI que estejam dentro da pasta atual e irá movê-las para a pasta DATA, contanto que respeitem a regra de denominação abaixo:
-
-  RS_<ID>.nii - para a imagem de Resting State
-  T1_<ID>.nii - para a imagem T1 estrutural
-  ID - código idenificador uníco do indivíduo
-
-  Exemplo da estrutura básica:
-  DATA/<ID>/RS_<ID>.nii
-  DATA/<ID>/T1_<ID>.nii
-
-EOF
-
-# Procurar imagens na pasta atual
-printf "\nBuscando no diretório atual as imagens:\n\n"
-if [[ ! -z $(find . -name "T1_*.nii") && ! -z $(find . -name "RS_*.nii") ]]; then
-	printf "\nForam encontradas as imagens T1 abaixo:\n"
-	find . -name "T1_*.nii"
-  echo -n "Total: " ; find . -name "T1_*.nii" | wc -l
-	printf "\nForam encontradas as imagens RS abaixo:\n"
-  find . -name "RS_*.nii"
-  echo -n "Total: " ; find . -name "RS_*.nii" | wc -l
-	else
-	printf "\nNão foram encontradas imagens no formato T1_<ID>.nii E RS_<ID>.nii. Adicione ou renomeie as imagens de acordo com o padronizado pelo pipeline.\n" | fold -s
-	exit
+#mapfile -t ID < $subs
+ID=$(cat $subs)
+echo "Lista de indivíduos para análise:"
+a=0
+for i in $ID; do 
+  echo -n "$i  ... " 
+  if [ $(find . -name "T1_$i.nii") ] && [ $(find . -name "T1_$i.PAR") ]; then
+    echo -n "T1" 
+  else echo -n "(T1 não encontrado)"; a=$((a + 1))
+  fi
+  if [ $(find . -name "RS_$i.nii") ] && [ $(find . -name "RS_$i.PAR") ]; then
+    echo " RS" 
+  else echo " (RS não encontrado)"; a=$((a + 1)) 
+  fi
+done
+echo
+if [ ! $a -eq 0 ]; then
+    echo "Imagens não foram encontradas ou não estão nomeadas conforme o padrão: RS_<ID>.nii/RS_<ID>.PAR e T1_<ID>.nii/T1_<ID>" | fold -s ; echo
+    exit
 fi
 
-# Perguntar se deseja prosseguir
-c=0
-until [ $c -eq 1 ]; do
-  echo
-	read -p "Deseja prosseguir com o processamento dessas imagens? [S/N]"
-	case $REPLY in
-		S|s ) printf "\nProsseguindo...\n"; c=1;;
-		N|n ) printf "\nAbortando script...\n"; exit; c=1;;
-		* ) printf "\nResponda apenas com S ou N\n";;
-	esac
-done
+[ -d DATA ] || mkdir DATA
+[ -d OUTPUT ] || mkdir OUTPUT
 
-# Estruturar corretamente as imagens
-printf "\nEstruturando as imagens encontradas de acordo com o padrão descrito acima...\n\n"
-ID=$(find . -name "RS_*.nii" -type f -printf "%f\n" | cut -d "_" -f 2 | cut -d "." -f 1)
+unset a; a=0
 for i in $ID; do
-  wfp_T1=$(find . -name "T1_$i.nii")
-	wfp_RS=$(find . -name "RS_$i.nii")
-	rfp_T1=DATA/$i/T1_$i.nii
-	rfp_RS=DATA/$i/RS_$i.nii
-	for f in DATA OUTPUT; do
-		if [ ! -d $f/$i ]; then
-		    mkdir -p $f/$i
-	 	fi
-	done
-	mv $wfp_T1 $rfp_T1 2> /dev/null
-	mv $wfp_RS $rfp_RS 2> /dev/null
+  [ -d DATA/$i ] || mkdir DATA/$i 
+  [ -d OUTPUT/$i ] || mkdir OUTPUT/$i 
+  for ii in T1_$i.nii T1_$i.PAR RS_$i.nii RS_$i.PAR physlog_$i; do
+    [ ! -f DATA/$i/$ii ] && wp=$(find . -name $ii) && rp=DATA/$i/$ii && mv $wp $rp 2> /dev/null && a=$((a + 1))
+  done
 done
+if [ ! $a -eq 0 ]; then 
+  echo "O caminho das imagens não está conformado com o padrâo: DATA/<ID>/T1_<ID>.nii"
+  echo "Conformando..."
+  echo
+fi
+
+exit
+  
 
 # SLICE TIMING CORRECTION=======================================================
 printf "=======================SLICE TIMING CORRECTION====================\n\n"

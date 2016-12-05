@@ -118,444 +118,50 @@ fi
 }
 
 node () {
-  if [ ! -d $outpath ]; then
-    mkdir $outpath
-  fi
-  local a=0; local b=0; local c=0
-  for i in ${in[@]}; do
-    if [ ! -e $inpath$i ]; then  a=$((a + 1)); fi
-    for ii in ${out[@]};do
-      if [ -e $outpath$ii ]; then b=$((b + 1)); fi
-      if [ $outpath$ii -ot $inpath$i ]; then c=$((c + 1)); fi
-    done
-  done
-  # echo $a $b $c
-  if [ ! $a -eq 0 ]; then
-    echo -n "INPUT não encontrado: "
+    [ -d $outpath ] || mkdir $outpath
+
+    local a=0; local b=0; local c=0; local d=0; local e=0
+
     for i in ${in[@]}; do
-      if [ ! -e $inpath$i ]; then echo -n $i; fi
+        if [ ! -f $inpath$i ]; then
+            echo "INPUT $i não encontrado"
+            a=$((a + 1))            
+        else
+            for ii in ${out[@]}; do
+                if [ -f $outpath$ii ]; then
+                    b=$((b + 1))
+                    [ $outpath$ii -ot $inpath$i ] && echo "INPUT $i MODIFICADO." && c=$((c + 1))
+                fi
+            done
+        fi
     done
-    echo
-  else
-    if [ $b -eq 0 ]; then
-      cd $inpath
+
+    echo $a $b $c
+
+    [ $a -eq 0 ] || exit
+
+    if [ $b -eq ${#out[@]} ]; then 
+        echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; d=1
+    else
+        if [ ! $b -eq 0 ]; then
+            echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
+            for ii in ${out[@]}; do rm $outpath$ii; done
+    fi
+
+    [ $c -eq 0 ] || for ii in ${out[@]}; do rm $outpath$ii; done
+
+    while d=0; do
+    cd $inpath
       $1 &> $prefix$i.log \
         && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
         || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
       cd $pwd
       mv $inpath$prefix* $outpath
-    else
-      if [ ! $c -eq 0 ]; then
-        printf "INPUT MODIFICADO. REFAZENDO ANÁLISE DA IMAGEM\n         "
-        for i in ${out[@]}; do rm $outpath$i; done
-        cd $inpath
-        $1 &> $prefix$i.log \
-          && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
-          || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
-        cd $pwd
-        mv $inpath$prefix* $outpath
-      else
-        echo JÁ EXISTE O OUTPUT ${out[*]};
-      fi
-    fi
-  fi
-}
-# ==============================================================================
-
-
-# INÍCIO =======================================================================
-
-fold -s <<-EOF
-
-Protocolo de pré-processamento de RS-fMRI
---------------------------------------
-
-RUNTIME: $(date)
-
-GNU bash           ...$(check bash)
-AFNI               ...$(check afni)
-FSL                ...$(check fsl5.0-fast)
-
-EOF
-+ fold -s
-date
-++ date
-check bash
-++ check bash
-++ command -v bash
-++ echo OK
-check afni
-++ check afni
-++ command -v afni
-++ echo OK
-check fsl5.0-fast
-++ check fsl5.0-fast
-++ command -v fsl5.0-fast
-++ echo OK
-
-Protocolo de pré-processamento de RS-fMRI
---------------------------------------
-
-RUNTIME: Mon Dec  5 19:02:11 BRST 2016
-
-GNU bash           ...OK
-AFNI               ...OK
-FSL                ...OK
-
-
-if ( ! command -v bash || ! command -v afni || ! command -v fsl5.0-fast) > /dev/null ; then
-	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
-	exit
-fi
-+ command -v bash
-+ command -v afni
-+ command -v fsl5.0-fast
-
-if [ ! -z $config ]; then  
-  if [ -f $config ]; then
-    source $config
-    a=0
-    for var in ptn mcbase gRL gAP gIS orient template blur; do
-      if [[ -z "${!var:-}" ]]; then
-      echo "Variável $var não encontrada"
-      a=$(($a + 1))
-      fi
     done
-    if [ ! $a -eq 0 ]; then
-      echo "Erro: Não é possível executar o script sem as variáveis acima estarem definidas no arquivo de configuração. Encerrando"
-      exit
-    fi
-    unset a
-  else
-  echo "Arquivo de configuração especificado não encontrado"
-  exit
-  fi
-else 
-  echo "O arquivo de configuração não foi especificado"
-  if [ ! -f preproc.cfg ]; then
-    echo "Será criado um arquivo de configuração com valores padrão: preproc.cfg"
-    cat > preproc.cfg << EOL
-# Variáveis RS-fMRI Preprocessing:
 
-ptn=seq+z
-mcbase=100
-gRL=90
-gAP=90
-gIS=60
-orient="rpi"
-template="MNI152_1mm_uni+tlrc"
-blur=6
-EOL
-exit
-  else
-    echo "Será usado o arquivo local preproc.cfg"
-    source preproc.cfg
-  fi
-fi  
-+ '[' '!' -z preproc.cfg ']'
-+ '[' -f preproc.cfg ']'
-+ source preproc.cfg
-# Variáveis RS-fMRI Preprocessing:
-
-ptn=seq+z
-++ ptn=seq+z
-mcbase=100
-++ mcbase=100
-gRL=90
-++ gRL=90
-gAP=90
-++ gAP=90
-gIS=60
-++ gIS=60
-orient="rpi"
-++ orient=rpi
-template="MNI152_1mm_uni+tlrc"
-++ template=MNI152_1mm_uni+tlrc
-blur=6
-++ blur=6
-+ a=0
-+ for var in ptn mcbase gRL gAP gIS orient template blur
-+ [[ -z seq+z ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
-+ [[ -z 100 ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
-+ [[ -z 90 ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
-+ [[ -z 90 ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
-+ [[ -z 60 ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
-+ [[ -z rpi ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
-+ [[ -z MNI152_1mm_uni+tlrc ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
-+ [[ -z 6 ]]
-+ '[' '!' 0 -eq 0 ']'
-+ unset a
-
-
-# informando os usuários das variáveis definidas ou defaults
-fold -s <<-EOF
-As variáveis que serão usadas como parametros para as análises são:
-Slice timing correction - sequência de aquisição => $ptn
-Motion correction       - valor base             => $mcbase
-Homogenize Grid         - tamanho da grade       => $gRL $gAP $gIS
-
-EOF
-+ fold -s
-As variáveis que serão usadas como parametros para as análises são:
-Slice timing correction - sequência de aquisição => seq+z
-Motion correction       - valor base             => 100
-Homogenize Grid         - tamanho da grade       => 90 90 60
-
-
-# Checando arquivo com nome dos indivíduos
-if [ ! -z $subs ]; then  
-  if [ ! -f $subs ]; then
-    echo "Arquivo com ID dos indivíduos especificado não encontrado"
-    exit
-  fi
-else 
-  if [ -f preproc.sbj ]; then
-    subs=preproc.sbj
-  else
-    echo "O arquivo com ID dos indivíduos não foi especificado" 
-    exit
-  fi
-fi  
-+ '[' '!' -z preproc.sbj ']'
-+ '[' '!' -f preproc.sbj ']'
-
-#mapfile -t ID < $subs
-ID=$(cat $subs)
-cat $subs
-++ cat preproc.sbj
-+ ID='C000917
-P001131
-P001543
-P001562
-T000001'
-echo "Lista de indivíduos para análise:"
-+ echo 'Lista de indivíduos para análise:'
-Lista de indivíduos para análise:
-a=0
-+ a=0
-for i in $ID; do 
-  echo -n "$i  ... " 
-  if [ $(find . -name "T1_$i.nii") ] && [ $(find . -name "T1_$i.PAR") ]; then
-    echo -n "T1" 
-  else echo -n "(T1 não encontrado)"; a=$((a + 1))
-  fi
-  if [ $(find . -name "RS_$i.nii") ] && [ $(find . -name "RS_$i.PAR") ]; then
-    echo " RS" 
-  else echo " (RS não encontrado)"; a=$((a + 1)) 
-  fi
-done
-+ for i in '$ID'
-+ echo -n 'C000917  ... '
-C000917  ... find . -name "T1_$i.nii"
-++ find . -name T1_C000917.nii
-+ '[' ./DATA/C000917/T1_C000917.nii ']'
-find . -name "T1_$i.PAR"
-++ find . -name T1_C000917.PAR
-+ '[' ./DATA/C000917/T1_C000917.PAR ']'
-+ echo -n T1
-T1find . -name "RS_$i.nii"
-++ find . -name RS_C000917.nii
-+ '[' ./DATA/C000917/RS_C000917.nii ']'
-find . -name "RS_$i.PAR"
-++ find . -name RS_C000917.PAR
-+ '[' ./DATA/C000917/RS_C000917.PAR ']'
-+ echo ' RS'
- RS
-+ for i in '$ID'
-+ echo -n 'P001131  ... '
-P001131  ... find . -name "T1_$i.nii"
-++ find . -name T1_P001131.nii
-+ '[' ./DATA/P001131/T1_P001131.nii ']'
-find . -name "T1_$i.PAR"
-++ find . -name T1_P001131.PAR
-+ '[' ./DATA/P001131/T1_P001131.PAR ']'
-+ echo -n T1
-T1find . -name "RS_$i.nii"
-++ find . -name RS_P001131.nii
-+ '[' ./DATA/P001131/RS_P001131.nii ']'
-find . -name "RS_$i.PAR"
-++ find . -name RS_P001131.PAR
-+ '[' ./DATA/P001131/RS_P001131.PAR ']'
-+ echo ' RS'
- RS
-+ for i in '$ID'
-+ echo -n 'P001543  ... '
-P001543  ... find . -name "T1_$i.nii"
-++ find . -name T1_P001543.nii
-+ '[' ./DATA/P001543/T1_P001543.nii ']'
-find . -name "T1_$i.PAR"
-++ find . -name T1_P001543.PAR
-+ '[' ./DATA/P001543/T1_P001543.PAR ']'
-+ echo -n T1
-T1find . -name "RS_$i.nii"
-++ find . -name RS_P001543.nii
-+ '[' ./DATA/P001543/RS_P001543.nii ']'
-find . -name "RS_$i.PAR"
-++ find . -name RS_P001543.PAR
-+ '[' ./DATA/P001543/RS_P001543.PAR ']'
-+ echo ' RS'
- RS
-+ for i in '$ID'
-+ echo -n 'P001562  ... '
-P001562  ... find . -name "T1_$i.nii"
-++ find . -name T1_P001562.nii
-+ '[' ./DATA/P001562/T1_P001562.nii ']'
-find . -name "T1_$i.PAR"
-++ find . -name T1_P001562.PAR
-+ '[' ./DATA/P001562/T1_P001562.PAR ']'
-+ echo -n T1
-T1find . -name "RS_$i.nii"
-++ find . -name RS_P001562.nii
-+ '[' ./DATA/P001562/RS_P001562.nii ']'
-find . -name "RS_$i.PAR"
-++ find . -name RS_P001562.PAR
-+ '[' ./DATA/P001562/RS_P001562.PAR ']'
-+ echo ' RS'
- RS
-+ for i in '$ID'
-+ echo -n 'T000001  ... '
-T000001  ... find . -name "T1_$i.nii"
-++ find . -name T1_T000001.nii
-+ '[' ./DATA/T000001/T1_T000001.nii ']'
-find . -name "T1_$i.PAR"
-++ find . -name T1_T000001.PAR
-+ '[' ./DATA/T000001/T1_T000001.PAR ']'
-+ echo -n T1
-T1find . -name "RS_$i.nii"
-++ find . -name RS_T000001.nii
-+ '[' ./DATA/T000001/RS_T000001.nii ']'
-find . -name "RS_$i.PAR"
-++ find . -name RS_T000001.PAR
-+ '[' ./DATA/T000001/RS_T000001.PAR ']'
-+ echo ' RS'
- RS
-echo
-+ echo
-
-if [ ! $a -eq 0 ]; then
-    echo "Imagens não foram encontradas ou não estão nomeadas conforme o padrão: RS_<ID>.nii/RS_<ID>.PAR e T1_<ID>.nii/T1_<ID>" | fold -s ; echo
-    exit
-fi
-+ '[' '!' 0 -eq 0 ']'
-
-[ -d DATA ] || mkdir DATA
-+ '[' -d DATA ']'
-[ -d OUTPUT ] || mkdir OUTPUT
-+ '[' -d OUTPUT ']'
-
-unset a; a=0
-+ unset a
-+ a=0
-for i in $ID; do
-  [ -d DATA/$i ] || mkdir DATA/$i 
-  [ -d OUTPUT/$i ] || mkdir OUTPUT/$i 
-  for ii in T1_$i.nii T1_$i.PAR RS_$i.nii RS_$i.PAR physlog_$i; do
-    [ ! -f DATA/$i/$ii ] && wp=$(find . -name $ii) && rp=DATA/$i/$ii && mv $wp $rp 2> /dev/null && a=$((a + 1))
-  done
-done
-+ for i in '$ID'
-+ '[' -d DATA/C000917 ']'
-+ '[' -d OUTPUT/C000917 ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/C000917/T1_C000917.nii ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/C000917/T1_C000917.PAR ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/C000917/RS_C000917.nii ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/C000917/RS_C000917.PAR ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/C000917/physlog_C000917 ']'
-find . -name $ii
-++ find . -name physlog_C000917
-+ wp=
-+ rp=DATA/C000917/physlog_C000917
-+ mv DATA/C000917/physlog_C000917
-+ for i in '$ID'
-+ '[' -d DATA/P001131 ']'
-+ '[' -d OUTPUT/P001131 ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001131/T1_P001131.nii ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001131/T1_P001131.PAR ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001131/RS_P001131.nii ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001131/RS_P001131.PAR ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001131/physlog_P001131 ']'
-find . -name $ii
-++ find . -name physlog_P001131
-+ wp=
-+ rp=DATA/P001131/physlog_P001131
-+ mv DATA/P001131/physlog_P001131
-+ for i in '$ID'
-+ '[' -d DATA/P001543 ']'
-+ '[' -d OUTPUT/P001543 ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001543/T1_P001543.nii ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001543/T1_P001543.PAR ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001543/RS_P001543.nii ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001543/RS_P001543.PAR ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001543/physlog_P001543 ']'
-find . -name $ii
-++ find . -name physlog_P001543
-+ wp=
-+ rp=DATA/P001543/physlog_P001543
-+ mv DATA/P001543/physlog_P001543
-+ for i in '$ID'
-+ '[' -d DATA/P001562 ']'
-+ '[' -d OUTPUT/P001562 ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001562/T1_P001562.nii ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001562/T1_P001562.PAR ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001562/RS_P001562.nii ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001562/RS_P001562.PAR ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001562/physlog_P001562 ']'
-find . -name $ii
-++ find . -name physlog_P001562
-+ wp=
-+ rp=DATA/P001562/physlog_P001562
-+ mv DATA/P001562/physlog_P001562
-+ for i in '$ID'
-+ '[' -d DATA/T000001 ']'
-+ '[' -d OUTPUT/T000001 ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/T000001/T1_T000001.nii ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/T000001/T1_T000001.PAR ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/T000001/RS_T000001.nii ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/T000001/RS_T000001.PAR ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/T000001/physlog_T000001 ']'
-find . -name $ii
-++ find . -name physlog_T000001
-+ wp=
-+ rp=DATA/T000001/physlog_T000001
-+ mv DATA/T000001/physlog_T000001
-if [ ! $a -eq 0 ]; then 
-  echo "O caminho das imagens não está conformado com o padrâo: DATA/<ID>/T1_<ID>.nii"
-  echo "Conformando..."
-  echo
-fi
-+ '[' '!' 0 -eq 0 ']'
-
-exit
-+ exit
+    for ii in ${out[@]}; do [ -f $outpath$ii ] ||  e=$((e + 1)) done
+      
+    [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG." && exit
+}
+./preproc.sh: line 132: syntax error near unexpected token `}'
+./preproc.sh: line 132: `}'

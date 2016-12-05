@@ -85,7 +85,6 @@ fi
 }
 
 node () {
-
     [ -d $outpath ] || mkdir $outpath
 
     local a=0; local b=0; local c=0; local d=0; local e=0
@@ -130,7 +129,6 @@ node () {
     for ii in ${out[@]}; do [ -f $outpath$ii ] ||  e=$((e + 1)) done
       
     [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG." && exit
-   
 }
 # ==============================================================================
 

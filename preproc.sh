@@ -134,8 +134,10 @@ node () {
 
 fold -s <<-EOF
 
-Protocolo de pré-processamento de fMRI
+Protocolo de pré-processamento de RS-fMRI
 --------------------------------------
+
+RUNTIME: $(date)
 
 GNU bash           ...$(check bash)
 AFNI               ...$(check afni)

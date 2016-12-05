@@ -85,47 +85,52 @@ fi
 }
 
 node () {
-  if [ ! -d $outpath ]; then
-    mkdir $outpath
-  fi
-  local a=0; local b=0; local c=0
-  for i in ${in[@]}; do
-    if [ ! -e $inpath$i ]; then  a=$((a + 1)); fi
-    for ii in ${out[@]};do
-      if [ -e $outpath$ii ]; then b=$((b + 1)); fi
-      if [ $outpath$ii -ot $inpath$i ]; then c=$((c + 1)); fi
-    done
-  done
-  # echo $a $b $c
-  if [ ! $a -eq 0 ]; then
-    echo -n "INPUT não encontrado: "
+
+    [ -d $outpath ] || mkdir $outpath
+
+    local a=0; local b=0; local c=0; local d=0; local e=0
+
     for i in ${in[@]}; do
-      if [ ! -e $inpath$i ]; then echo -n $i; fi
+        if [ ! -f $inpath$i ]; then
+            echo "INPUT $i não encontrado"
+            a=$((a + 1))            
+        else
+            for ii in ${out[@]}; do
+                if [ -f $outpath$ii ]; then
+                    b=$((b + 1))
+                    [ $outpath$ii -ot $inpath$i ] && echo "INPUT $i MODIFICADO." && c=$((c + 1))
+                fi
+            done
+        fi
     done
-    echo
-  else
-    if [ $b -eq 0 ]; then
-      cd $inpath
+
+    echo $a $b $c
+
+    [ $a -eq 0 ] || exit
+
+    if [ $b -eq ${#out[@]} ]; then 
+        echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; d=1
+    else
+        if [ ! $b -eq 0 ]; then
+            echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
+            for ii in ${out[@]}; do rm $outpath$ii; done
+    fi
+
+    [ $c -eq 0 ] || for ii in ${out[@]}; do rm $outpath$ii; done
+
+    while d=0; do
+    cd $inpath
       $1 &> $prefix$i.log \
         && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
         || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
       cd $pwd
       mv $inpath$prefix* $outpath
-    else
-      if [ ! $c -eq 0 ]; then
-        printf "INPUT MODIFICADO. REFAZENDO ANÁLISE DA IMAGEM\n         "
-        for i in ${out[@]}; do rm $outpath$i; done
-        cd $inpath
-        $1 &> $prefix$i.log \
-          && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
-          || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
-        cd $pwd
-        mv $inpath$prefix* $outpath
-      else
-        echo JÁ EXISTE O OUTPUT ${out[*]};
-      fi
-    fi
-  fi
+    done
+
+    for ii in ${out[@]}; do [ -f $outpath$ii ] ||  e=$((e + 1)) done
+      
+    [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG." && exit
+   
 }
 # ==============================================================================
 

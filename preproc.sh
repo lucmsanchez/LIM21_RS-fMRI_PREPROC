@@ -8,8 +8,6 @@ usage() {
     echo
 }
 
-
-
 i=$(($# + 1)) # index of the first non-existing argument
 declare -A longoptspec
 longoptspec=( [config]=1 [subs]=1 )
@@ -85,47 +83,71 @@ fi
 }
 
 node () {
-  if [ ! -d $outpath ]; then
-    mkdir $outpath
-  fi
-  local a=0; local b=0; local c=0
+  [ -d $outpath ] || mkdir $outpath
+  #
+  local a=0; local b=0; local c=0; local d=0; local e=0; local v=0
+  ex=0
+  
+
+  #
   for i in ${in[@]}; do
-    if [ ! -e $inpath$i ]; then  a=$((a + 1)); fi
-    for ii in ${out[@]};do
-      if [ -e $outpath$ii ]; then b=$((b + 1)); fi
-      if [ $outpath$ii -ot $inpath$i ]; then c=$((c + 1)); fi
-    done
-  done
-  # echo $a $b $c
-  if [ ! $a -eq 0 ]; then
-    echo -n "INPUT não encontrado: "
-    for i in ${in[@]}; do
-      if [ ! -e $inpath$i ]; then echo -n $i; fi
-    done
-    echo
-  else
-    if [ $b -eq 0 ]; then
-      cd $inpath
-      $1 &> $prefix$i.log \
-        && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
-        || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
-      cd $pwd
-      mv $inpath$prefix* $outpath
-    else
-      if [ ! $c -eq 0 ]; then
-        printf "INPUT MODIFICADO. REFAZENDO ANÁLISE DA IMAGEM\n         "
-        for i in ${out[@]}; do rm $outpath$i; done
-        cd $inpath
-        $1 &> $prefix$i.log \
-          && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
-          || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
-        cd $pwd
-        mv $inpath$prefix* $outpath
+      if [ ! -f $inpath$i ]; then
+          echo "INPUT $i não encontrado"
+          a=$((a + 1))            
       else
-        echo JÁ EXISTE O OUTPUT ${out[*]};
+          for ii in ${out[@]}; do
+              if [ -f $outpath$ii ]; then
+                  b=$((b + 1))
+                  [ $outpath$ii -ot $inpath$i ] && echo -n "INPUT $i MODIFICADO. REFAZENDO ANÁLISE. " && c=$((c + 1))
+              fi
+          done
       fi
-    fi
+  done
+  #
+  if [ $a -eq 0 ]; then
+  #
+  if [ $b -eq ${#out[@]} ]; then 
+    if [ ! $c -eq 0 ]; then
+      for ii in ${out[@]}; do rm $outpath$ii; done
+      else
+        echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; d=1
+     fi
+  else
+      if [ ! $b -eq 0 ]; then
+          echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
+          for ii in ${out[@]}; do rm $outpath$ii; done
+      fi
   fi
+  #
+  while [ $d -eq 0 ]; do
+  cd $inpath
+    $1 &> $prefix$i.log \
+      && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
+      || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log" | fold -s
+    cd $pwd
+    mv $inpath$prefix* $outpath
+    d=1
+  done
+  #
+  for ii in ${out[@]}; do 
+    [ -f $outpath$ii ] ||  e=$((e + 1)) 
+  done
+  # 
+  [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG."
+  else
+  ex=$((ex + 1)) 
+  fi
+}
+
+input.error () {
+[ $ex -eq ${#ID[@]} ] && exit
+}
+
+organize.files () {
+  local files=$( find "$inpath" -name "$prefix*" )
+  for i in $files; do
+  mv $i $outpath 2> /dev/null
+  done
 }
 # ==============================================================================
 
@@ -217,7 +239,6 @@ else
   fi
 fi  
 
-#mapfile -t ID < $subs
 ID=$(cat $subs)
 echo "Lista de indivíduos para análise:"
 a=0
@@ -228,9 +249,11 @@ for i in $ID; do
   else echo -n "(T1 não encontrado)"; a=$((a + 1))
   fi
   if [ $(find . -name "RS_$i.nii") ] && [ $(find . -name "RS_$i.PAR") ]; then
-    echo " RS" 
+    printf " RS" 
   else echo " (RS não encontrado)"; a=$((a + 1)) 
   fi
+  [ $(find . -name "t_RS_$i.nii") ] && printf " stc"
+  printf "\n"
 done
 echo
 if [ ! $a -eq 0 ]; then
@@ -255,9 +278,6 @@ if [ ! $a -eq 0 ]; then
   echo
 fi
 
-exit
-  
-
 # SLICE TIMING CORRECTION=======================================================
 printf "=======================SLICE TIMING CORRECTION====================\n\n"
 pwd=($PWD)
@@ -274,7 +294,14 @@ for i in $ID; do
     -prefix $out \
     -Fourier \
     $in"
+input.error
+organize.files
+unset prefix in out inpath outpath 
 done
+echo
+
+exit
+
 
 # MOTION CORRECTION============================================================
 printf "\n=========================MOTION CORRECTION=======================\n\n"

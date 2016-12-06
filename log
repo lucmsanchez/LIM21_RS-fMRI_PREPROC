@@ -8,8 +8,6 @@ usage() {
     echo
 }
 
-
-
 i=$(($# + 1)) # index of the first non-existing argument
 + i=5
 declare -A longoptspec
@@ -118,47 +116,69 @@ fi
 }
 
 node () {
-  if [ ! -d $outpath ]; then
-    mkdir $outpath
-  fi
-  local a=0; local b=0; local c=0
+  [ -d $outpath ] || mkdir $outpath
+  #
+  local a=0; local b=0; local c=0; local d=0; local e=0
+  ex=0
+  #
   for i in ${in[@]}; do
-    if [ ! -e $inpath$i ]; then  a=$((a + 1)); fi
-    for ii in ${out[@]};do
-      if [ -e $outpath$ii ]; then b=$((b + 1)); fi
-      if [ $outpath$ii -ot $inpath$i ]; then c=$((c + 1)); fi
-    done
-  done
-  # echo $a $b $c
-  if [ ! $a -eq 0 ]; then
-    echo -n "INPUT não encontrado: "
-    for i in ${in[@]}; do
-      if [ ! -e $inpath$i ]; then echo -n $i; fi
-    done
-    echo
-  else
-    if [ $b -eq 0 ]; then
-      cd $inpath
-      $1 &> $prefix$i.log \
-        && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
-        || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
-      cd $pwd
-      mv $inpath$prefix* $outpath
-    else
-      if [ ! $c -eq 0 ]; then
-        printf "INPUT MODIFICADO. REFAZENDO ANÁLISE DA IMAGEM\n         "
-        for i in ${out[@]}; do rm $outpath$i; done
-        cd $inpath
-        $1 &> $prefix$i.log \
-          && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
-          || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
-        cd $pwd
-        mv $inpath$prefix* $outpath
+      if [ ! -f $inpath$i ]; then
+          echo "INPUT $i não encontrado"
+          a=$((a + 1))            
       else
-        echo JÁ EXISTE O OUTPUT ${out[*]};
+          for ii in ${out[@]}; do
+              if [ -f $outpath$ii ]; then
+                  b=$((b + 1))
+                  [ $outpath$ii -ot $inpath$i ] && echo -n "INPUT $i MODIFICADO. REFAZENDO ANÁLISE. " && c=$((c + 1))
+              fi
+          done
       fi
+  done
+  #
+  if [ $a -eq 0 ]; then
+  #
+  if [ $b -eq ${#out[@]} ]; then 
+    if [ ! $c -eq 0 ]; then
+      for ii in ${out[@]}; do rm $outpath$ii; done
+      else
+        echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; d=1
     fi
+  else
+      if [ ! $b -eq 0 ]; then
+          echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
+          for ii in ${out[@]}; do rm $outpath$ii; done
+      fi
   fi
+  #
+  while [ $d -eq 0 ]; do
+  cd $inpath
+    $1 &> $prefix$i.log \
+      && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
+      || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log" | fold -s
+    cd $pwd
+    mv $inpath$prefix* $outpath
+    d=1
+  done
+  #
+  for ii in ${out[@]}; do 
+    [ -f $outpath$ii ] ||  e=$((e + 1)) 
+  done
+  # 
+  [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG."
+  else
+  ex=$((ex + 1)) 
+  fi
+}
+
+input.error () {
+[ $ex -eq ${#ID[@]} ] && exit
+}
+
+organize.files () {
+  local files=$( find . -name "$i/$prefix*" )
+  for i in $files; do
+  mv $i $outpath
+  done
 }
 # ==============================================================================
 
@@ -196,7 +216,7 @@ check fsl5.0-fast
 Protocolo de pré-processamento de RS-fMRI
 --------------------------------------
 
-RUNTIME: Mon Dec  5 19:02:11 BRST 2016
+RUNTIME: Tue Dec  6 10:57:55 BRST 2016
 
 GNU bash           ...OK
 AFNI               ...OK
@@ -326,12 +346,10 @@ fi
 + '[' '!' -z preproc.sbj ']'
 + '[' '!' -f preproc.sbj ']'
 
-#mapfile -t ID < $subs
 ID=$(cat $subs)
 cat $subs
 ++ cat preproc.sbj
 + ID='C000917
-P001131
 P001543
 P001562
 T000001'
@@ -350,6 +368,7 @@ for i in $ID; do
     echo " RS" 
   else echo " (RS não encontrado)"; a=$((a + 1)) 
   fi
+  [ $(find . -name "t_RS_$i.nii") ] && echo " stc"
 done
 + for i in '$ID'
 + echo -n 'C000917  ... '
@@ -368,23 +387,9 @@ find . -name "RS_$i.PAR"
 + '[' ./DATA/C000917/RS_C000917.PAR ']'
 + echo ' RS'
  RS
-+ for i in '$ID'
-+ echo -n 'P001131  ... '
-P001131  ... find . -name "T1_$i.nii"
-++ find . -name T1_P001131.nii
-+ '[' ./DATA/P001131/T1_P001131.nii ']'
-find . -name "T1_$i.PAR"
-++ find . -name T1_P001131.PAR
-+ '[' ./DATA/P001131/T1_P001131.PAR ']'
-+ echo -n T1
-T1find . -name "RS_$i.nii"
-++ find . -name RS_P001131.nii
-+ '[' ./DATA/P001131/RS_P001131.nii ']'
-find . -name "RS_$i.PAR"
-++ find . -name RS_P001131.PAR
-+ '[' ./DATA/P001131/RS_P001131.PAR ']'
-+ echo ' RS'
- RS
+find . -name "t_RS_$i.nii"
+++ find . -name t_RS_C000917.nii
++ '[' ']'
 + for i in '$ID'
 + echo -n 'P001543  ... '
 P001543  ... find . -name "T1_$i.nii"
@@ -402,6 +407,9 @@ find . -name "RS_$i.PAR"
 + '[' ./DATA/P001543/RS_P001543.PAR ']'
 + echo ' RS'
  RS
+find . -name "t_RS_$i.nii"
+++ find . -name t_RS_P001543.nii
++ '[' ']'
 + for i in '$ID'
 + echo -n 'P001562  ... '
 P001562  ... find . -name "T1_$i.nii"
@@ -419,6 +427,9 @@ find . -name "RS_$i.PAR"
 + '[' ./DATA/P001562/RS_P001562.PAR ']'
 + echo ' RS'
  RS
+find . -name "t_RS_$i.nii"
+++ find . -name t_RS_P001562.nii
++ '[' ']'
 + for i in '$ID'
 + echo -n 'T000001  ... '
 T000001  ... find . -name "T1_$i.nii"
@@ -436,6 +447,9 @@ find . -name "RS_$i.PAR"
 + '[' ./DATA/T000001/RS_T000001.PAR ']'
 + echo ' RS'
  RS
+find . -name "t_RS_$i.nii"
+++ find . -name t_RS_T000001.nii
++ '[' ']'
 echo
 + echo
 
@@ -478,24 +492,6 @@ find . -name $ii
 + wp=
 + rp=DATA/C000917/physlog_C000917
 + mv DATA/C000917/physlog_C000917
-+ for i in '$ID'
-+ '[' -d DATA/P001131 ']'
-+ '[' -d OUTPUT/P001131 ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001131/T1_P001131.nii ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001131/T1_P001131.PAR ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001131/RS_P001131.nii ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001131/RS_P001131.PAR ']'
-+ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
-+ '[' '!' -f DATA/P001131/physlog_P001131 ']'
-find . -name $ii
-++ find . -name physlog_P001131
-+ wp=
-+ rp=DATA/P001131/physlog_P001131
-+ mv DATA/P001131/physlog_P001131
 + for i in '$ID'
 + '[' -d DATA/P001543 ']'
 + '[' -d OUTPUT/P001543 ']'
@@ -556,6 +552,218 @@ if [ ! $a -eq 0 ]; then
   echo
 fi
 + '[' '!' 0 -eq 0 ']'
+
+# SLICE TIMING CORRECTION=======================================================
+printf "=======================SLICE TIMING CORRECTION====================\n\n"
++ printf '=======================SLICE TIMING CORRECTION====================\n\n'
+=======================SLICE TIMING CORRECTION====================
+
+pwd=($PWD)
++ pwd=($PWD)
+for i in $ID; do
+  prefix=t_RS_
+  in=RS_$i.nii
+  out=$prefix$i.nii
+  inpath=DATA/$i/
+  outpath=DATA/$i/slice_correction/
+  echo -n "$i> "
+  node "3dTshift \
+    -verbose \
+    -tpattern $ptn \
+    -prefix $out \
+    -Fourier \
+    $in"
+input.error
+organize.files
+unset prefix in out inpath outpath 
+done
++ for i in '$ID'
++ prefix=t_RS_
++ in=RS_C000917.nii
++ out=t_RS_C000917.nii
++ inpath=DATA/C000917/
++ outpath=DATA/C000917/slice_correction/
++ echo -n 'C000917> '
+C000917> + node '3dTshift     -verbose     -tpattern seq+z     -prefix t_RS_C000917.nii     -Fourier     RS_C000917.nii'
++ '[' -d DATA/C000917/slice_correction/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local e=0
++ ex=0
++ for i in '${in[@]}'
++ '[' '!' -f DATA/C000917/RS_C000917.nii ']'
++ for ii in '${out[@]}'
++ '[' -f DATA/C000917/slice_correction/t_RS_C000917.nii ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 1 ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ cd DATA/C000917/
++ 3dTshift -verbose -tpattern seq+z -prefix t_RS_C000917.nii -Fourier RS_C000917.nii
++ fold -s
++ printf 'Houve um erro no processamento da imagem %s, consulte o log %s. ' RS_C000917.nii t_RS_RS_C000917.nii.log
+Houve um erro no processamento da imagem RS_C000917.nii, consulte o log 
+t_RS_RS_C000917.nii.log. + cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv DATA/C000917/t_RS_RS_C000917.nii.log DATA/C000917/slice_correction/
++ d=1
++ '[' 1 -eq 0 ']'
++ for ii in '${out[@]}'
++ '[' -f DATA/C000917/slice_correction/t_RS_C000917.nii ']'
++ e=1
++ '[' '!' 1 -eq 0 ']'
++ echo 'OUTPUT CORROMPIDO. CONSULTE O LOG.'
+OUTPUT CORROMPIDO. CONSULTE O LOG.
++ input.error
++ '[' 0 -eq 1 ']'
++ organize.files
+ find . -name "$i/$prefix*" 
+++ find . -name 'RS_C000917.nii/t_RS_*'
+find: warning: Unix filenames usually don't contain slashes (though pathnames do).  That means that '-name `RS_C000917.nii/t_RS_*'' will probably evaluate to false all the time on this system.  You might find the '-wholename' test more useful, or perhaps '-samefile'.  Alternatively, if you are using GNU grep, you could use 'find ... -print0 | grep -FzZ `RS_C000917.nii/t_RS_*''.
++ local files=
++ unset prefix in out inpath outpath
++ for i in '$ID'
++ prefix=t_RS_
++ in=RS_P001543.nii
++ out=t_RS_P001543.nii
++ inpath=DATA/P001543/
++ outpath=DATA/P001543/slice_correction/
++ echo -n 'P001543> '
+P001543> + node '3dTshift     -verbose     -tpattern seq+z     -prefix t_RS_P001543.nii     -Fourier     RS_P001543.nii'
++ '[' -d DATA/P001543/slice_correction/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local e=0
++ ex=0
++ for i in '${in[@]}'
++ '[' '!' -f DATA/P001543/RS_P001543.nii ']'
++ for ii in '${out[@]}'
++ '[' -f DATA/P001543/slice_correction/t_RS_P001543.nii ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 1 ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ cd DATA/P001543/
++ 3dTshift -verbose -tpattern seq+z -prefix t_RS_P001543.nii -Fourier RS_P001543.nii
++ fold -s
++ printf 'Houve um erro no processamento da imagem %s, consulte o log %s. ' RS_P001543.nii t_RS_RS_P001543.nii.log
+Houve um erro no processamento da imagem RS_P001543.nii, consulte o log 
+t_RS_RS_P001543.nii.log. + cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv DATA/P001543/t_RS_RS_P001543.nii.log DATA/P001543/slice_correction/
++ d=1
++ '[' 1 -eq 0 ']'
++ for ii in '${out[@]}'
++ '[' -f DATA/P001543/slice_correction/t_RS_P001543.nii ']'
++ e=1
++ '[' '!' 1 -eq 0 ']'
++ echo 'OUTPUT CORROMPIDO. CONSULTE O LOG.'
+OUTPUT CORROMPIDO. CONSULTE O LOG.
++ input.error
++ '[' 0 -eq 1 ']'
++ organize.files
+ find . -name "$i/$prefix*" 
+++ find . -name 'RS_P001543.nii/t_RS_*'
+find: warning: Unix filenames usually don't contain slashes (though pathnames do).  That means that '-name `RS_P001543.nii/t_RS_*'' will probably evaluate to false all the time on this system.  You might find the '-wholename' test more useful, or perhaps '-samefile'.  Alternatively, if you are using GNU grep, you could use 'find ... -print0 | grep -FzZ `RS_P001543.nii/t_RS_*''.
++ local files=
++ unset prefix in out inpath outpath
++ for i in '$ID'
++ prefix=t_RS_
++ in=RS_P001562.nii
++ out=t_RS_P001562.nii
++ inpath=DATA/P001562/
++ outpath=DATA/P001562/slice_correction/
++ echo -n 'P001562> '
+P001562> + node '3dTshift     -verbose     -tpattern seq+z     -prefix t_RS_P001562.nii     -Fourier     RS_P001562.nii'
++ '[' -d DATA/P001562/slice_correction/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local e=0
++ ex=0
++ for i in '${in[@]}'
++ '[' '!' -f DATA/P001562/RS_P001562.nii ']'
++ for ii in '${out[@]}'
++ '[' -f DATA/P001562/slice_correction/t_RS_P001562.nii ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 1 ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ cd DATA/P001562/
++ 3dTshift -verbose -tpattern seq+z -prefix t_RS_P001562.nii -Fourier RS_P001562.nii
++ fold -s
++ printf 'Houve um erro no processamento da imagem %s, consulte o log %s. ' RS_P001562.nii t_RS_RS_P001562.nii.log
+Houve um erro no processamento da imagem RS_P001562.nii, consulte o log 
+t_RS_RS_P001562.nii.log. + cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv DATA/P001562/t_RS_RS_P001562.nii.log DATA/P001562/slice_correction/
++ d=1
++ '[' 1 -eq 0 ']'
++ for ii in '${out[@]}'
++ '[' -f DATA/P001562/slice_correction/t_RS_P001562.nii ']'
++ e=1
++ '[' '!' 1 -eq 0 ']'
++ echo 'OUTPUT CORROMPIDO. CONSULTE O LOG.'
+OUTPUT CORROMPIDO. CONSULTE O LOG.
++ input.error
++ '[' 0 -eq 1 ']'
++ organize.files
+ find . -name "$i/$prefix*" 
+++ find . -name 'RS_P001562.nii/t_RS_*'
+find: warning: Unix filenames usually don't contain slashes (though pathnames do).  That means that '-name `RS_P001562.nii/t_RS_*'' will probably evaluate to false all the time on this system.  You might find the '-wholename' test more useful, or perhaps '-samefile'.  Alternatively, if you are using GNU grep, you could use 'find ... -print0 | grep -FzZ `RS_P001562.nii/t_RS_*''.
++ local files=
++ unset prefix in out inpath outpath
++ for i in '$ID'
++ prefix=t_RS_
++ in=RS_T000001.nii
++ out=t_RS_T000001.nii
++ inpath=DATA/T000001/
++ outpath=DATA/T000001/slice_correction/
++ echo -n 'T000001> '
+T000001> + node '3dTshift     -verbose     -tpattern seq+z     -prefix t_RS_T000001.nii     -Fourier     RS_T000001.nii'
++ '[' -d DATA/T000001/slice_correction/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local e=0
++ ex=0
++ for i in '${in[@]}'
++ '[' '!' -f DATA/T000001/RS_T000001.nii ']'
++ for ii in '${out[@]}'
++ '[' -f DATA/T000001/slice_correction/t_RS_T000001.nii ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 1 ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ cd DATA/T000001/
++ 3dTshift -verbose -tpattern seq+z -prefix t_RS_T000001.nii -Fourier RS_T000001.nii
++ fold -s
++ printf 'Houve um erro no processamento da imagem %s, consulte o log %s. ' RS_T000001.nii t_RS_RS_T000001.nii.log
+Houve um erro no processamento da imagem RS_T000001.nii, consulte o log 
+t_RS_RS_T000001.nii.log. + cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv DATA/T000001/t_RS_RS_T000001.nii.log DATA/T000001/slice_correction/
++ d=1
++ '[' 1 -eq 0 ']'
++ for ii in '${out[@]}'
++ '[' -f DATA/T000001/slice_correction/t_RS_T000001.nii ']'
++ e=1
++ '[' '!' 1 -eq 0 ']'
++ echo 'OUTPUT CORROMPIDO. CONSULTE O LOG.'
+OUTPUT CORROMPIDO. CONSULTE O LOG.
++ input.error
++ '[' 0 -eq 1 ']'
++ organize.files
+ find . -name "$i/$prefix*" 
+++ find . -name 'RS_T000001.nii/t_RS_*'
+find: warning: Unix filenames usually don't contain slashes (though pathnames do).  That means that '-name `RS_T000001.nii/t_RS_*'' will probably evaluate to false all the time on this system.  You might find the '-wholename' test more useful, or perhaps '-samefile'.  Alternatively, if you are using GNU grep, you could use 'find ... -print0 | grep -FzZ `RS_T000001.nii/t_RS_*''.
++ local files=
++ unset prefix in out inpath outpath
+echo
++ echo
+
 
 exit
 + exit

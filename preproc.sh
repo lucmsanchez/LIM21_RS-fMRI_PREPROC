@@ -8,10 +8,13 @@ usage() {
     echo
 }
 
+aztec=0
+
+
 i=$(($# + 1)) # index of the first non-existing argument
 declare -A longoptspec
 longoptspec=( [config]=1 [subs]=1 )
-optspec=":l:h-:"
+optspec=":l:h:a-:"
 while getopts "$optspec" opt; do
 while true; do
     case "${opt}" in
@@ -46,6 +49,9 @@ while true; do
 
             continue #now that opt/OPTARG are set we can process them as
             # if getopts would've given us long options
+            ;;
+       a|aztec)
+            aztec=1
             ;;
         c|config)
           config=$OPTARG
@@ -161,13 +167,17 @@ Protocolo de pré-processamento de RS-fMRI
 
 RUNTIME: $(date)
 
+Programas necessários:
 GNU bash           ...$(check bash)
 AFNI               ...$(check afni)
 FSL                ...$(check fsl5.0-fast)
+MATLAB             ...$(check matlab)
+  SPM5
+  aztec
 
 EOF
 
-if ( ! command -v bash || ! command -v afni || ! command -v fsl5.0-fast) > /dev/null ; then
+if ( ! command -v bash || ! command -v afni || ! command -v fsl5.0-fast || ! command -v matlab ) > /dev/null ; then
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit
 fi
@@ -276,6 +286,15 @@ if [ ! $a -eq 0 ]; then
   echo "O caminho das imagens não está conformado com o padrâo: DATA/<ID>/T1_<ID>.nii"
   echo "Conformando..."
   echo
+fi
+
+# AZTEC========================================================================
+if [ $aztec -eq 1 ]; then
+printf "=============================AZTEC==================================\n\n"
+pwd=($PWD)
+
+
+
 fi
 
 # SLICE TIMING CORRECTION=======================================================

@@ -85,8 +85,10 @@ fi
 node () {
   [ -d $outpath ] || mkdir $outpath
   #
-  local a=0; local b=0; local c=0; local d=0; local e=0
+  local a=0; local b=0; local c=0; local d=0; local e=0; local v=0
   ex=0
+  
+
   #
   for i in ${in[@]}; do
       if [ ! -f $inpath$i ]; then
@@ -109,7 +111,7 @@ node () {
       for ii in ${out[@]}; do rm $outpath$ii; done
       else
         echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; d=1
-    fi
+     fi
   else
       if [ ! $b -eq 0 ]; then
           echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
@@ -247,10 +249,11 @@ for i in $ID; do
   else echo -n "(T1 não encontrado)"; a=$((a + 1))
   fi
   if [ $(find . -name "RS_$i.nii") ] && [ $(find . -name "RS_$i.PAR") ]; then
-    echo " RS" 
+    printf " RS" 
   else echo " (RS não encontrado)"; a=$((a + 1)) 
   fi
-  [ $(find . -name "t_RS_$i.nii") ] && echo " stc"
+  [ $(find . -name "t_RS_$i.nii") ] && printf " stc"
+  printf "\n"
 done
 echo
 if [ ! $a -eq 0 ]; then

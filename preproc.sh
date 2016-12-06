@@ -85,50 +85,53 @@ fi
 }
 
 node () {
-    [ -d $outpath ] || mkdir $outpath
-
-    local a=0; local b=0; local c=0; local d=0; local e=0
-
-    for i in ${in[@]}; do
-        if [ ! -f $inpath$i ]; then
-            echo "INPUT $i não encontrado"
-            a=$((a + 1))            
-        else
-            for ii in ${out[@]}; do
-                if [ -f $outpath$ii ]; then
-                    b=$((b + 1))
-                    [ $outpath$ii -ot $inpath$i ] && echo "INPUT $i MODIFICADO." && c=$((c + 1))
-                fi
-            done
-        fi
-    done
-
-    echo $a $b $c
-
-    [ $a -eq 0 ] || exit
-
-    if [ $b -eq ${#out[@]} ]; then 
-        echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; d=1
-    else
-        if [ ! $b -eq 0 ]; then
-            echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
-            for ii in ${out[@]}; do rm $outpath$ii; done
-    fi
-
-    [ $c -eq 0 ] || for ii in ${out[@]}; do rm $outpath$ii; done
-
-    while d=0; do
-    cd $inpath
-      $1 &> $prefix$i.log \
-        && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
-        || printf "Houve um erro no processamento da imagem %s, consulte o log %s\n" "$i" "$prefix$i.log" | fold -s
-      cd $pwd
-      mv $inpath$prefix* $outpath
-    done
-
-    for ii in ${out[@]}; do [ -f $outpath$ii ] ||  e=$((e + 1)) done
-      
-    [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG." && exit
+  [ -d $outpath ] || mkdir $outpath
+  #
+  local a=0; local b=0; local c=0; local d=0; local e=0
+  ex=0
+  #
+  for i in ${in[@]}; do
+      if [ ! -f $inpath$i ]; then
+          echo "INPUT $i não encontrado"
+          a=$((a + 1))            
+      else
+          for ii in ${out[@]}; do
+              if [ -f $outpath$ii ]; then
+                  b=$((b + 1))
+                  [ $outpath$ii -ot $inpath$i ] && echo "INPUT $i MODIFICADO." && c=$((c + 1))
+              fi
+          done
+      fi
+  done
+  #
+  [ $a -eq 0 ] || ex=1
+  #
+  if [ $b -eq ${#out[@]} ]; then 
+      echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; d=1
+  else
+      if [ ! $b -eq 0 ]; then
+          echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
+          for ii in ${out[@]}; do rm $outpath$ii; done
+      fi
+  fi
+  #
+  [ $c -eq 0 ] || for ii in ${out[@]}; do rm $outpath$ii; done
+  #
+  while [ $d -eq 0 ]; do
+  cd $inpath
+    $1 &> $prefix$i.log \
+      && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
+      || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log" | fold -s
+    cd $pwd
+    mv $inpath$prefix* $outpath
+    d=1
+  done
+  #
+  for ii in ${out[@]}; do 
+    [ -f $outpath$ii ] ||  e=$((e + 1)) 
+  done
+  # 
+  [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG." && ex=1
 }
 # ==============================================================================
 
@@ -258,9 +261,6 @@ if [ ! $a -eq 0 ]; then
   echo
 fi
 
-exit
-  
-
 # SLICE TIMING CORRECTION=======================================================
 printf "=======================SLICE TIMING CORRECTION====================\n\n"
 pwd=($PWD)
@@ -277,7 +277,11 @@ for i in $ID; do
     -prefix $out \
     -Fourier \
     $in"
+unset prefix in out inpath outpath 
 done
+[ $ex -eq 0 ] || exit
+exit
+
 
 # MOTION CORRECTION============================================================
 printf "\n=========================MOTION CORRECTION=======================\n\n"

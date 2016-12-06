@@ -8,8 +8,6 @@ usage() {
     echo
 }
 
-
-
 i=$(($# + 1)) # index of the first non-existing argument
 declare -A longoptspec
 longoptspec=( [config]=1 [subs]=1 )
@@ -98,24 +96,26 @@ node () {
           for ii in ${out[@]}; do
               if [ -f $outpath$ii ]; then
                   b=$((b + 1))
-                  [ $outpath$ii -ot $inpath$i ] && echo "INPUT $i MODIFICADO." && c=$((c + 1))
+                  [ $outpath$ii -ot $inpath$i ] && echo -n "INPUT $i MODIFICADO. REFAZENDO ANÁLISE. " && c=$((c + 1))
               fi
           done
       fi
   done
   #
-  [ $a -eq 0 ] || ex=1
+  if [ $a -eq 0 ]; then
   #
   if [ $b -eq ${#out[@]} ]; then 
-      echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; d=1
+    if [ ! $c -eq 0 ]; then
+      for ii in ${out[@]}; do rm $outpath$ii; done
+      else
+        echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; d=1
+    fi
   else
       if [ ! $b -eq 0 ]; then
           echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
           for ii in ${out[@]}; do rm $outpath$ii; done
       fi
   fi
-  #
-  [ $c -eq 0 ] || for ii in ${out[@]}; do rm $outpath$ii; done
   #
   while [ $d -eq 0 ]; do
   cd $inpath
@@ -131,7 +131,21 @@ node () {
     [ -f $outpath$ii ] ||  e=$((e + 1)) 
   done
   # 
-  [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG." && ex=1
+  [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG."
+  else
+  ex=$((ex + 1)) 
+  fi
+}
+
+input.error () {
+[ $ex -eq ${#ID[@]} ] && exit
+}
+
+organize.files () {
+  local files=$( find "$inpath" -name "$prefix*" )
+  for i in $files; do
+  mv $i $outpath 2> /dev/null
+  done
 }
 # ==============================================================================
 
@@ -223,7 +237,6 @@ else
   fi
 fi  
 
-#mapfile -t ID < $subs
 ID=$(cat $subs)
 echo "Lista de indivíduos para análise:"
 a=0
@@ -237,6 +250,7 @@ for i in $ID; do
     echo " RS" 
   else echo " (RS não encontrado)"; a=$((a + 1)) 
   fi
+  [ $(find . -name "t_RS_$i.nii") ] && echo " stc"
 done
 echo
 if [ ! $a -eq 0 ]; then
@@ -277,9 +291,12 @@ for i in $ID; do
     -prefix $out \
     -Fourier \
     $in"
+input.error
+organize.files
 unset prefix in out inpath outpath 
 done
-[ $ex -eq 0 ] || exit
+echo
+
 exit
 
 

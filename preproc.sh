@@ -177,10 +177,11 @@ MATLAB             ...$(check matlab)
 
 EOF
 
-if ( ! command -v bash || ! command -v afni || ! command -v fsl5.0-fast || ! command -v matlab ) > /dev/null ; then
+if ( ! command -v bash || ! command -v afni || ! command -v fsl5.0-fast  ) > /dev/null ; then
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit
 fi
+[ $aztec -eq 1 ] && [ ! $(command -v matlab) ] && echo "o Matlab e os plugins SPM5 e aztec são necessários para a análise e não foram encontrados. Certifique-se que eles estão instalados e configurados na variável de ambiente $PATH" | fold -s && exit 
 
 if [ ! -z $config ]; then  
   if [ -f $config ]; then

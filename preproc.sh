@@ -88,23 +88,25 @@ check () {
 fi
 }
 
-node () {
+input.error () {
+[ $ex -eq ${#ID[@]} ] && exit
+}
+
+open.node () {
   [ -d $outpath ] || mkdir $outpath
   #
-  local a=0; local b=0; local c=0; local d=0; local e=0; local v=0
-  ex=0
-  
-
+  local a=0; local b=0; local c=0; local e=0; local v=0
+  ex=0; go=1
   #
-  for i in ${in[@]}; do
-      if [ ! -f $inpath$i ]; then
-          echo "INPUT $i não encontrado"
+  for ii in ${in[@]}; do
+      if [ ! -f $inpath$ii ]; then
+          echo "INPUT $ii não encontrado"
           a=$((a + 1))            
       else
-          for ii in ${out[@]}; do
-              if [ -f $outpath$ii ]; then
+          for iii in ${out[@]}; do
+              if [ -f $outpath$iii ]; then
                   b=$((b + 1))
-                  [ $outpath$ii -ot $inpath$i ] && echo -n "INPUT $i MODIFICADO. REFAZENDO ANÁLISE. " && c=$((c + 1))
+                  [ $outpath$iii -ot $inpath$ii ] && echo -n "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. " && c=$((c + 1))
               fi
           done
       fi
@@ -112,49 +114,47 @@ node () {
   #
   if [ $a -eq 0 ]; then
   #
-  if [ $b -eq ${#out[@]} ]; then 
-    if [ ! $c -eq 0 ]; then
-      for ii in ${out[@]}; do rm $outpath$ii; done
+    if [ $b -eq ${#out[@]} ]; then 
+      if [ ! $c -eq 0 ]; then
+        for iii in ${out[@]}; do rm $outpath$iii; done
       else
-        echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; d=1
-     fi
-  else
-      if [ ! $b -eq 0 ]; then
-          echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
-          for ii in ${out[@]}; do rm $outpath$ii; done
+          echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0
       fi
+    else
+        if [ ! $b -eq 0 ]; then
+            echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
+            for ii in ${out[@]}; do rm $outpath$ii; done
+        fi
+    fi
+    #
+    if [ $go -eq 1 ]; then
+      cd $inpath
+    fi
+  else
+  go=0
   fi
-  #
-  while [ $d -eq 0 ]; do
-  cd $inpath
-    $1 &> $prefix$i.log \
-      && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" \
-      || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log" | fold -s
+  
+}
+
+close.node () {
+  if [ $go -eq 1 ]; then  
     cd $pwd
     mv $inpath$prefix* $outpath
-    d=1
-  done
-  #
-  for ii in ${out[@]}; do 
-    [ -f $outpath$ii ] ||  e=$((e + 1)) 
-  done
-  # 
-  [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG."
+    for iii in ${out[@]}; do 
+      [ -f $outpath$iii ] ||  e=$((e + 1)) 
+    done
+    # 
+    [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG."
   else
-  ex=$((ex + 1)) 
+    ex=$((ex + 1)) 
   fi
-}
 
-input.error () {
-[ $ex -eq ${#ID[@]} ] && exit
-}
-
-organize.files () {
-  local files=$( find "$inpath" -name "$prefix*" )
-  for i in $files; do
-  mv $i $outpath 2> /dev/null
+ local files=$( find "$inpath" -name "$prefix*" )
+  for f in $files; do
+    mv $f $outpath 2> /dev/null
   done
 }
+
 # ==============================================================================
 
 
@@ -209,6 +209,8 @@ else
     cat > preproc.cfg << EOL
 # Variáveis RS-fMRI Preprocessing:
 
+TR=2000
+hp=0
 ptn=seq+z
 mcbase=100
 gRL=90
@@ -291,12 +293,37 @@ fi
 
 # AZTEC========================================================================
 if [ $aztec -eq 1 ]; then
-printf "=============================AZTEC==================================\n\n"
-pwd=($PWD)
+  printf "=============================AZTEC==================================\n\n"
+  pwd=($PWD)
+  for i in $ID; do
+    prefix=z_RS_
+    in=RS_$i.nii
+    in[2]=RS_$i.log
+    out=$prefix$i.nii
+    inpath=DATA/$i/
+    outpath=DATA/$i/aztec/
+    echo -n "$i> "
+    open.node; if [ $go -eq 1 ]; then
+      #
+   #   if [ ! -d "3d" ]; then  mkdir 3d ; fi && \
+   #   fsl5.0-fslsplit $in 3d_"$i"_ -t && \
+   #   mv 3d_"$i"* 3d && \
+   #   gunzip 3d/3d_$i_* && \
+      echo "aztec('${in[2]}','$(find 3d)',500,$TR,1,$hp,'/3d'); quit" > aztec.m
+      matlab -nodisplay -nodesktop -r "run aztec.m" &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+      #
+    fi; close.node
+ 
 
-
-
+  #rm 3d/3d* && \
+  #3dTcat -prefix z_RS_$i.nii -TR 2 3d/aztec* && \
+  #rm 3d/aztec*
+  # Descobrir o formato do output e reconfigurar
+  done
+  input.error
+  echo
 fi
+exit 
 
 # SLICE TIMING CORRECTION=======================================================
 printf "=======================SLICE TIMING CORRECTION====================\n\n"

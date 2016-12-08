@@ -305,20 +305,18 @@ if [ $aztec -eq 1 ]; then
     echo -n "$i> "
     open.node; if [ $go -eq 1 ]; then
       #
-   #   if [ ! -d "3d" ]; then  mkdir 3d ; fi && \
-   #   fsl5.0-fslsplit $in 3d_"$i"_ -t && \
-   #   mv 3d_"$i"* 3d && \
-   #   gunzip 3d/3d_$i_* && \
-      echo "aztec('${in[2]}','$(find 3d)',500,$TR,1,$hp,'/3d'); quit" > aztec.m
-      matlab -nodisplay -nodesktop -r "run aztec.m" &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+   #  if [ ! -d "3d" ]; then  mkdir 3d ; fi && \
+   #  fsl5.0-fslsplit $in 3d_"$i"_ -t && \
+   #  mv 3d_"$i"* 3d && \
+   #  gunzip 3d/3d_$i_* && \
+   #  echo "try aztec('${in[2]}',files ,500,$TR,1,$hp,'/3d') catch  quit" > azt_script.m
+   #  matlab -nodisplay -nodesktop -r "run azt_script.m" 
+   #  rm 3d/3d* && \
+   #  3dTcat -prefix $out -TR $TR 3d/aztec* && \
+   #  rm 3d/aztec* 3d && \ 
+      &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
       #
     fi; close.node
- 
-
-  #rm 3d/3d* && \
-  #3dTcat -prefix z_RS_$i.nii -TR 2 3d/aztec* && \
-  #rm 3d/aztec*
-  # Descobrir o formato do output e reconfigurar
   done
   input.error
   echo

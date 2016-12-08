@@ -309,7 +309,7 @@ if [ $aztec -eq 1 ]; then
    #   fsl5.0-fslsplit $in 3d_"$i"_ -t && \
    #   mv 3d_"$i"* 3d && \
    #   gunzip 3d/3d_$i_* && \
-      echo "aztec('${in[2]}','$(find 3d)',500,$TR,1,$hp,'/3d');quit" > aztec.m
+      echo "try aztec('${in[2]}', spm_select(),500,$TR,1,$hp,'/3d'); catch Error; end; quit" > aztec.m
       matlab -nodisplay -nodesktop -r "run aztec.m" &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
       #
     fi; close.node

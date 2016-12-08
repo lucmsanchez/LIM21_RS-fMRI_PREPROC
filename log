@@ -9,12 +9,17 @@ usage() {
 }
 
 aztec=0
++ aztec=0
 
 
 i=$(($# + 1)) # index of the first non-existing argument
++ i=5
 declare -A longoptspec
++ declare -A longoptspec
 longoptspec=( [config]=1 [subs]=1 )
++ longoptspec=([config]=1 [subs]=1)
 optspec=":l:h:a-:"
++ optspec=:l:h:a-:
 while getopts "$optspec" opt; do
 while true; do
     case "${opt}" in
@@ -76,6 +81,35 @@ while true; do
     esac
 break; done
 done
++ getopts :l:h:a-: opt
++ true
++ case "${opt}" in
++ [[ config =~ .*=.* ]]
++ opt=config
++ (( 6 <= 1 ))
++ OPTARG=(${@:OPTIND:$((longoptspec[$opt]))})
++ (( OPTIND+=longoptspec[config] ))
++ (( OPTIND > i ))
++ continue
++ true
++ case "${opt}" in
++ config=preproc.cfg
++ break
++ getopts :l:h:a-: opt
++ true
++ case "${opt}" in
++ [[ subs =~ .*=.* ]]
++ opt=subs
++ (( 4 <= 1 ))
++ OPTARG=(${@:OPTIND:$((longoptspec[$opt]))})
++ (( OPTIND+=longoptspec[subs] ))
++ (( OPTIND > i ))
++ continue
++ true
++ case "${opt}" in
++ subs=preproc.sbj
++ break
++ getopts :l:h:a-: opt
 
 # ==============================================================================
 
@@ -93,20 +127,28 @@ input.error () {
 }
 
 open.node () {
-  [ -d $outpath ] || mkdir $outpath
+  
+  echo ${in[$i]}
+  echo ${inpath[$i]}
+  echo ${out[$i]}
+  echo ${outpath[$i]}
+
+  [ -d ${outpath[$i]} ] || mkdir ${outpath[$i]}
   #
-  local a=0; local b=0; local c=0; local e=0; local v=0
+  local a=0; local b=0; local c=0; local d=0; local e=0; local v=0
   ex=0; go=1
   #
-  for ii in ${in[@]}; do
-      if [ ! -f $inpath$ii ]; then
+  for ii in ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}; do
+      if [ ! -f ${inpath[$i]}$ii ]; then
           echo "INPUT $ii não encontrado"
           a=$((a + 1))            
       else
-          for iii in ${out[@]}; do
-              if [ -f $outpath$iii ]; then
+          for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do
+              if [ ! -f ${outpath[$i]}$iii ]; then
                   b=$((b + 1))
-                  [ $outpath$iii -ot $inpath$ii ] && echo -n "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. " && c=$((c + 1))
+                else
+                  d=$((d + 1))
+                  [ ${outpath[$i]}$iii -ot ${inpath[$i]}$ii ] && echo -n "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. " && c=$((c + 1))
               fi
           done
       fi
@@ -114,21 +156,21 @@ open.node () {
   #
   if [ $a -eq 0 ]; then
   #
-    if [ $b -eq ${#out[@]} ]; then 
+    if [ $b -eq 0 ]; then 
       if [ ! $c -eq 0 ]; then
-        for iii in ${out[@]}; do rm $outpath$iii; done
+        for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do rm ${outpath[$i]}$iii; done
       else
           echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0
       fi
     else
-        if [ ! $b -eq 0 ]; then
+        if [ ! $d -eq 0 ]; then
             echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
-            for ii in ${out[@]}; do rm $outpath$ii; done
+            for ii in ${out[@]}; do rm ${outpath[$i}$ii; done
         fi
     fi
     #
     if [ $go -eq 1 ]; then
-      cd $inpath
+      cd ${inpath[$i]}
     fi
   else
   go=0
@@ -139,9 +181,9 @@ open.node () {
 close.node () {
   if [ $go -eq 1 ]; then  
     cd $pwd
-    mv $inpath$prefix* $outpath
-    for iii in ${out[@]}; do 
-      [ -f $outpath$iii ] ||  e=$((e + 1)) 
+    mv ${inpath[$i]}$prefix* ${outpath[$i]}
+     for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do 
+      [ -f ${outpath[$i]}$iii ] ||  e=$((e + 1)) 
     done
     # 
     [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG."
@@ -149,9 +191,9 @@ close.node () {
     ex=$((ex + 1)) 
   fi
 
- local files=$( find "$inpath" -name "$prefix*" )
+ local files=$( find "${inpath[$i]}" -name "$prefix*" )
   for f in $files; do
-    mv $f $outpath 2> /dev/null
+    mv $f ${outpath[$i]} 2> /dev/null
   done
 }
 
@@ -176,12 +218,49 @@ MATLAB             ...$(check matlab)
   aztec
 
 EOF
++ fold -s
+date
+++ date
+check bash
+++ check bash
+++ command -v bash
+++ echo OK
+check afni
+++ check afni
+++ command -v afni
+++ echo OK
+check fsl5.0-fast
+++ check fsl5.0-fast
+++ command -v fsl5.0-fast
+++ echo OK
+check matlab
+++ check matlab
+++ command -v matlab
+++ echo OK
+
+Protocolo de pré-processamento de RS-fMRI
+--------------------------------------
+
+RUNTIME: Thu Dec  8 14:47:56 BRST 2016
+
+Programas necessários:
+GNU bash           ...OK
+AFNI               ...OK
+FSL                ...OK
+MATLAB             ...OK
+  SPM5
+  aztec
+
 
 if ( ! command -v bash || ! command -v afni || ! command -v fsl5.0-fast  ) > /dev/null ; then
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit
 fi
++ command -v bash
++ command -v afni
++ command -v fsl5.0-fast
 [ $aztec -eq 1 ] && [ ! $(command -v matlab) ] && echo "o Matlab e os plugins SPM5 e aztec são necessários para a análise e não foram encontrados. Certifique-se que eles estão instalados e configurados na variável de ambiente $PATH" | fold -s && exit 
++ '[' 0 -eq 1 ']'
 
 if [ ! -z $config ]; then  
   if [ -f $config ]; then
@@ -226,16 +305,68 @@ exit
     source preproc.cfg
   fi
 fi  
++ '[' '!' -z preproc.cfg ']'
++ '[' -f preproc.cfg ']'
++ source preproc.cfg
+# Variáveis RS-fMRI Preprocessing:
+
+TR=2000
+++ TR=2000
+hp=0
+++ hp=0
+ptn=seq+z
+++ ptn=seq+z
+mcbase=100
+++ mcbase=100
+gRL=90
+++ gRL=90
+gAP=90
+++ gAP=90
+gIS=60
+++ gIS=60
+orient="rpi"
+++ orient=rpi
+template="MNI152_1mm_uni+tlrc"
+++ template=MNI152_1mm_uni+tlrc
+blur=6
+++ blur=6
++ a=0
++ for var in ptn mcbase gRL gAP gIS orient template blur
++ [[ -z seq+z ]]
++ for var in ptn mcbase gRL gAP gIS orient template blur
++ [[ -z 100 ]]
++ for var in ptn mcbase gRL gAP gIS orient template blur
++ [[ -z 90 ]]
++ for var in ptn mcbase gRL gAP gIS orient template blur
++ [[ -z 90 ]]
++ for var in ptn mcbase gRL gAP gIS orient template blur
++ [[ -z 60 ]]
++ for var in ptn mcbase gRL gAP gIS orient template blur
++ [[ -z rpi ]]
++ for var in ptn mcbase gRL gAP gIS orient template blur
++ [[ -z MNI152_1mm_uni+tlrc ]]
++ for var in ptn mcbase gRL gAP gIS orient template blur
++ [[ -z 6 ]]
++ '[' '!' 0 -eq 0 ']'
++ unset a
 
 
 # informando os usuários das variáveis definidas ou defaults
 fold -s <<-EOF
 As variáveis que serão usadas como parametros para as análises são:
-Slice timing correction - sequência de aquisição => $ptn
-Motion correction       - valor base             => $mcbase
-Homogenize Grid         - tamanho da grade       => $gRL $gAP $gIS
+Aztec                   - Tempo de repetição(ms)  => $TR
+Slice timing correction - sequência de aquisição  => $ptn
+Motion correction       - valor base              => $mcbase
+Homogenize Grid         - tamanho da grade        => $gRL $gAP $gIS
 
 EOF
++ fold -s
+As variáveis que serão usadas como parametros para as análises são:
+Aztec                   - Tempo de repetição(ms)  => 2000
+Slice timing correction - sequência de aquisição  => seq+z
+Motion correction       - valor base              => 100
+Homogenize Grid         - tamanho da grade        => 90 90 60
+
 
 # Checando arquivo com nome dos indivíduos
 if [ ! -z $subs ]; then  
@@ -251,10 +382,21 @@ else
     exit
   fi
 fi  
++ '[' '!' -z preproc.sbj ']'
++ '[' '!' -f preproc.sbj ']'
 
 ID=$(cat $subs)
+cat $subs
+++ cat preproc.sbj
++ ID='C000917
+P001543
+P001562
+T000001'
 echo "Lista de indivíduos para análise:"
++ echo 'Lista de indivíduos para análise:'
+Lista de indivíduos para análise:
 a=0
++ a=0
 for i in $ID; do 
   echo -n "$i  ... " 
   if [ $(find . -name "T1_$i.nii") ] && [ $(find . -name "T1_$i.PAR") ]; then
@@ -265,19 +407,110 @@ for i in $ID; do
     printf " RS" 
   else echo " (RS não encontrado)"; a=$((a + 1)) 
   fi
-  [ $(find . -name "t_RS_$i.nii") ] && printf " stc"
+  [ $(find . -name "*t*$i.nii") ] && printf " stc"
   printf "\n"
 done
++ for i in '$ID'
++ echo -n 'C000917  ... '
+C000917  ... find . -name "T1_$i.nii"
+++ find . -name T1_C000917.nii
++ '[' ./DATA/C000917/T1_C000917.nii ']'
+find . -name "T1_$i.PAR"
+++ find . -name T1_C000917.PAR
++ '[' ./DATA/C000917/T1_C000917.PAR ']'
++ echo -n T1
+T1find . -name "RS_$i.nii"
+++ find . -name RS_C000917.nii
++ '[' ./DATA/C000917/RS_C000917.nii ']'
+find . -name "RS_$i.PAR"
+++ find . -name RS_C000917.PAR
++ '[' ./DATA/C000917/RS_C000917.PAR ']'
++ printf ' RS'
+ RSfind . -name "*t*$i.nii"
+++ find . -name '*t*C000917.nii'
++ '[' ']'
++ printf '\n'
+
++ for i in '$ID'
++ echo -n 'P001543  ... '
+P001543  ... find . -name "T1_$i.nii"
+++ find . -name T1_P001543.nii
++ '[' ./DATA/P001543/T1_P001543.nii ']'
+find . -name "T1_$i.PAR"
+++ find . -name T1_P001543.PAR
++ '[' ./DATA/P001543/T1_P001543.PAR ']'
++ echo -n T1
+T1find . -name "RS_$i.nii"
+++ find . -name RS_P001543.nii
++ '[' ./DATA/P001543/RS_P001543.nii ']'
+find . -name "RS_$i.PAR"
+++ find . -name RS_P001543.PAR
++ '[' ./DATA/P001543/RS_P001543.PAR ']'
++ printf ' RS'
+ RSfind . -name "*t*$i.nii"
+++ find . -name '*t*P001543.nii'
++ '[' ']'
++ printf '\n'
+
++ for i in '$ID'
++ echo -n 'P001562  ... '
+P001562  ... find . -name "T1_$i.nii"
+++ find . -name T1_P001562.nii
++ '[' ./DATA/P001562/T1_P001562.nii ']'
+find . -name "T1_$i.PAR"
+++ find . -name T1_P001562.PAR
++ '[' ./DATA/P001562/T1_P001562.PAR ']'
++ echo -n T1
+T1find . -name "RS_$i.nii"
+++ find . -name RS_P001562.nii
++ '[' ./DATA/P001562/RS_P001562.nii ']'
+find . -name "RS_$i.PAR"
+++ find . -name RS_P001562.PAR
++ '[' ./DATA/P001562/RS_P001562.PAR ']'
++ printf ' RS'
+ RSfind . -name "*t*$i.nii"
+++ find . -name '*t*P001562.nii'
++ '[' ']'
++ printf '\n'
+
++ for i in '$ID'
++ echo -n 'T000001  ... '
+T000001  ... find . -name "T1_$i.nii"
+++ find . -name T1_T000001.nii
++ '[' ./DATA/T000001/T1_T000001.nii ']'
+find . -name "T1_$i.PAR"
+++ find . -name T1_T000001.PAR
++ '[' ./DATA/T000001/T1_T000001.PAR ']'
++ echo -n T1
+T1find . -name "RS_$i.nii"
+++ find . -name RS_T000001.nii
++ '[' ./DATA/T000001/RS_T000001.nii ']'
+find . -name "RS_$i.PAR"
+++ find . -name RS_T000001.PAR
++ '[' ./DATA/T000001/RS_T000001.PAR ']'
++ printf ' RS'
+ RSfind . -name "*t*$i.nii"
+++ find . -name '*t*T000001.nii'
++ '[' ']'
++ printf '\n'
+
 echo
++ echo
+
 if [ ! $a -eq 0 ]; then
     echo "Imagens não foram encontradas ou não estão nomeadas conforme o padrão: RS_<ID>.nii/RS_<ID>.PAR e T1_<ID>.nii/T1_<ID>" | fold -s ; echo
     exit
 fi
++ '[' '!' 0 -eq 0 ']'
 
 [ -d DATA ] || mkdir DATA
++ '[' -d DATA ']'
 [ -d OUTPUT ] || mkdir OUTPUT
++ '[' -d OUTPUT ']'
 
 unset a; a=0
++ unset a
++ a=0
 for i in $ID; do
   [ -d DATA/$i ] || mkdir DATA/$i 
   [ -d OUTPUT/$i ] || mkdir OUTPUT/$i 
@@ -285,13 +518,113 @@ for i in $ID; do
     [ ! -f DATA/$i/$ii ] && wp=$(find . -name $ii) && rp=DATA/$i/$ii && mv $wp $rp 2> /dev/null && a=$((a + 1))
   done
 done
++ for i in '$ID'
++ '[' -d DATA/C000917 ']'
++ '[' -d OUTPUT/C000917 ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/C000917/T1_C000917.nii ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/C000917/T1_C000917.PAR ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/C000917/RS_C000917.nii ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/C000917/RS_C000917.PAR ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/C000917/physlog_C000917 ']'
+find . -name $ii
+++ find . -name physlog_C000917
++ wp=
++ rp=DATA/C000917/physlog_C000917
++ mv DATA/C000917/physlog_C000917
++ for i in '$ID'
++ '[' -d DATA/P001543 ']'
++ '[' -d OUTPUT/P001543 ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/P001543/T1_P001543.nii ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/P001543/T1_P001543.PAR ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/P001543/RS_P001543.nii ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/P001543/RS_P001543.PAR ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/P001543/physlog_P001543 ']'
+find . -name $ii
+++ find . -name physlog_P001543
++ wp=
++ rp=DATA/P001543/physlog_P001543
++ mv DATA/P001543/physlog_P001543
++ for i in '$ID'
++ '[' -d DATA/P001562 ']'
++ '[' -d OUTPUT/P001562 ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/P001562/T1_P001562.nii ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/P001562/T1_P001562.PAR ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/P001562/RS_P001562.nii ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/P001562/RS_P001562.PAR ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/P001562/physlog_P001562 ']'
+find . -name $ii
+++ find . -name physlog_P001562
++ wp=
++ rp=DATA/P001562/physlog_P001562
++ mv DATA/P001562/physlog_P001562
++ for i in '$ID'
++ '[' -d DATA/T000001 ']'
++ '[' -d OUTPUT/T000001 ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/T000001/T1_T000001.nii ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/T000001/T1_T000001.PAR ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/T000001/RS_T000001.nii ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/T000001/RS_T000001.PAR ']'
++ for ii in 'T1_$i.nii' 'T1_$i.PAR' 'RS_$i.nii' 'RS_$i.PAR' 'physlog_$i'
++ '[' '!' -f DATA/T000001/physlog_T000001 ']'
+find . -name $ii
+++ find . -name physlog_T000001
++ wp=
++ rp=DATA/T000001/physlog_T000001
++ mv DATA/T000001/physlog_T000001
 if [ ! $a -eq 0 ]; then 
   echo "O caminho das imagens não está conformado com o padrâo: DATA/<ID>/T1_<ID>.nii"
   echo "Conformando..."
   echo
 fi
++ '[' '!' 0 -eq 0 ']'
 
 prefix=_RS_
++ prefix=_RS_
+declare -A in in_2 in_3 in_4 in_5
++ declare -A in in_2 in_3 in_4 in_5
+declare -A inpath
++ declare -A inpath
+declare -A out out_2 out_3 ou_4 out_5
++ declare -A out out_2 out_3 ou_4 out_5
+declare -A outpath
++ declare -A outpath
+
+for i in $ID; do
+out[$i]=RS_$i.nii
+outpath[$i]=DATA/$i/
+done
++ for i in '$ID'
++ out[$i]=RS_C000917.nii
++ outpath[$i]=DATA/C000917/
++ for i in '$ID'
++ out[$i]=RS_P001543.nii
++ outpath[$i]=DATA/P001543/
++ for i in '$ID'
++ out[$i]=RS_P001562.nii
++ outpath[$i]=DATA/P001562/
++ for i in '$ID'
++ out[$i]=RS_T000001.nii
++ outpath[$i]=DATA/T000001/
+
 
 # AZTEC========================================================================
 if [ $aztec -eq 1 ]; then
@@ -299,23 +632,25 @@ if [ $aztec -eq 1 ]; then
   pwd=($PWD)
   prefix=z$prefix
   for i in $ID; do
-    in=RS_$i.nii
-    in[2]=RS_$i.log
-    inpath=DATA/$i/
-    out=$prefix$i.nii
-    outpath=DATA/$i/aztec/
+    #inputs
+    in[$i]=${out[$i]}
+    in_2[$i]=RS_$i.log
+    inpath[$i]=${outpath[$i]}
+    #outputs
+    out[$i]=$prefix$i.nii
+    outpath[$i]=DATA/$i/aztec/
     echo -n "$i> "
     open.node; if [ $go -eq 1 ]; then
       #
    #  if [ ! -d "3d" ]; then  mkdir 3d ; fi && \
-   #  fsl5.0-fslsplit $in 3d_"$i"_ -t && \
+   #  fsl5.0-fslsplit ${in[$i]} 3d_"$i"_ -t && \
    #  mv 3d_"$i"* 3d && \
    #  gunzip 3d/3d_$i_* && \
       echo "try aztec(); catch; end" > azt_script.m && \
    #  echo "try aztec('${in[2]}',files ,500,$TR,1,$hp,'/3d') catch  quit" > azt_script.m
       matlab -nosplash -r "run azt_script.m" \
    #  rm 3d/3d* && \
-   #  3dTcat -prefix $out -TR $TR 3d/aztec* && \
+   #  3dTcat -prefix ${out[$i]} -TR $((TR/1000)) 3d/aztec* && \
    #  rm 3d/aztec* 3d azt* && \ 
       &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! " "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
       #
@@ -324,544 +659,254 @@ if [ $aztec -eq 1 ]; then
   input.error
   echo
 fi
-exit 
++ '[' 0 -eq 1 ']'
 
 # SLICE TIMING CORRECTION=======================================================
 printf "=======================SLICE TIMING CORRECTION====================\n\n"
++ printf '=======================SLICE TIMING CORRECTION====================\n\n'
+=======================SLICE TIMING CORRECTION====================
+
 pwd=($PWD)
-prefix
++ pwd=($PWD)
+prefix=t$prefix
++ prefix=t_RS_
 for i in $ID; do
-  prefix=t$prefix
-  in=RS_$i.nii
-  out=$prefix$i.nii
-  inpath=DATA/$i/
-  outpath=DATA/$i/slice_correction/
+  #inputs
+  in[$i]=${out[$i]}
+  inpath[$i]=${outpath[$i]}
+  #outputs
+  out[$i]=$prefix$i.nii
+  outpath[$i]=DATA/$i/slice_correction/
   echo -n "$i> "
-  node "3dTshift \
-    -verbose \
-    -tpattern $ptn \
-    -prefix $out \
-    -Fourier \
-    $in"
-input.error
-organize.files
-unset prefix in out inpath outpath 
+  open.node; if [ $go -eq 1 ]; then
+    #
+    3dTshift \
+      -verbose \
+      -tpattern $ptn \
+      -prefix ${out[$i]} \
+      -Fourier \
+      ${in[$i]} &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! " "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+    #
+  fi; close.node
 done
++ for i in '$ID'
++ in[$i]=RS_C000917.nii
++ inpath[$i]=DATA/C000917/
++ out[$i]=t_RS_C000917.nii
++ outpath[$i]=DATA/C000917/slice_correction/
++ echo -n 'C000917> '
+C000917> + open.node
++ echo RS_C000917.nii
+RS_C000917.nii
++ echo DATA/C000917/
+DATA/C000917/
++ echo t_RS_C000917.nii
+t_RS_C000917.nii
++ echo DATA/C000917/slice_correction/
+DATA/C000917/slice_correction/
++ '[' -d DATA/C000917/slice_correction/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local e=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/C000917/RS_C000917.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/C000917/slice_correction/t_RS_C000917.nii ']'
++ b=1
++ '[' 0 -eq 0 ']'
++ '[' 1 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 1 -eq 1 ']'
++ cd DATA/C000917/
++ '[' 1 -eq 1 ']'
++ 3dTshift -verbose -tpattern seq+z -prefix t_RS_C000917.nii -Fourier RS_C000917.nii
++ printf 'Processamento da imagem %s realizado com sucesso! ' C000917
+Processamento da imagem C000917 realizado com sucesso! + close.node
++ '[' 1 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv DATA/C000917/t_RS_C000917.log DATA/C000917/t_RS_C000917.nii DATA/C000917/slice_correction/
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/C000917/slice_correction/t_RS_C000917.nii ']'
++ '[' '!' -eq 0 ']'
+./preproc.sh: line 155: [: !: integer expression expected
+ find "${inpath[$i]}" -name "$prefix*" 
+++ find DATA/C000917/ -name 't_RS_*'
++ local 'files=DATA/C000917/slice_correction/t_RS_C000917.nii
+DATA/C000917/slice_correction/t_RS_C000917.log'
++ for f in '$files'
++ mv DATA/C000917/slice_correction/t_RS_C000917.nii DATA/C000917/slice_correction/
++ for f in '$files'
++ mv DATA/C000917/slice_correction/t_RS_C000917.log DATA/C000917/slice_correction/
++ for i in '$ID'
++ in[$i]=RS_P001543.nii
++ inpath[$i]=DATA/P001543/
++ out[$i]=t_RS_P001543.nii
++ outpath[$i]=DATA/P001543/slice_correction/
++ echo -n 'P001543> '
+P001543> + open.node
++ echo RS_P001543.nii
+RS_P001543.nii
++ echo DATA/P001543/
+DATA/P001543/
++ echo t_RS_P001543.nii
+t_RS_P001543.nii
++ echo DATA/P001543/slice_correction/
+DATA/P001543/slice_correction/
++ '[' -d DATA/P001543/slice_correction/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local e=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001543/RS_P001543.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001543/slice_correction/t_RS_P001543.nii ']'
++ b=1
++ '[' 0 -eq 0 ']'
++ '[' 1 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 1 -eq 1 ']'
++ cd DATA/P001543/
++ '[' 1 -eq 1 ']'
++ 3dTshift -verbose -tpattern seq+z -prefix t_RS_P001543.nii -Fourier RS_P001543.nii
++ printf 'Processamento da imagem %s realizado com sucesso! ' P001543
+Processamento da imagem P001543 realizado com sucesso! + close.node
++ '[' 1 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv DATA/P001543/t_RS_P001543.log DATA/P001543/t_RS_P001543.nii DATA/P001543/slice_correction/
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/P001543/slice_correction/t_RS_P001543.nii ']'
++ '[' '!' -eq 0 ']'
+./preproc.sh: line 155: [: !: integer expression expected
+ find "${inpath[$i]}" -name "$prefix*" 
+++ find DATA/P001543/ -name 't_RS_*'
++ local 'files=DATA/P001543/slice_correction/t_RS_P001543.log
+DATA/P001543/slice_correction/t_RS_P001543.nii'
++ for f in '$files'
++ mv DATA/P001543/slice_correction/t_RS_P001543.log DATA/P001543/slice_correction/
++ for f in '$files'
++ mv DATA/P001543/slice_correction/t_RS_P001543.nii DATA/P001543/slice_correction/
++ for i in '$ID'
++ in[$i]=RS_P001562.nii
++ inpath[$i]=DATA/P001562/
++ out[$i]=t_RS_P001562.nii
++ outpath[$i]=DATA/P001562/slice_correction/
++ echo -n 'P001562> '
+P001562> + open.node
++ echo RS_P001562.nii
+RS_P001562.nii
++ echo DATA/P001562/
+DATA/P001562/
++ echo t_RS_P001562.nii
+t_RS_P001562.nii
++ echo DATA/P001562/slice_correction/
+DATA/P001562/slice_correction/
++ '[' -d DATA/P001562/slice_correction/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local e=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001562/RS_P001562.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001562/slice_correction/t_RS_P001562.nii ']'
++ b=1
++ '[' 0 -eq 0 ']'
++ '[' 1 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 1 -eq 1 ']'
++ cd DATA/P001562/
++ '[' 1 -eq 1 ']'
++ 3dTshift -verbose -tpattern seq+z -prefix t_RS_P001562.nii -Fourier RS_P001562.nii
++ printf 'Processamento da imagem %s realizado com sucesso! ' P001562
+Processamento da imagem P001562 realizado com sucesso! + close.node
++ '[' 1 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv DATA/P001562/t_RS_P001562.log DATA/P001562/t_RS_P001562.nii DATA/P001562/slice_correction/
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/P001562/slice_correction/t_RS_P001562.nii ']'
++ '[' '!' -eq 0 ']'
+./preproc.sh: line 155: [: !: integer expression expected
+ find "${inpath[$i]}" -name "$prefix*" 
+++ find DATA/P001562/ -name 't_RS_*'
++ local 'files=DATA/P001562/slice_correction/t_RS_P001562.nii
+DATA/P001562/slice_correction/t_RS_P001562.log'
++ for f in '$files'
++ mv DATA/P001562/slice_correction/t_RS_P001562.nii DATA/P001562/slice_correction/
++ for f in '$files'
++ mv DATA/P001562/slice_correction/t_RS_P001562.log DATA/P001562/slice_correction/
++ for i in '$ID'
++ in[$i]=RS_T000001.nii
++ inpath[$i]=DATA/T000001/
++ out[$i]=t_RS_T000001.nii
++ outpath[$i]=DATA/T000001/slice_correction/
++ echo -n 'T000001> '
+T000001> + open.node
++ echo RS_T000001.nii
+RS_T000001.nii
++ echo DATA/T000001/
+DATA/T000001/
++ echo t_RS_T000001.nii
+t_RS_T000001.nii
++ echo DATA/T000001/slice_correction/
+DATA/T000001/slice_correction/
++ '[' -d DATA/T000001/slice_correction/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local e=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/T000001/RS_T000001.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/T000001/slice_correction/t_RS_T000001.nii ']'
++ b=1
++ '[' 0 -eq 0 ']'
++ '[' 1 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 1 -eq 1 ']'
++ cd DATA/T000001/
++ '[' 1 -eq 1 ']'
++ 3dTshift -verbose -tpattern seq+z -prefix t_RS_T000001.nii -Fourier RS_T000001.nii
++ printf 'Processamento da imagem %s realizado com sucesso! ' T000001
+Processamento da imagem T000001 realizado com sucesso! + close.node
++ '[' 1 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv DATA/T000001/t_RS_T000001.log DATA/T000001/t_RS_T000001.nii DATA/T000001/slice_correction/
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/T000001/slice_correction/t_RS_T000001.nii ']'
++ '[' '!' -eq 0 ']'
+./preproc.sh: line 155: [: !: integer expression expected
+ find "${inpath[$i]}" -name "$prefix*" 
+++ find DATA/T000001/ -name 't_RS_*'
++ local 'files=DATA/T000001/slice_correction/t_RS_T000001.log
+DATA/T000001/slice_correction/t_RS_T000001.nii'
++ for f in '$files'
++ mv DATA/T000001/slice_correction/t_RS_T000001.log DATA/T000001/slice_correction/
++ for f in '$files'
++ mv DATA/T000001/slice_correction/t_RS_T000001.nii DATA/T000001/slice_correction/
+input.error
++ input.error
++ '[' 0 -eq 1 ']'
 echo
++ echo
+
 
 exit
-
-
-# MOTION CORRECTION============================================================
-printf "\n=========================MOTION CORRECTION=======================\n\n"
-pwd=($PWD)
-for i in $ID; do
-  prefix=rt_RS_
-  in=t_RS_$i.nii
-  out=$prefix$i.nii
-  out[2]="$prefix"mc_$i.1d
-  inpath=DATA/$i/slice_correction/
-  outpath=DATA/$i/motion_correction/
-  echo -n "$i> "
-  node "3dvolreg \
-  -prefix $out \
-  -base 100 \
-  -zpad 2 \
-  -twopass \
-  -Fourier \
-  -verbose \
-  -1Dfile ${out[2]} \
-  $in"
-done
-exit # <<=======================================================================
-
-#===============================================================================
-#===============================================================================
-
-
-### MOTION CORRECTION QUALITY CONTROL
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Aplicando Check Motion Correction às imagens ==========="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando CMC em $i..."
-  1dplot motioncorrection_"$i".1d
-  #read -p "Aperte enter para continuar..."
-done
-
-## DEOBLIQUE: T1 e RS
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "========= Aplicando estapa Deoblique T1 e fmri às imagens ========"
-echo "===================================================================="
-echo
-### Deoblique T1
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dWarp \
-  -deoblique \
-  -prefix  d_T1_"$i" \
-  T1_"$i".nii
-done
-
-### Deoblique fMRI
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dWarp \
-  -deoblique \
-  -prefix  drt_RS_"$i" \
-  rt_RS_"$i"+orig
-done
-
-## HOMOGENIZE GRID
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Aplicando etapa Homogenize Grid às imagens ============"
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dZeropad \
-  -RL "$gRL" \
-  -AP "$gAP" \
-  -IS "$gIS" \
-  -prefix pdrt_RS_"$i" \
-  drt_RS_"$i"+orig
-done
-
-## REORIENT TO TEMPLATE
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Aplicando etapa Reorient to templete às imagens =========="
-echo "===================================================================="
-echo
-### Reorient T1
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dresample \
-  -orient "$orient" \
-  -prefix rd_T1_"$i" \
-  -inset d_T1_"$i"+orig
-done
-
-### Reorient fMRI
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dresample \
-  -orient "$orient" \
-  -prefix rpdrt_RS_"$i" \
-  -inset pdrt_RS_"$i"+orig
-done
-
-## ALIGN CENTER T1 TO TEMPLATE
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "==== Aplicando etapa Align center of T1 to template às imagens ====="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  @Align_Centers \
-  -base "$template" \
-  -dset rd_T1_"$i"+orig
-done
-
-## UNIFORMIZE T1
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Aplicando etapa Uniformize T1 às imagens =============="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dUnifize \
-  -prefix urd_T1_"$i" \
-  -input rd_T1_"$i"_shft+orig
-done
-
-## SKULL STRIPPING: Nesse pipeline deve ser realizado manualmente
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Preparando para realiar o SKULL STRIPPING =============="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dAFNItoNIFTI urd_T1_"$i"+orig
-  done
-echo "Para a próxima etapa recomenda-se realizar o SKULL STRIPPING das imagens manualmente no MRIcron. Lembre-se de salvar como Analyze a mascara com o nome: "
-echo "lurd_T1_<cod_sub>"
-echo "Em seguida use o MRIron para converter a mascara para o formato NIFTI. Salve com o seguinte nome:"
-echo "lurd_T1_<cod_sub>.nii.gz"
-
-## =============================================================================
-## ====================== ATÉ AQUI JÁ TESTADO ==================================
-## =============================================================================
-
-## APPLY SKULL STRIPPING MASK
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Aplicando a mascara do SKULL STRIPPING ================="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dcalc \
-  -a        urd_T1_"$i".nii \
-  -b        lurd_T1_"$i".nii.gz \
-  -expr     'a*abs(b-1)' \
-  -prefix   SS_T1_"$i"
-  done
-### The command 3dcalc performs the following calculation: 'a*abs(b-1)'. This means that:
-### a = T1 image before skull stripping
-### b = mask (1 = regions to be deleted; 0 = regions to be preserved)
-### b-1 => the regions to be removed are now ‘0’ and the regions to be preserved are now ‘-1’
-### abs(b-1) => calculate the absolute value so that the regions to be removed are still ‘0’ and the regions to be preserved are now ‘1’
-### a*abs(b-1) => multiply the T1 image to the ‘abs(b-1)’ so that the regions to be deleted are set to zero and the regions to be preserved are unchanged.
-
-## ALIGN CENTER fmri TO T1
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "====== Aplicando etapa Align center of fmri to T1 às imagens ======="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  @Align_Centers \
-  -cm \
-  -base SS_T1_"$i"+orig \
-  -dset rpdrt_RS_"$i"+orig
-done
-
-## COREGISTER fmri and T1
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "========= Aplicando etapa Coregister fmri e T1 às imagens =========="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  align_epi_anat.py \
-  -anat SS_T1_"$i"+orig \
-  -epi rpdrt_RS_"$i"_shft+orig \
-  -epi_base 100 \
-  -anat_has_skull no \
-  -volreg off \
-  -tshift off \
-  -deoblique off
-done
-
-## NORMALIZE T1 TO TEMPLATE
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "========= Aplicando etapa Normalize T1 to template às imagens ======"
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dQwarp \
-  -prefix MNI_T1_"$i" \
-  -blur 0 3 \
-  -base "$template" \
-  -allineate \
-  -source SS_T1_"$i"_al+orig
-done
-
-## SPATIAL NORMALIZATION
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "========= Aplicando etapa Spatial Normalization fmri às imagens ======"
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3drename MNI_T1_"$i"_WARP+tlrc MNI_T1_WARP
-  3dNwarpApply \
-  -source rpdrt_RS_"$i"_shft+orig \
-  -nwarp 'MNI_T1_WARP+tlrc' \
-  -master "$template" \
-  -newgrid 3 \
-  -prefix rpdrt_RS_MNI_"$i"
-  3drename MNI_T1_WARP+tlrc MNI_T1_"$i"_WARP
-done
-
-## CREATE CSF AND WM MASKS
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "========= Aplicando etapa Create CSF and WM Masks às imagens ======"
-echo "===================================================================="
-echo
-### Segmentando as imagens com FSL-FAST
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dAFNItoNIFTI SS_T1_"$i"_al+orig
-  echo "Segmentando as imagens usando FSL-FAST"
-  echo
-  fsl5.0-fast \
-  -o seg_"$i" \
-  -S 1 \
-  -t 1 \
-  -n 3 \
-  SS_T1_"$i"_al.nii
-done
-### Explained: -o = output name; -S = number of channels (1, because only T1 image); -t = type of image (1 for T1); -n = number of tissue-type classes
-### This gives three output files: seg_"$lista"_pve_0.nii.gz (CSF), seg_"$lista"_pve_1.nii.gz (GM) and seg_"$lista"_pve_3.nii.gz (WM).
-
-### Binarize the segmented images
-echo
-echo "Binarizando as imagens segmentadas"
-echo
-for i in "${lista[@]}"
-  do
-  ### first, the CSF
-  3dcalc \
-  -a seg_"$i"_pve_0.nii.gz \
-  -expr 'equals(a,1)' \
-  -prefix "$i"_CSF
-  ### now, the WM
-  3dcalc \
-  -a seg_"$i"_pve_2.nii.gz \
-  -expr 'equals(a,1)' \
-  -prefix "$i"_WM
-done
-
-### Aplicando Resample as imagens
-echo
-echo "Aplicando Resample às imagens"
-echo
-for i in "${lista[@]}"
-  do
-  ### resample CSF mask
-  3dresample \
-  -master rpdrt_RS_"$i"_shft+orig \
-  -inset "$i"_CSF+orig \
-  -prefix "$i"_CSF_resampled+orig
-  ### resample WM mask
-  3dresample \
-  -master rpdrt_RS_"$i"_shft+orig \
-  -inset "$i"_WM+orig \
-  -prefix "$i"_WM_resampled+orig
-done
-
-### Calculando CSF and WM mean signal
-echo
-echo "Calculando CSF e WM mean signal"
-echo
-for i in "${lista[@]}"
-  do
-  ### first, mean CSF signal
-  3dmaskave \
-  -mask "$i"_CSF_resampled+orig \
-  -quiet \
-  rpdrt_RS_"$i"_shft+orig \
-  "$i"_CSF_signal.1d
-  ### now, mean WM signal
-  3dmaskave \
-  -mask "$i"_WM_resampled+orig \
-  -quiet \
-  rpdrt_RS_"$l"_shft+orig \
-  "$i"_WM_signal.1d
-done
-
-### 3dBandPass
-echo
-echo "Aplicando 3dBandpass para correção de movimentos"
-echo
-for i in "${lista[@]}"
-  do
-  3dBandpass \
-  -band 0.01 0.08 \
-  -despike \
-  -ort motioncorrection_"$i".1d \
-  -ort "$i"_CSF_signal.1d \
-  -ort "$i"_WM_signal.1d \
-  -prefix frpdrt_RS_MNI_"$i" \
-  -input rpdrt_RS_MNI_"$i"+tlrc
-done
-
-## SPATIAL Smoothing
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "========= Aplicando etapa Spatial Smoothing às imagens ======"
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-	echo "Aplicando em $i..."
-	3dmerge \
-	-1blur_fwhm "$blur" \
-	-doall \
-	-prefix bfrpdrt_RS_MNI_"$i" \
-	frpdrt_RS_MNI_"$i"+tlrc
-done
-
-## MOTION CENSORING
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "========= Aplicando etapa Motion censoring às imagens ============"
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-	echo "Aplicando em $i..."
-	echo
-	echo "Create Framewise Displacement (FD) censor"
-	echo
-	### take the temporal derivative of each vector (done as first backward difference)
-	1d_tool.py \
-	-infile motioncorrection_"$i".1d \
-	-derivative \
-	-write "$i"_RS.deltamotion.1D
-
-	### calculate total framewise displacement (sum of six parameters)
-	1deval \
-	-a "$i"_RS.deltamotion.1D'[0]' \
-	-b "$i"_RS.deltamotion.1D'[1]' \
-	-c "$i"_RS.deltamotion.1D'[2]' \
-	-d "$i"_RS.deltamotion.1D'[3]' \
-	-e "$i"_RS.deltamotion.1D'[4]' \
-	-f "$i"_RS.deltamotion.1D'[5]' \
-	-expr '100*sind(abs(a)/2) + 100*sind(abs(b)/2) + 100*sind(abs(c)/2) + abs(d) + abs(e) + abs(f)' \
-	"$i"_RS.deltamotion.FD.1D
-
-	### create temporal mask (1 = extreme motion)
-	1d_tool.py \
-	-infile "$i"_RS.deltamotion.FD.1D \
-	-extreme_mask -1 0.5 \
-	-write "$i"_RS.deltamotion.FD.extreme0.5.1D
-
-	### create temporal mask (0 = extreme motion)
-	1deval -a "$i"_RS.deltamotion.FD.extreme0.5.1D \
-	-expr 'not(a)' \
-	"$i"_RS.deltamotion.FD.moderate0.5.1D
-
-	### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
-	1deval \
-	-a "$i"_RS.deltamotion.FD.moderate0.5.1D \
-	-b "$i"_RS.deltamotion.FD.moderate0.5.1D'{1..$,0}' \
-	-expr 'ispositive(a + b - 1)' \
-	"$i"_RS.deltamotion.FD.moderate0.5.n.1D
-
-	### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
-	1deval \
-	-a "$i"_RS.deltamotion.FD.moderate0.5.n.1D \
-	-b "$i"_RS.deltamotion.FD.moderate0.5.n.1D'{0,0..$}' \
-	-expr 'ispositive(a + b - 1)' \
-	"$i"_RS.deltamotion.FD.moderate0.5.n.n.1D
-
-	### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
-	1deval \
-	-a "$i"_RS.deltamotion.FD.moderate0.5.n.n.1D \
-	-b "$i"_RS.deltamotion.FD.moderate0.5.n.n.1D'{0,0..$}' \
-	-expr 'ispositive(a + b - 1)' \
-	"$i"_RS.deltamotion.FD.moderate0.5.n.n.n.1D
-
-	echo "Create DVARS censor"
-	echo
-	### normalize and scale the BOLD to percent signal change
-	### find the mean
-	3dTstat \
-	-mean \
-	-prefix meanBOLD_"$i" \
-	RS_"$i".nii
-	### scale BOLD signal to percent change
-	3dcalc \
-	-a RS_"$i".nii \
-	-b meanBOLD_"$i"+orig \
-	-expr "(a/b) * 100" \
-	-prefix "$i"_RS_scaled
-	### temporal derivative of the frames
-	3dcalc \
-	-a "$i"_RS_scaled+orig \
-	-b 'a[0,0,0,-1]' \
-	-expr '(a - b)^2' \
-	-prefix "$i"_RS.backdif2
-	### Extract brain mask
-	3dAutomask \
-	-prefix "$i".auto_mask.brain \
-	RS_"$i".nii
-	### average data from each frame (inside brain mask)
-	3dmaskave \
-	-mask "$i".auto_mask.brain+orig \
-	-quiet "$i"_RS.backdif2+orig \
-	"$i"_RS.backdif2.avg.1D
-	### square root to finally get DVARS
-	1deval \
-	-a "$i"_RS.backdif2.avg.1D \
-	-expr 'sqrt(a)' \
-	"$i"_RS.backdif2.avg.dvars.1D
-	### mask extreme (1 = extreme motion)
-	1d_tool.py \
-	-infile "$i"_RS.backdif2.avg.dvars.1D \
-	-extreme_mask -1 5 \
-	-write "$i"_RS.backdif2.avg.dvars.extreme5.1D
-	### mask extreme (0 = extreme motion)
-	1deval \
-	-a "$i"_RS.backdif2.avg.dvars.extreme5.1D \
-	-expr 'not(a)' \
-	"$i"_RS.backdif2.avg.dvars.moderate5.1D
-	### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
-	1deval \
-	-a "$i"_RS.backdif2.avg.dvars.moderate5.1D \
-	-b "$i"_RS.backdif2.avg.dvars.moderate5.1D'{1..$,0}' \
-	-expr 'ispositive(a + b - 1)' \
-	"$i"_RS.backdif2.avg.dvars.moderate5.n.1D
-	### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 2)
-	1deval \
-	-a "$i"_RS.backdif2.avg.dvars.moderate5.n.1D \
-	-b "$i"_RS.backdif2.avg.dvars.moderate5.n.1D'{0,0..$}' \
-	-expr 'ispositive(a + b - 1)' \
-	"$i"_RS.backdif2.avg.dvars.moderate5.n.n.1D
-	### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 3)
-	1deval \
-	-a "$i"_RS.backdif2.avg.dvars.moderate5.n.n.1D \
-	-b "$i"_RS.backdif2.avg.dvars.moderate5.n.n.1D'{0,0..$}' \
-	-expr 'ispositive(a + b - 1)' \
-	"$i"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D
-
-
-	### Integrate FD and DVARS censoring
-	### (only frames censored on both will be excluded, as in Power et al., 2012)
-
-	### FD censor OR DVARS censor
-	1deval \
-	-a "$i"_RS.deltamotion.FD.moderate0.5.n.n.n.1D \
-	-b "$i"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D \
-	-expr 'or(a, b)' \
-	"$i"_powerCensorIntersection.1D
-
-	### Apply censor file in the final preprocessed image (after temporal filtering and spatial blurring)
-	afni_restproc.py -apply_censor bfrpdrt_RS_MNI_"$i"+tlrc "$i"_powerCensorIntersection.1D cbfrpdrt_RS_MNI_"$i"
-done
++ exit

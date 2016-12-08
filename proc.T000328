@@ -32,7 +32,7 @@ endif
 set output_dir = $subj.results
 
 # verify that the results directory does not yet exist
-if ( -d $output_dir ) then
+if ( -d ${out[$i]}put_dir ) then
     echo output dir "$subj.results" already exists
     exit
 endif
@@ -41,16 +41,16 @@ endif
 set runs = (`count -digits 2 1 1`)
 
 # create results and stimuli directories
-mkdir $output_dir
-mkdir $output_dir/stimuli
+mkdir ${out[$i]}put_dir
+mkdir ${out[$i]}put_dir/stimuli
 
 # copy anatomy to results dir
-3dcopy DATA/T000328/T1_T000328.nii $output_dir/T1_T000328
+3dcopy DATA/T000328/T1_T000328.nii ${out[$i]}put_dir/T1_T000328
 
 # ============================ auto block: tcat ============================
 # apply 3dTcat to copy input dsets to results dir, while
 # removing the first 0 TRs
-3dTcat -prefix $output_dir/pb00.$subj.r01.tcat \
+3dTcat -prefix ${out[$i]}put_dir/pb00.$subj.r01.tcat \
     DATA/T000328/RS_T000328.nii'[0..$]'
 
 # and make note of repetitions (TRs) per run
@@ -58,7 +58,7 @@ set tr_counts = ( 200 )
 
 # -------------------------------------------------------
 # enter the results directory (can begin processing data)
-cd $output_dir
+cd ${out[$i]}put_dir
 
 
 # ========================== auto block: outcount ==========================

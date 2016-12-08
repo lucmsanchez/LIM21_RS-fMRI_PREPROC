@@ -93,20 +93,22 @@ input.error () {
 }
 
 open.node () {
-  [ -d $outpath ] || mkdir $outpath
+  [ -d ${outpath[$i]} ] || mkdir ${outpath[$i]}
   #
-  local a=0; local b=0; local c=0; local e=0; local v=0
+  local a=0; local b=0; local c=0; local d=0; local e=0; local v=0
   ex=0; go=1
   #
-  for ii in ${in[@]}; do
-      if [ ! -f $inpath$ii ]; then
+  for ii in ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}; do
+      if [ ! -f ${inpath[$i]}$ii ]; then
           echo "INPUT $ii não encontrado"
           a=$((a + 1))            
       else
-          for iii in ${out[@]}; do
-              if [ -f $outpath$iii ]; then
+          for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do
+              if [ ! -f ${outpath[$i]}$iii ]; then
                   b=$((b + 1))
-                  [ $outpath$iii -ot $inpath$ii ] && echo -n "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. " && c=$((c + 1))
+                else
+                  d=$((d + 1))
+                  [ ${outpath[$i]}$iii -ot ${inpath[$i]}$ii ] && echo -n "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. " && c=$((c + 1))
               fi
           done
       fi
@@ -114,21 +116,21 @@ open.node () {
   #
   if [ $a -eq 0 ]; then
   #
-    if [ $b -eq ${#out[@]} ]; then 
+    if [ $b -eq 0 ]; then 
       if [ ! $c -eq 0 ]; then
-        for iii in ${out[@]}; do rm $outpath$iii; done
+        for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do rm ${outpath[$i]}$iii; done
       else
           echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0
       fi
     else
-        if [ ! $b -eq 0 ]; then
+        if [ ! $d -eq 0 ]; then
             echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
-            for ii in ${out[@]}; do rm $outpath$ii; done
+            for ii in ${out[@]}; do rm ${outpath[$i}$ii; done
         fi
     fi
     #
     if [ $go -eq 1 ]; then
-      cd $inpath
+      cd ${inpath[$i]}
     fi
   else
   go=0
@@ -139,9 +141,9 @@ open.node () {
 close.node () {
   if [ $go -eq 1 ]; then  
     cd $pwd
-    mv $inpath$prefix* $outpath
-    for iii in ${out[@]}; do 
-      [ -f $outpath$iii ] ||  e=$((e + 1)) 
+    mv ${inpath[$i]}$prefix* ${outpath[$i]}
+     for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do 
+      [ -f ${outpath[$i]}$iii ] ||  e=$((e + 1)) 
     done
     # 
     [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG."
@@ -149,9 +151,9 @@ close.node () {
     ex=$((ex + 1)) 
   fi
 
- local files=$( find "$inpath" -name "$prefix*" )
+ local files=$( find "${inpath[$i]}" -name "$prefix*" )
   for f in $files; do
-    mv $f $outpath 2> /dev/null
+    mv $f ${outpath[$i]} 2> /dev/null
   done
 }
 
@@ -231,9 +233,10 @@ fi
 # informando os usuários das variáveis definidas ou defaults
 fold -s <<-EOF
 As variáveis que serão usadas como parametros para as análises são:
-Slice timing correction - sequência de aquisição => $ptn
-Motion correction       - valor base             => $mcbase
-Homogenize Grid         - tamanho da grade       => $gRL $gAP $gIS
+Aztec                   - Tempo de repetição(ms)  => $TR
+Slice timing correction - sequência de aquisição  => $ptn
+Motion correction       - valor base              => $mcbase
+Homogenize Grid         - tamanho da grade        => $gRL $gAP $gIS
 
 EOF
 
@@ -292,6 +295,16 @@ if [ ! $a -eq 0 ]; then
 fi
 
 prefix=_RS_
+declare -A in in_2 in_3 in_4 in_5
+declare -A inpath
+declare -A out out_2 out_3 ou_4 out_5
+declare -A outpath
+
+for i in $ID; do
+out[$i]=RS_$i.nii
+outpath[$i]=DATA/$i/
+done
+
 
 # AZTEC========================================================================
 if [ $aztec -eq 1 ]; then
@@ -299,28 +312,29 @@ if [ $aztec -eq 1 ]; then
   pwd=($PWD)
   prefix=z$prefix
   for i in $ID; do
-    in=RS_$i.nii
-    in[2]=RS_$i.log
-    inpath=DATA/$i/
-    out=$prefix$i.nii
-    outpath=DATA/$i/aztec/
+    #inputs
+    in[$i]=${out[$i]}
+    in_2[$i]=RS_$i.log
+    inpath[$i]=${outpath[$i]}
+    #outputs
+    out[$i]=$prefix$i.nii
+    outpath[$i]=DATA/$i/aztec/
     echo -n "$i> "
     open.node; if [ $go -eq 1 ]; then
       #
    #  if [ ! -d "3d" ]; then  mkdir 3d ; fi && \
-   #  fsl5.0-fslsplit $in 3d_"$i"_ -t && \
+   #  fsl5.0-fslsplit ${in[$i]} 3d_"$i"_ -t && \
    #  mv 3d_"$i"* 3d && \
    #  gunzip 3d/3d_$i_* && \
       echo "try aztec(); catch; end" > azt_script.m && \
    #  echo "try aztec('${in[2]}',files ,500,$TR,1,$hp,'/3d') catch  quit" > azt_script.m
       matlab -nosplash -r "run azt_script.m" \
    #  rm 3d/3d* && \
-   #  3dTcat -prefix $out -TR $((TR/1000)) 3d/aztec* && \
+   #  3dTcat -prefix ${out[$i]} -TR $((TR/1000)) 3d/aztec* && \
    #  rm 3d/aztec* 3d azt* && \ 
       &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! " "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
       #
     fi; close.node
-    unset in out inpath outpath 
   done
   input.error
   echo
@@ -331,22 +345,23 @@ printf "=======================SLICE TIMING CORRECTION====================\n\n"
 pwd=($PWD)
 prefix=t$prefix
 for i in $ID; do
-  in=RS_$i.nii
-  out=$prefix$i.nii
-  inpath=DATA/$i/
-  outpath=DATA/$i/slice_correction/
+  #inputs
+  in[$i]=${out[$i]}
+  inpath[$i]=${outpath[$i]}
+  #outputs
+  out[$i]=$prefix$i.nii
+  outpath[$i]=DATA/$i/slice_correction/
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
     #
     3dTshift \
       -verbose \
       -tpattern $ptn \
-      -prefix $out \
+      -prefix ${out[$i]} \
       -Fourier \
-      $in &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! " "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+      ${in[$i]} &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! " "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
     #
   fi; close.node
-  unset in out inpath outpath 
 done
 input.error
 echo
@@ -357,23 +372,23 @@ exit
 # MOTION CORRECTION============================================================
 printf "\n=========================MOTION CORRECTION=======================\n\n"
 pwd=($PWD)
+prefix=r$prefix
 for i in $ID; do
-  prefix=rt_RS_
-  in=t_RS_$i.nii
+  in=$old_prefix$i.nii
   out=$prefix$i.nii
   out[2]="$prefix"mc_$i.1d
   inpath=DATA/$i/slice_correction/
   outpath=DATA/$i/motion_correction/
   echo -n "$i> "
   node "3dvolreg \
-  -prefix $out \
+  -prefix ${out[$i]} \
   -base 100 \
   -zpad 2 \
   -twopass \
   -Fourier \
   -verbose \
   -1Dfile ${out[2]} \
-  $in"
+  ${in[$i]}"
 done
 exit # <<=======================================================================
 

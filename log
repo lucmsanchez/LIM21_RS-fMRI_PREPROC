@@ -127,15 +127,9 @@ input.error () {
 }
 
 open.node () {
-  
-  echo ${in[$i]}
-  echo ${inpath[$i]}
-  echo ${out[$i]}
-  echo ${outpath[$i]}
-
   [ -d ${outpath[$i]} ] || mkdir ${outpath[$i]}
   #
-  local a=0; local b=0; local c=0; local d=0; local e=0; local v=0
+  local a=0; local b=0; local c=0; local d=0; local v=0
   ex=0; go=1
   #
   for ii in ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}; do
@@ -158,14 +152,14 @@ open.node () {
   #
     if [ $b -eq 0 ]; then 
       if [ ! $c -eq 0 ]; then
-        for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do rm ${outpath[$i]}$iii; done
+        for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do rm ${outpath[$i]}$iii 2> /dev/null; done
       else
-          echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0
+          echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0; ex=0
       fi
     else
         if [ ! $d -eq 0 ]; then
             echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
-            for ii in ${out[@]}; do rm ${outpath[$i}$ii; done
+            for ii in ${out[@]}; do rm ${outpath[$i]}$ii 2> /dev/null; done
         fi
     fi
     #
@@ -179,6 +173,7 @@ open.node () {
 }
 
 close.node () {
+  local e=0
   if [ $go -eq 1 ]; then  
     cd $pwd
     mv ${inpath[$i]}$prefix* ${outpath[$i]}
@@ -186,9 +181,7 @@ close.node () {
       [ -f ${outpath[$i]}$iii ] ||  e=$((e + 1)) 
     done
     # 
-    [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG."
-  else
-    ex=$((ex + 1)) 
+    [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG." && ex=$((ex + 1)) 
   fi
 
  local files=$( find "${inpath[$i]}" -name "$prefix*" )
@@ -197,6 +190,20 @@ close.node () {
   done
 }
 
+log () {
+if [ $go -eq 1 ]; then
+  echo >> DATA/preproc_$i.log
+  echo "ETAPA: $1  - RUNTIME: $(date)" >> DATA/preproc_$i.log
+  echo >> DATA/preproc_$i.log
+  echo "PREFIX: $prefix" >> DATA/preproc_$i.log
+  echo "INPUT PATH: ${inpath[$i]} "  >> DATA/preproc_$i.log
+  echo "INPUTS: ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}" >>DATA/preproc_$i.log
+  echo "OUTPUT PATH: ${outpath[$i]}" >> DATA/preproc_$i.log
+  echo "OUTPUTS: ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}" >> DATA/preproc_$i.log
+  echo >> DATA/preproc_$i.log
+  cat ${outpath[$i]}$prefix$i.log >> DATA/preproc_$i.log
+fi
+}
 # ==============================================================================
 
 
@@ -241,7 +248,7 @@ check matlab
 Protocolo de pré-processamento de RS-fMRI
 --------------------------------------
 
-RUNTIME: Thu Dec  8 14:47:56 BRST 2016
+RUNTIME: Thu Dec  8 18:26:04 BRST 2016
 
 Programas necessários:
 GNU bash           ...OK
@@ -407,7 +414,9 @@ for i in $ID; do
     printf " RS" 
   else echo " (RS não encontrado)"; a=$((a + 1)) 
   fi
-  [ $(find . -name "*t*$i.nii") ] && printf " stc"
+  [ $(find . -name "z_RS_$i.nii") ] && printf " aztec"
+  [ $(find . -name "t*_RS_$i.nii") ] && printf " stc"
+  [ $(find . -name "rt*_RS_$i.nii") ] && printf " mc"
   printf "\n"
 done
 + for i in '$ID'
@@ -426,10 +435,18 @@ find . -name "RS_$i.PAR"
 ++ find . -name RS_C000917.PAR
 + '[' ./DATA/C000917/RS_C000917.PAR ']'
 + printf ' RS'
- RSfind . -name "*t*$i.nii"
-++ find . -name '*t*C000917.nii'
+ RSfind . -name "z_RS_$i.nii"
+++ find . -name z_RS_C000917.nii
 + '[' ']'
-+ printf '\n'
+find . -name "t*_RS_$i.nii"
+++ find . -name 't*_RS_C000917.nii'
++ '[' ./DATA/C000917/slice_correction/t_RS_C000917.nii ']'
++ printf ' stc'
+ stcfind . -name "rt*_RS_$i.nii"
+++ find . -name 'rt*_RS_C000917.nii'
++ '[' ./DATA/C000917/motion_correction/rt_RS_C000917.nii ']'
++ printf ' mc'
+ mc+ printf '\n'
 
 + for i in '$ID'
 + echo -n 'P001543  ... '
@@ -447,10 +464,18 @@ find . -name "RS_$i.PAR"
 ++ find . -name RS_P001543.PAR
 + '[' ./DATA/P001543/RS_P001543.PAR ']'
 + printf ' RS'
- RSfind . -name "*t*$i.nii"
-++ find . -name '*t*P001543.nii'
+ RSfind . -name "z_RS_$i.nii"
+++ find . -name z_RS_P001543.nii
 + '[' ']'
-+ printf '\n'
+find . -name "t*_RS_$i.nii"
+++ find . -name 't*_RS_P001543.nii'
++ '[' ./DATA/P001543/slice_correction/t_RS_P001543.nii ']'
++ printf ' stc'
+ stcfind . -name "rt*_RS_$i.nii"
+++ find . -name 'rt*_RS_P001543.nii'
++ '[' ./DATA/P001543/motion_correction/rt_RS_P001543.nii ']'
++ printf ' mc'
+ mc+ printf '\n'
 
 + for i in '$ID'
 + echo -n 'P001562  ... '
@@ -468,10 +493,18 @@ find . -name "RS_$i.PAR"
 ++ find . -name RS_P001562.PAR
 + '[' ./DATA/P001562/RS_P001562.PAR ']'
 + printf ' RS'
- RSfind . -name "*t*$i.nii"
-++ find . -name '*t*P001562.nii'
+ RSfind . -name "z_RS_$i.nii"
+++ find . -name z_RS_P001562.nii
 + '[' ']'
-+ printf '\n'
+find . -name "t*_RS_$i.nii"
+++ find . -name 't*_RS_P001562.nii'
++ '[' ./DATA/P001562/slice_correction/t_RS_P001562.nii ']'
++ printf ' stc'
+ stcfind . -name "rt*_RS_$i.nii"
+++ find . -name 'rt*_RS_P001562.nii'
++ '[' ./DATA/P001562/motion_correction/rt_RS_P001562.nii ']'
++ printf ' mc'
+ mc+ printf '\n'
 
 + for i in '$ID'
 + echo -n 'T000001  ... '
@@ -489,10 +522,18 @@ find . -name "RS_$i.PAR"
 ++ find . -name RS_T000001.PAR
 + '[' ./DATA/T000001/RS_T000001.PAR ']'
 + printf ' RS'
- RSfind . -name "*t*$i.nii"
-++ find . -name '*t*T000001.nii'
+ RSfind . -name "z_RS_$i.nii"
+++ find . -name z_RS_T000001.nii
 + '[' ']'
-+ printf '\n'
+find . -name "t*_RS_$i.nii"
+++ find . -name 't*_RS_T000001.nii'
++ '[' ./DATA/T000001/slice_correction/t_RS_T000001.nii ']'
++ printf ' stc'
+ stcfind . -name "rt*_RS_$i.nii"
+++ find . -name 'rt*_RS_T000001.nii'
++ '[' ./DATA/T000001/motion_correction/rt_RS_T000001.nii ']'
++ printf ' mc'
+ mc+ printf '\n'
 
 echo
 + echo
@@ -607,7 +648,6 @@ declare -A out out_2 out_3 ou_4 out_5
 + declare -A out out_2 out_3 ou_4 out_5
 declare -A outpath
 + declare -A outpath
-
 for i in $ID; do
 out[$i]=RS_$i.nii
 outpath[$i]=DATA/$i/
@@ -652,9 +692,10 @@ if [ $aztec -eq 1 ]; then
    #  rm 3d/3d* && \
    #  3dTcat -prefix ${out[$i]} -TR $((TR/1000)) 3d/aztec* && \
    #  rm 3d/aztec* 3d azt* && \ 
-      &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! " "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+      &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! \n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
       #
     fi; close.node
+    log "Aztec"
   done
   input.error
   echo
@@ -685,9 +726,10 @@ for i in $ID; do
       -tpattern $ptn \
       -prefix ${out[$i]} \
       -Fourier \
-      ${in[$i]} &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! " "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+      ${in[$i]} &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! \n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
     #
   fi; close.node
+  log "Slice Timing Correction"
 done
 + for i in '$ID'
 + in[$i]=RS_C000917.nii
@@ -696,20 +738,11 @@ done
 + outpath[$i]=DATA/C000917/slice_correction/
 + echo -n 'C000917> '
 C000917> + open.node
-+ echo RS_C000917.nii
-RS_C000917.nii
-+ echo DATA/C000917/
-DATA/C000917/
-+ echo t_RS_C000917.nii
-t_RS_C000917.nii
-+ echo DATA/C000917/slice_correction/
-DATA/C000917/slice_correction/
 + '[' -d DATA/C000917/slice_correction/ ']'
 + local a=0
 + local b=0
 + local c=0
 + local d=0
-+ local e=0
 + local v=0
 + ex=0
 + go=1
@@ -717,23 +750,20 @@ DATA/C000917/slice_correction/
 + '[' '!' -f DATA/C000917/RS_C000917.nii ']'
 + for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
 + '[' '!' -f DATA/C000917/slice_correction/t_RS_C000917.nii ']'
-+ b=1
++ d=1
++ '[' DATA/C000917/slice_correction/t_RS_C000917.nii -ot DATA/C000917/RS_C000917.nii ']'
 + '[' 0 -eq 0 ']'
-+ '[' 1 -eq 0 ']'
++ '[' 0 -eq 0 ']'
 + '[' '!' 0 -eq 0 ']'
-+ '[' 1 -eq 1 ']'
-+ cd DATA/C000917/
-+ '[' 1 -eq 1 ']'
-+ 3dTshift -verbose -tpattern seq+z -prefix t_RS_C000917.nii -Fourier RS_C000917.nii
-+ printf 'Processamento da imagem %s realizado com sucesso! ' C000917
-Processamento da imagem C000917 realizado com sucesso! + close.node
-+ '[' 1 -eq 1 ']'
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ mv DATA/C000917/t_RS_C000917.log DATA/C000917/t_RS_C000917.nii DATA/C000917/slice_correction/
-+ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
-+ '[' -f DATA/C000917/slice_correction/t_RS_C000917.nii ']'
-+ '[' '!' -eq 0 ']'
-./preproc.sh: line 155: [: !: integer expression expected
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
  find "${inpath[$i]}" -name "$prefix*" 
 ++ find DATA/C000917/ -name 't_RS_*'
 + local 'files=DATA/C000917/slice_correction/t_RS_C000917.nii
@@ -742,6 +772,8 @@ DATA/C000917/slice_correction/t_RS_C000917.log'
 + mv DATA/C000917/slice_correction/t_RS_C000917.nii DATA/C000917/slice_correction/
 + for f in '$files'
 + mv DATA/C000917/slice_correction/t_RS_C000917.log DATA/C000917/slice_correction/
++ log 'Slice Timing Correction'
++ '[' 0 -eq 1 ']'
 + for i in '$ID'
 + in[$i]=RS_P001543.nii
 + inpath[$i]=DATA/P001543/
@@ -749,20 +781,11 @@ DATA/C000917/slice_correction/t_RS_C000917.log'
 + outpath[$i]=DATA/P001543/slice_correction/
 + echo -n 'P001543> '
 P001543> + open.node
-+ echo RS_P001543.nii
-RS_P001543.nii
-+ echo DATA/P001543/
-DATA/P001543/
-+ echo t_RS_P001543.nii
-t_RS_P001543.nii
-+ echo DATA/P001543/slice_correction/
-DATA/P001543/slice_correction/
 + '[' -d DATA/P001543/slice_correction/ ']'
 + local a=0
 + local b=0
 + local c=0
 + local d=0
-+ local e=0
 + local v=0
 + ex=0
 + go=1
@@ -770,23 +793,20 @@ DATA/P001543/slice_correction/
 + '[' '!' -f DATA/P001543/RS_P001543.nii ']'
 + for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
 + '[' '!' -f DATA/P001543/slice_correction/t_RS_P001543.nii ']'
-+ b=1
++ d=1
++ '[' DATA/P001543/slice_correction/t_RS_P001543.nii -ot DATA/P001543/RS_P001543.nii ']'
 + '[' 0 -eq 0 ']'
-+ '[' 1 -eq 0 ']'
++ '[' 0 -eq 0 ']'
 + '[' '!' 0 -eq 0 ']'
-+ '[' 1 -eq 1 ']'
-+ cd DATA/P001543/
-+ '[' 1 -eq 1 ']'
-+ 3dTshift -verbose -tpattern seq+z -prefix t_RS_P001543.nii -Fourier RS_P001543.nii
-+ printf 'Processamento da imagem %s realizado com sucesso! ' P001543
-Processamento da imagem P001543 realizado com sucesso! + close.node
-+ '[' 1 -eq 1 ']'
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ mv DATA/P001543/t_RS_P001543.log DATA/P001543/t_RS_P001543.nii DATA/P001543/slice_correction/
-+ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
-+ '[' -f DATA/P001543/slice_correction/t_RS_P001543.nii ']'
-+ '[' '!' -eq 0 ']'
-./preproc.sh: line 155: [: !: integer expression expected
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
  find "${inpath[$i]}" -name "$prefix*" 
 ++ find DATA/P001543/ -name 't_RS_*'
 + local 'files=DATA/P001543/slice_correction/t_RS_P001543.log
@@ -795,6 +815,8 @@ DATA/P001543/slice_correction/t_RS_P001543.nii'
 + mv DATA/P001543/slice_correction/t_RS_P001543.log DATA/P001543/slice_correction/
 + for f in '$files'
 + mv DATA/P001543/slice_correction/t_RS_P001543.nii DATA/P001543/slice_correction/
++ log 'Slice Timing Correction'
++ '[' 0 -eq 1 ']'
 + for i in '$ID'
 + in[$i]=RS_P001562.nii
 + inpath[$i]=DATA/P001562/
@@ -802,20 +824,11 @@ DATA/P001543/slice_correction/t_RS_P001543.nii'
 + outpath[$i]=DATA/P001562/slice_correction/
 + echo -n 'P001562> '
 P001562> + open.node
-+ echo RS_P001562.nii
-RS_P001562.nii
-+ echo DATA/P001562/
-DATA/P001562/
-+ echo t_RS_P001562.nii
-t_RS_P001562.nii
-+ echo DATA/P001562/slice_correction/
-DATA/P001562/slice_correction/
 + '[' -d DATA/P001562/slice_correction/ ']'
 + local a=0
 + local b=0
 + local c=0
 + local d=0
-+ local e=0
 + local v=0
 + ex=0
 + go=1
@@ -823,23 +836,20 @@ DATA/P001562/slice_correction/
 + '[' '!' -f DATA/P001562/RS_P001562.nii ']'
 + for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
 + '[' '!' -f DATA/P001562/slice_correction/t_RS_P001562.nii ']'
-+ b=1
++ d=1
++ '[' DATA/P001562/slice_correction/t_RS_P001562.nii -ot DATA/P001562/RS_P001562.nii ']'
 + '[' 0 -eq 0 ']'
-+ '[' 1 -eq 0 ']'
++ '[' 0 -eq 0 ']'
 + '[' '!' 0 -eq 0 ']'
-+ '[' 1 -eq 1 ']'
-+ cd DATA/P001562/
-+ '[' 1 -eq 1 ']'
-+ 3dTshift -verbose -tpattern seq+z -prefix t_RS_P001562.nii -Fourier RS_P001562.nii
-+ printf 'Processamento da imagem %s realizado com sucesso! ' P001562
-Processamento da imagem P001562 realizado com sucesso! + close.node
-+ '[' 1 -eq 1 ']'
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ mv DATA/P001562/t_RS_P001562.log DATA/P001562/t_RS_P001562.nii DATA/P001562/slice_correction/
-+ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
-+ '[' -f DATA/P001562/slice_correction/t_RS_P001562.nii ']'
-+ '[' '!' -eq 0 ']'
-./preproc.sh: line 155: [: !: integer expression expected
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
  find "${inpath[$i]}" -name "$prefix*" 
 ++ find DATA/P001562/ -name 't_RS_*'
 + local 'files=DATA/P001562/slice_correction/t_RS_P001562.nii
@@ -848,6 +858,8 @@ DATA/P001562/slice_correction/t_RS_P001562.log'
 + mv DATA/P001562/slice_correction/t_RS_P001562.nii DATA/P001562/slice_correction/
 + for f in '$files'
 + mv DATA/P001562/slice_correction/t_RS_P001562.log DATA/P001562/slice_correction/
++ log 'Slice Timing Correction'
++ '[' 0 -eq 1 ']'
 + for i in '$ID'
 + in[$i]=RS_T000001.nii
 + inpath[$i]=DATA/T000001/
@@ -855,20 +867,11 @@ DATA/P001562/slice_correction/t_RS_P001562.log'
 + outpath[$i]=DATA/T000001/slice_correction/
 + echo -n 'T000001> '
 T000001> + open.node
-+ echo RS_T000001.nii
-RS_T000001.nii
-+ echo DATA/T000001/
-DATA/T000001/
-+ echo t_RS_T000001.nii
-t_RS_T000001.nii
-+ echo DATA/T000001/slice_correction/
-DATA/T000001/slice_correction/
 + '[' -d DATA/T000001/slice_correction/ ']'
 + local a=0
 + local b=0
 + local c=0
 + local d=0
-+ local e=0
 + local v=0
 + ex=0
 + go=1
@@ -876,23 +879,20 @@ DATA/T000001/slice_correction/
 + '[' '!' -f DATA/T000001/RS_T000001.nii ']'
 + for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
 + '[' '!' -f DATA/T000001/slice_correction/t_RS_T000001.nii ']'
-+ b=1
++ d=1
++ '[' DATA/T000001/slice_correction/t_RS_T000001.nii -ot DATA/T000001/RS_T000001.nii ']'
 + '[' 0 -eq 0 ']'
-+ '[' 1 -eq 0 ']'
++ '[' 0 -eq 0 ']'
 + '[' '!' 0 -eq 0 ']'
-+ '[' 1 -eq 1 ']'
-+ cd DATA/T000001/
-+ '[' 1 -eq 1 ']'
-+ 3dTshift -verbose -tpattern seq+z -prefix t_RS_T000001.nii -Fourier RS_T000001.nii
-+ printf 'Processamento da imagem %s realizado com sucesso! ' T000001
-Processamento da imagem T000001 realizado com sucesso! + close.node
-+ '[' 1 -eq 1 ']'
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ mv DATA/T000001/t_RS_T000001.log DATA/T000001/t_RS_T000001.nii DATA/T000001/slice_correction/
-+ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
-+ '[' -f DATA/T000001/slice_correction/t_RS_T000001.nii ']'
-+ '[' '!' -eq 0 ']'
-./preproc.sh: line 155: [: !: integer expression expected
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
  find "${inpath[$i]}" -name "$prefix*" 
 ++ find DATA/T000001/ -name 't_RS_*'
 + local 'files=DATA/T000001/slice_correction/t_RS_T000001.log
@@ -901,6 +901,8 @@ DATA/T000001/slice_correction/t_RS_T000001.nii'
 + mv DATA/T000001/slice_correction/t_RS_T000001.log DATA/T000001/slice_correction/
 + for f in '$files'
 + mv DATA/T000001/slice_correction/t_RS_T000001.nii DATA/T000001/slice_correction/
++ log 'Slice Timing Correction'
++ '[' 0 -eq 1 ']'
 input.error
 + input.error
 + '[' 0 -eq 1 ']'
@@ -908,5 +910,487 @@ echo
 + echo
 
 
-exit
+# MOTION CORRECTION============================================================
+printf "\n=========================MOTION CORRECTION=======================\n\n"
++ printf '\n=========================MOTION CORRECTION=======================\n\n'
+
+=========================MOTION CORRECTION=======================
+
+pwd=($PWD)
++ pwd=($PWD)
+prefix=r$prefix
++ prefix=rt_RS_
+for i in $ID; do
+  #inputs
+  in[$i]=${out[$i]}
+  inpath[$i]=${outpath[$i]}
+  #outputs
+  out[$i]=$prefix$i.nii
+  out_2[$i]="$prefix"mc_$i.1d
+  out_3[$i]="$prefix"mcplot_$i.jpg
+  outpath[$i]=DATA/$i/motion_correction/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dvolreg \
+    -prefix ${out[$i]} \
+    -base 100 \
+    -zpad 2 \
+    -twopass \
+    -Fourier \
+    -verbose \
+    -1Dfile ${out_2[$i]} \
+    ${in[$i]} && \
+    1dplot \
+    -jpg ${out_3[$i]} \
+    -volreg -dx $((TR / 1000)) \
+    -xlabel Time \
+    -thick \
+    ${out_2[$i]} &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! \n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+  fi; close.node
+  log "Motion Correction "
+done
++ for i in '$ID'
++ in[$i]=t_RS_C000917.nii
++ inpath[$i]=DATA/C000917/slice_correction/
++ out[$i]=rt_RS_C000917.nii
++ out_2[$i]=rt_RS_mc_C000917.1d
++ out_3[$i]=rt_RS_mcplot_C000917.jpg
++ outpath[$i]=DATA/C000917/motion_correction/
++ echo -n 'C000917> '
+C000917> + open.node
++ '[' -d DATA/C000917/motion_correction/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/C000917/slice_correction/t_RS_C000917.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/C000917/motion_correction/rt_RS_C000917.nii ']'
++ d=1
++ '[' DATA/C000917/motion_correction/rt_RS_C000917.nii -ot DATA/C000917/slice_correction/t_RS_C000917.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/C000917/motion_correction/rt_RS_mc_C000917.1d ']'
++ d=2
++ '[' DATA/C000917/motion_correction/rt_RS_mc_C000917.1d -ot DATA/C000917/slice_correction/t_RS_C000917.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/C000917/motion_correction/rt_RS_mcplot_C000917.jpg ']'
++ b=1
++ '[' 0 -eq 0 ']'
++ '[' 1 -eq 0 ']'
++ '[' '!' 2 -eq 0 ']'
++ echo 'OUTPUT CORROMPIDO. REFAZENDO ANÁLISE.'
+OUTPUT CORROMPIDO. REFAZENDO ANÁLISE.
++ for ii in '${out[@]}'
++ rm DATA/C000917/motion_correction/t_RS_P001543.nii
++ for ii in '${out[@]}'
++ rm DATA/C000917/motion_correction/t_RS_T000001.nii
++ for ii in '${out[@]}'
++ rm DATA/C000917/motion_correction/rt_RS_C000917.nii
++ for ii in '${out[@]}'
++ rm DATA/C000917/motion_correction/t_RS_P001562.nii
++ '[' 1 -eq 1 ']'
++ cd DATA/C000917/slice_correction/
++ '[' 1 -eq 1 ']'
++ 3dvolreg -prefix rt_RS_C000917.nii -base 100 -zpad 2 -twopass -Fourier -verbose -1Dfile rt_RS_mc_C000917.1d t_RS_C000917.nii
+++ 3dvolreg: AFNI version=AFNI_2011_12_21_1014 (Mar  6 2016) [64-bit]
+++ Authored by: RW Cox
+*+ WARNING:   If you are performing spatial transformations on an oblique dset, 
+  such as t_RS_C000917.nii,
+  or viewing/combining it with volumes of differing obliquity,
+  you should consider running: 
+     3dWarp -deoblique 
+  on this and  other oblique datasets in the same session.
+ See 3dWarp -help for details.
+++ Oblique dataset:t_RS_C000917.nii is 5.648023 degrees from plumb.
+++ Coarse del was 10, replaced with 3
+++ Reading input dataset t_RS_C000917.nii
+
+Fatal Signal 2 (SIGINT) received
+Last STATUS: calling nifti_image_read_bricks
+    THD_load_nifti
+   THD_load_datablock
+  3dvolreg main
+ Bottom of Debug Stack
+** AFNI version = AFNI_2011_12_21_1014  Compile date = Mar  6 2016
+** [[Precompiled binary =Debian-x86_64-1-gnu: Mar  6 2016]]
+** Program Abort **
++ printf 'Houve um erro no processamento da imagem %s, consulte o log %s. ' C000917 rt_RS_C000917.log
+Houve um erro no processamento da imagem C000917, consulte o log rt_RS_C000917.log. + close.node
++ local e=0
++ '[' 1 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv 'DATA/C000917/slice_correction/rt_RS_*' DATA/C000917/motion_correction/
+mv: cannot stat ‘DATA/C000917/slice_correction/rt_RS_*’: No such file or directory
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/C000917/motion_correction/rt_RS_C000917.nii ']'
++ e=1
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/C000917/motion_correction/rt_RS_mc_C000917.1d ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/C000917/motion_correction/rt_RS_mcplot_C000917.jpg ']'
++ e=2
++ '[' '!' 2 -eq 0 ']'
++ echo 'OUTPUT CORROMPIDO. CONSULTE O LOG.'
+OUTPUT CORROMPIDO. CONSULTE O LOG.
++ ex=1
+ find "${inpath[$i]}" -name "$prefix*" 
+++ find DATA/C000917/slice_correction/ -name 'rt_RS_*'
++ local files=
++ log 'Motion Correction '
++ '[' 1 -eq 1 ']'
++ echo
+date
+++ date
++ echo 'ETAPA: Motion Correction   - RUNTIME: Thu Dec  8 18:26:09 BRST 2016'
++ echo
++ echo 'PREFIX: rt_RS_'
++ echo 'INPUT PATH: DATA/C000917/slice_correction/ '
++ echo 'INPUTS: t_RS_C000917.nii   '
++ echo 'OUTPUT PATH: DATA/C000917/motion_correction/'
++ echo 'OUTPUTS: rt_RS_C000917.nii rt_RS_mc_C000917.1d rt_RS_mcplot_C000917.jpg '
++ echo
++ cat DATA/C000917/motion_correction/rt_RS_C000917.log
++ for i in '$ID'
++ in[$i]=t_RS_P001543.nii
++ inpath[$i]=DATA/P001543/slice_correction/
++ out[$i]=rt_RS_P001543.nii
++ out_2[$i]=rt_RS_mc_P001543.1d
++ out_3[$i]=rt_RS_mcplot_P001543.jpg
++ outpath[$i]=DATA/P001543/motion_correction/
++ echo -n 'P001543> '
+P001543> + open.node
++ '[' -d DATA/P001543/motion_correction/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001543/slice_correction/t_RS_P001543.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001543/motion_correction/rt_RS_P001543.nii ']'
++ d=1
++ '[' DATA/P001543/motion_correction/rt_RS_P001543.nii -ot DATA/P001543/slice_correction/t_RS_P001543.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001543/motion_correction/rt_RS_mc_P001543.1d ']'
++ d=2
++ '[' DATA/P001543/motion_correction/rt_RS_mc_P001543.1d -ot DATA/P001543/slice_correction/t_RS_P001543.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001543/motion_correction/rt_RS_mcplot_P001543.jpg ']'
++ b=1
++ '[' 0 -eq 0 ']'
++ '[' 1 -eq 0 ']'
++ '[' '!' 2 -eq 0 ']'
++ echo 'OUTPUT CORROMPIDO. REFAZENDO ANÁLISE.'
+OUTPUT CORROMPIDO. REFAZENDO ANÁLISE.
++ for ii in '${out[@]}'
++ rm DATA/P001543/motion_correction/rt_RS_P001543.nii
++ for ii in '${out[@]}'
++ rm DATA/P001543/motion_correction/t_RS_T000001.nii
++ for ii in '${out[@]}'
++ rm DATA/P001543/motion_correction/rt_RS_C000917.nii
++ for ii in '${out[@]}'
++ rm DATA/P001543/motion_correction/t_RS_P001562.nii
++ '[' 1 -eq 1 ']'
++ cd DATA/P001543/slice_correction/
++ '[' 1 -eq 1 ']'
++ 3dvolreg -prefix rt_RS_P001543.nii -base 100 -zpad 2 -twopass -Fourier -verbose -1Dfile rt_RS_mc_P001543.1d t_RS_P001543.nii
+++ 3dvolreg: AFNI version=AFNI_2011_12_21_1014 (Mar  6 2016) [64-bit]
+++ Authored by: RW Cox
+*+ WARNING:   If you are performing spatial transformations on an oblique dset, 
+  such as t_RS_P001543.nii,
+  or viewing/combining it with volumes of differing obliquity,
+  you should consider running: 
+     3dWarp -deoblique 
+  on this and  other oblique datasets in the same session.
+ See 3dWarp -help for details.
+++ Oblique dataset:t_RS_P001543.nii is 15.935398 degrees from plumb.
+++ Coarse del was 10, replaced with 4
+++ Reading input dataset t_RS_P001543.nii
+
+Fatal Signal 2 (SIGINT) received
+  3dvolreg main
+ Bottom of Debug Stack
+** AFNI version = AFNI_2011_12_21_1014  Compile date = Mar  6 2016
+** [[Precompiled binary =Debian-x86_64-1-gnu: Mar  6 2016]]
+** Program Abort **
+
+Fatal Signal 2 (SIGINT) received
+Last STATUS: calling nifti_image_read_bricks
+    THD_load_nifti
+   THD_load_datablock
+  3dvolreg main
+ Bottom of Debug Stack
+** AFNI version = AFNI_2011_12_21_1014  Compile date = Mar  6 2016
+** [[Precompiled binary =Debian-x86_64-1-gnu: Mar  6 2016]]
+** Program Abort **
++ printf 'Houve um erro no processamento da imagem %s, consulte o log %s. ' P001543 rt_RS_P001543.log
+Houve um erro no processamento da imagem P001543, consulte o log rt_RS_P001543.log. + close.node
++ local e=0
++ '[' 1 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv 'DATA/P001543/slice_correction/rt_RS_*' DATA/P001543/motion_correction/
+mv: cannot stat ‘DATA/P001543/slice_correction/rt_RS_*’: No such file or directory
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/P001543/motion_correction/rt_RS_P001543.nii ']'
++ e=1
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/P001543/motion_correction/rt_RS_mc_P001543.1d ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/P001543/motion_correction/rt_RS_mcplot_P001543.jpg ']'
++ e=2
++ '[' '!' 2 -eq 0 ']'
++ echo 'OUTPUT CORROMPIDO. CONSULTE O LOG.'
+OUTPUT CORROMPIDO. CONSULTE O LOG.
++ ex=1
+ find "${inpath[$i]}" -name "$prefix*" 
+++ find DATA/P001543/slice_correction/ -name 'rt_RS_*'
++ local files=
++ log 'Motion Correction '
++ '[' 1 -eq 1 ']'
++ echo
+date
+++ date
++ echo 'ETAPA: Motion Correction   - RUNTIME: Thu Dec  8 18:26:09 BRST 2016'
++ echo
++ echo 'PREFIX: rt_RS_'
++ echo 'INPUT PATH: DATA/P001543/slice_correction/ '
++ echo 'INPUTS: t_RS_P001543.nii   '
++ echo 'OUTPUT PATH: DATA/P001543/motion_correction/'
++ echo 'OUTPUTS: rt_RS_P001543.nii rt_RS_mc_P001543.1d rt_RS_mcplot_P001543.jpg '
++ echo
++ cat DATA/P001543/motion_correction/rt_RS_P001543.log
++ for i in '$ID'
++ in[$i]=t_RS_P001562.nii
++ inpath[$i]=DATA/P001562/slice_correction/
++ out[$i]=rt_RS_P001562.nii
++ out_2[$i]=rt_RS_mc_P001562.1d
++ out_3[$i]=rt_RS_mcplot_P001562.jpg
++ outpath[$i]=DATA/P001562/motion_correction/
++ echo -n 'P001562> '
+P001562> + open.node
++ '[' -d DATA/P001562/motion_correction/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001562/slice_correction/t_RS_P001562.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001562/motion_correction/rt_RS_P001562.nii ']'
++ d=1
++ '[' DATA/P001562/motion_correction/rt_RS_P001562.nii -ot DATA/P001562/slice_correction/t_RS_P001562.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001562/motion_correction/rt_RS_mc_P001562.1d ']'
++ d=2
++ '[' DATA/P001562/motion_correction/rt_RS_mc_P001562.1d -ot DATA/P001562/slice_correction/t_RS_P001562.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001562/motion_correction/rt_RS_mcplot_P001562.jpg ']'
++ b=1
++ '[' 0 -eq 0 ']'
++ '[' 1 -eq 0 ']'
++ '[' '!' 2 -eq 0 ']'
++ echo 'OUTPUT CORROMPIDO. REFAZENDO ANÁLISE.'
+OUTPUT CORROMPIDO. REFAZENDO ANÁLISE.
++ for ii in '${out[@]}'
++ rm DATA/P001562/motion_correction/rt_RS_P001543.nii
++ for ii in '${out[@]}'
++ rm DATA/P001562/motion_correction/t_RS_T000001.nii
++ for ii in '${out[@]}'
++ rm DATA/P001562/motion_correction/rt_RS_C000917.nii
++ for ii in '${out[@]}'
++ rm DATA/P001562/motion_correction/rt_RS_P001562.nii
++ '[' 1 -eq 1 ']'
++ cd DATA/P001562/slice_correction/
++ '[' 1 -eq 1 ']'
++ 3dvolreg -prefix rt_RS_P001562.nii -base 100 -zpad 2 -twopass -Fourier -verbose -1Dfile rt_RS_mc_P001562.1d t_RS_P001562.nii
+++ 3dvolreg: AFNI version=AFNI_2011_12_21_1014 (Mar  6 2016) [64-bit]
+++ Authored by: RW Cox
+*+ WARNING:   If you are performing spatial transformations on an oblique dset, 
+  such as t_RS_P001562.nii,
+  or viewing/combining it with volumes of differing obliquity,
+  you should consider running: 
+     3dWarp -deoblique 
+  on this and  other oblique datasets in the same session.
+ See 3dWarp -help for details.
+++ Oblique dataset:t_RS_P001562.nii is 10.300989 degrees from plumb.
+++ Coarse del was 10, replaced with 4
+++ Reading input dataset t_RS_P001562.nii
+
+Fatal Signal 2 (SIGINT) received
+  3dvolreg main
+ Bottom of Debug Stack
+** AFNI version = AFNI_2011_12_21_1014  Compile date = Mar  6 2016
+** [[Precompiled binary =Debian-x86_64-1-gnu: Mar  6 2016]]
+** Program Abort **
+
+Fatal Signal 2 (SIGINT) received
+Last STATUS: calling nifti_image_read_bricks
+    THD_load_nifti
+   THD_load_datablock
+  3dvolreg main
+ Bottom of Debug Stack
+** AFNI version = AFNI_2011_12_21_1014  Compile date = Mar  6 2016
+** [[Precompiled binary =Debian-x86_64-1-gnu: Mar  6 2016]]
+** Program Abort **
++ printf 'Houve um erro no processamento da imagem %s, consulte o log %s. ' P001562 rt_RS_P001562.log
+Houve um erro no processamento da imagem P001562, consulte o log rt_RS_P001562.log. + close.node
++ local e=0
++ '[' 1 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv 'DATA/P001562/slice_correction/rt_RS_*' DATA/P001562/motion_correction/
+mv: cannot stat ‘DATA/P001562/slice_correction/rt_RS_*’: No such file or directory
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/P001562/motion_correction/rt_RS_P001562.nii ']'
++ e=1
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/P001562/motion_correction/rt_RS_mc_P001562.1d ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/P001562/motion_correction/rt_RS_mcplot_P001562.jpg ']'
++ e=2
++ '[' '!' 2 -eq 0 ']'
++ echo 'OUTPUT CORROMPIDO. CONSULTE O LOG.'
+OUTPUT CORROMPIDO. CONSULTE O LOG.
++ ex=1
+ find "${inpath[$i]}" -name "$prefix*" 
+++ find DATA/P001562/slice_correction/ -name 'rt_RS_*'
++ local files=
++ log 'Motion Correction '
++ '[' 1 -eq 1 ']'
++ echo
+date
+++ date
++ echo 'ETAPA: Motion Correction   - RUNTIME: Thu Dec  8 18:26:10 BRST 2016'
++ echo
++ echo 'PREFIX: rt_RS_'
++ echo 'INPUT PATH: DATA/P001562/slice_correction/ '
++ echo 'INPUTS: t_RS_P001562.nii   '
++ echo 'OUTPUT PATH: DATA/P001562/motion_correction/'
++ echo 'OUTPUTS: rt_RS_P001562.nii rt_RS_mc_P001562.1d rt_RS_mcplot_P001562.jpg '
++ echo
++ cat DATA/P001562/motion_correction/rt_RS_P001562.log
++ for i in '$ID'
++ in[$i]=t_RS_T000001.nii
++ inpath[$i]=DATA/T000001/slice_correction/
++ out[$i]=rt_RS_T000001.nii
++ out_2[$i]=rt_RS_mc_T000001.1d
++ out_3[$i]=rt_RS_mcplot_T000001.jpg
++ outpath[$i]=DATA/T000001/motion_correction/
++ echo -n 'T000001> '
+T000001> + open.node
++ '[' -d DATA/T000001/motion_correction/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/T000001/slice_correction/t_RS_T000001.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/T000001/motion_correction/rt_RS_T000001.nii ']'
++ d=1
++ '[' DATA/T000001/motion_correction/rt_RS_T000001.nii -ot DATA/T000001/slice_correction/t_RS_T000001.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/T000001/motion_correction/rt_RS_mc_T000001.1d ']'
++ d=2
++ '[' DATA/T000001/motion_correction/rt_RS_mc_T000001.1d -ot DATA/T000001/slice_correction/t_RS_T000001.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/T000001/motion_correction/rt_RS_mcplot_T000001.jpg ']'
++ b=1
++ '[' 0 -eq 0 ']'
++ '[' 1 -eq 0 ']'
++ '[' '!' 2 -eq 0 ']'
++ echo 'OUTPUT CORROMPIDO. REFAZENDO ANÁLISE.'
+OUTPUT CORROMPIDO. REFAZENDO ANÁLISE.
++ for ii in '${out[@]}'
++ rm DATA/T000001/motion_correction/rt_RS_P001543.nii
++ for ii in '${out[@]}'
++ rm DATA/T000001/motion_correction/rt_RS_T000001.nii
++ for ii in '${out[@]}'
++ rm DATA/T000001/motion_correction/rt_RS_C000917.nii
++ for ii in '${out[@]}'
++ rm DATA/T000001/motion_correction/rt_RS_P001562.nii
++ '[' 1 -eq 1 ']'
++ cd DATA/T000001/slice_correction/
++ '[' 1 -eq 1 ']'
++ 3dvolreg -prefix rt_RS_T000001.nii -base 100 -zpad 2 -twopass -Fourier -verbose -1Dfile rt_RS_mc_T000001.1d t_RS_T000001.nii
+++ 3dvolreg: AFNI version=AFNI_2011_12_21_1014 (Mar  6 2016) [64-bit]
+++ Authored by: RW Cox
+*+ WARNING:   If you are performing spatial transformations on an oblique dset, 
+  such as t_RS_T000001.nii,
+  or viewing/combining it with volumes of differing obliquity,
+  you should consider running: 
+     3dWarp -deoblique 
+  on this and  other oblique datasets in the same session.
+ See 3dWarp -help for details.
+++ Oblique dataset:t_RS_T000001.nii is 8.347956 degrees from plumb.
+++ Coarse del was 10, replaced with 4
+++ Reading input dataset t_RS_T000001.nii
+
+Fatal Signal 2 (SIGINT) received
+  3dvolreg main
+ Bottom of Debug Stack
+** AFNI version = AFNI_2011_12_21_1014  Compile date = Mar  6 2016
+** [[Precompiled binary =Debian-x86_64-1-gnu: Mar  6 2016]]
+** Program Abort **
+
+Fatal Signal 2 (SIGINT) received
+Last STATUS: calling nifti_image_read_bricks
+    THD_load_nifti
+   THD_load_datablock
+  3dvolreg main
+ Bottom of Debug Stack
+** AFNI version = AFNI_2011_12_21_1014  Compile date = Mar  6 2016
+** [[Precompiled binary =Debian-x86_64-1-gnu: Mar  6 2016]]
+** Program Abort **
++ printf 'Houve um erro no processamento da imagem %s, consulte o log %s. ' T000001 rt_RS_T000001.log
+Houve um erro no processamento da imagem T000001, consulte o log rt_RS_T000001.log. + close.node
++ local e=0
++ '[' 1 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv 'DATA/T000001/slice_correction/rt_RS_*' DATA/T000001/motion_correction/
+mv: cannot stat ‘DATA/T000001/slice_correction/rt_RS_*’: No such file or directory
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/T000001/motion_correction/rt_RS_T000001.nii ']'
++ e=1
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/T000001/motion_correction/rt_RS_mc_T000001.1d ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/T000001/motion_correction/rt_RS_mcplot_T000001.jpg ']'
++ e=2
++ '[' '!' 2 -eq 0 ']'
++ echo 'OUTPUT CORROMPIDO. CONSULTE O LOG.'
+OUTPUT CORROMPIDO. CONSULTE O LOG.
++ ex=1
+ find "${inpath[$i]}" -name "$prefix*" 
+++ find DATA/T000001/slice_correction/ -name 'rt_RS_*'
++ local files=
++ log 'Motion Correction '
++ '[' 1 -eq 1 ']'
++ echo
+date
+++ date
++ echo 'ETAPA: Motion Correction   - RUNTIME: Thu Dec  8 18:26:10 BRST 2016'
++ echo
++ echo 'PREFIX: rt_RS_'
++ echo 'INPUT PATH: DATA/T000001/slice_correction/ '
++ echo 'INPUTS: t_RS_T000001.nii   '
++ echo 'OUTPUT PATH: DATA/T000001/motion_correction/'
++ echo 'OUTPUTS: rt_RS_T000001.nii rt_RS_mc_T000001.1d rt_RS_mcplot_T000001.jpg '
++ echo
++ cat DATA/T000001/motion_correction/rt_RS_T000001.log
+input.error
++ input.error
++ '[' 1 -eq 1 ']'
 + exit

@@ -95,7 +95,7 @@ input.error () {
 open.node () {
   [ -d ${outpath[$i]} ] || mkdir ${outpath[$i]}
   #
-  local a=0; local b=0; local c=0; local d=0; local e=0; local v=0
+  local a=0; local b=0; local c=0; local d=0; local v=0
   ex=0; go=1
   #
   for ii in ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}; do
@@ -118,14 +118,14 @@ open.node () {
   #
     if [ $b -eq 0 ]; then 
       if [ ! $c -eq 0 ]; then
-        for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do rm ${outpath[$i]}$iii; done
+        for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do rm ${outpath[$i]}$iii 2> /dev/null; done
       else
-          echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0
+          echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0; ex=0
       fi
     else
         if [ ! $d -eq 0 ]; then
             echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
-            for ii in ${out[@]}; do rm ${outpath[$i}$ii; done
+            for ii in ${out[@]}; do rm ${outpath[$i]}$ii 2> /dev/null; done
         fi
     fi
     #
@@ -139,6 +139,7 @@ open.node () {
 }
 
 close.node () {
+  local e=0
   if [ $go -eq 1 ]; then  
     cd $pwd
     mv ${inpath[$i]}$prefix* ${outpath[$i]}
@@ -146,9 +147,7 @@ close.node () {
       [ -f ${outpath[$i]}$iii ] ||  e=$((e + 1)) 
     done
     # 
-    [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG."
-  else
-    ex=$((ex + 1)) 
+    [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG." && ex=$((ex + 1)) 
   fi
 
  local files=$( find "${inpath[$i]}" -name "$prefix*" )
@@ -157,6 +156,20 @@ close.node () {
   done
 }
 
+log () {
+if [ $go -eq 1 ]; then
+  echo >> DATA/preproc_$i.log
+  echo "ETAPA: $1  - RUNTIME: $(date)" >> DATA/preproc_$i.log
+  echo >> DATA/preproc_$i.log
+  echo "PREFIX: $prefix" >> DATA/preproc_$i.log
+  echo "INPUT PATH: ${inpath[$i]} "  >> DATA/preproc_$i.log
+  echo "INPUTS: ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}" >>DATA/preproc_$i.log
+  echo "OUTPUT PATH: ${outpath[$i]}" >> DATA/preproc_$i.log
+  echo "OUTPUTS: ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}" >> DATA/preproc_$i.log
+  echo >> DATA/preproc_$i.log
+  cat ${outpath[$i]}$prefix$i.log >> DATA/preproc_$i.log
+fi
+}
 # ==============================================================================
 
 
@@ -268,7 +281,9 @@ for i in $ID; do
     printf " RS" 
   else echo " (RS não encontrado)"; a=$((a + 1)) 
   fi
-  [ $(find . -name "*t*$i.nii") ] && printf " stc"
+  [ $(find . -name "z_RS_$i.nii") ] && printf " aztec"
+  [ $(find . -name "t*_RS_$i.nii") ] && printf " stc"
+  [ $(find . -name "rt*_RS_$i.nii") ] && printf " mc"
   printf "\n"
 done
 echo
@@ -299,7 +314,6 @@ declare -A in in_2 in_3 in_4 in_5
 declare -A inpath
 declare -A out out_2 out_3 ou_4 out_5
 declare -A outpath
-
 for i in $ID; do
 out[$i]=RS_$i.nii
 outpath[$i]=DATA/$i/
@@ -332,9 +346,10 @@ if [ $aztec -eq 1 ]; then
    #  rm 3d/3d* && \
    #  3dTcat -prefix ${out[$i]} -TR $((TR/1000)) 3d/aztec* && \
    #  rm 3d/aztec* 3d azt* && \ 
-      &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! " "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+      &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! \n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
       #
     fi; close.node
+    log "Aztec"
   done
   input.error
   echo
@@ -359,56 +374,52 @@ for i in $ID; do
       -tpattern $ptn \
       -prefix ${out[$i]} \
       -Fourier \
-      ${in[$i]} &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! " "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+      ${in[$i]} &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! \n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
     #
   fi; close.node
+  log "Slice Timing Correction"
 done
 input.error
 echo
-
-exit
-
 
 # MOTION CORRECTION============================================================
 printf "\n=========================MOTION CORRECTION=======================\n\n"
 pwd=($PWD)
 prefix=r$prefix
 for i in $ID; do
-  in=$old_prefix$i.nii
-  out=$prefix$i.nii
-  out[2]="$prefix"mc_$i.1d
-  inpath=DATA/$i/slice_correction/
-  outpath=DATA/$i/motion_correction/
+  #inputs
+  in[$i]=${out[$i]}
+  inpath[$i]=${outpath[$i]}
+  #outputs
+  out[$i]=$prefix$i.nii
+  out_2[$i]="$prefix"mc_$i.1d
+  out_3[$i]="$prefix"mcplot_$i.jpg
+  outpath[$i]=DATA/$i/motion_correction/
   echo -n "$i> "
-  node "3dvolreg \
-  -prefix ${out[$i]} \
-  -base 100 \
-  -zpad 2 \
-  -twopass \
-  -Fourier \
-  -verbose \
-  -1Dfile ${out[2]} \
-  ${in[$i]}"
+  open.node; if [ $go -eq 1 ]; then
+    3dvolreg \
+    -prefix ${out[$i]} \
+    -base 100 \
+    -zpad 2 \
+    -twopass \
+    -Fourier \
+    -verbose \
+    -1Dfile ${out_2[$i]} \
+    ${in[$i]} &>> $prefix$i.log && \
+    1dplot \
+    -jpg ${out_3[$i]} \
+    -volreg -dx $((TR / 1000)) \
+    -xlabel Time \
+    -thick \
+    ${out_2[$i]} &>> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! \n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+  fi; close.node
+  log "Motion Correction "
 done
+input.error
+echo
 exit # <<=======================================================================
 
-#===============================================================================
-#===============================================================================
 
-
-### MOTION CORRECTION QUALITY CONTROL
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Aplicando Check Motion Correction às imagens ==========="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando CMC em $i..."
-  1dplot motioncorrection_"$i".1d
-  #read -p "Aperte enter para continuar..."
-done
 
 ## DEOBLIQUE: T1 e RS
 cd "$pathpi"

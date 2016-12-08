@@ -23,14 +23,15 @@ Abaixo exemplo de como rodar o script. Ele usa a pasta onde é rodado como base 
 ```bash
 ./preproc.sh --config preproc.cfg --subs preproc.sbj 
 ```
-Caso tenha algum problema e queira fazer Debug execute como especificado abaixo e envie o log para nós:
+Caso tenha algum problema e queira fazer o Debug, execute como especificado abaixo e envie o log para nós:
 
 ```bash
-bash -vxn ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
+bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
 ```
 
 ## Limitações
 
+- Script não checa os pré-requisitos dentro do matlab - SPM e aztec. (Bug #8)
 - Script não checa atualizações nas variáveis definidas nas configurações. Caso mude uma das configurações deve-se apagar o output da etapa a que a configuração se refere. (Bug #6)
 - Opção -a e etapa aztec não funciona. (Bug #7)
     - 1o) qual dos arquivos de log deve-se usar? 

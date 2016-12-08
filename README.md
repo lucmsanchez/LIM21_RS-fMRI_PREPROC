@@ -13,8 +13,8 @@ Esse protocolo ainda está em desenvolvimento.
 - FSL v5.0 (https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/)
 - R v3.3.2 (https://www.r-project.org/)
 - Matlab (https://www.mathworks.com/)
-        SPM5 (www.fil.ion.ucl.ac.uk/spm/software/spm5/)
-        aztec v2.0 (http://www.ni-utrecht.nl/downloads/aztec)
+        - SPM5 (http://wwww.fil.ion.ucl.ac.uk/spm/software/spm5/)
+        - aztec v2.0 (http://www.ni-utrecht.nl/downloads/aztec)
 
 ## Uso
 

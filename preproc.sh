@@ -265,7 +265,7 @@ for i in $ID; do
     printf " RS" 
   else echo " (RS não encontrado)"; a=$((a + 1)) 
   fi
-  [ $(find . -name "t_RS_$i.nii") ] && printf " stc"
+  [ $(find . -name "*t*$i.nii") ] && printf " stc"
   printf "\n"
 done
 echo
@@ -291,16 +291,18 @@ if [ ! $a -eq 0 ]; then
   echo
 fi
 
+prefix=_RS_
+
 # AZTEC========================================================================
 if [ $aztec -eq 1 ]; then
   printf "=============================AZTEC==================================\n\n"
   pwd=($PWD)
+  prefix=z$prefix
   for i in $ID; do
-    prefix=z_RS_
     in=RS_$i.nii
     in[2]=RS_$i.log
-    out=$prefix$i.nii
     inpath=DATA/$i/
+    out=$prefix$i.nii
     outpath=DATA/$i/aztec/
     echo -n "$i> "
     open.node; if [ $go -eq 1 ]; then
@@ -309,40 +311,44 @@ if [ $aztec -eq 1 ]; then
    #  fsl5.0-fslsplit $in 3d_"$i"_ -t && \
    #  mv 3d_"$i"* 3d && \
    #  gunzip 3d/3d_$i_* && \
+      echo "try aztec(); catch; end" > azt_script.m && \
    #  echo "try aztec('${in[2]}',files ,500,$TR,1,$hp,'/3d') catch  quit" > azt_script.m
-   #  matlab -nodisplay -nodesktop -r "run azt_script.m" 
+      matlab -nosplash -r "run azt_script.m" \
    #  rm 3d/3d* && \
-   #  3dTcat -prefix $out -TR $TR 3d/aztec* && \
-   #  rm 3d/aztec* 3d && \ 
-      &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso!\n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+   #  3dTcat -prefix $out -TR $((TR/1000)) 3d/aztec* && \
+   #  rm 3d/aztec* 3d azt* && \ 
+      &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! " "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
       #
     fi; close.node
+    unset in out inpath outpath 
   done
   input.error
   echo
 fi
-exit 
 
 # SLICE TIMING CORRECTION=======================================================
 printf "=======================SLICE TIMING CORRECTION====================\n\n"
 pwd=($PWD)
+prefix=t$prefix
 for i in $ID; do
-  prefix=t_RS_
   in=RS_$i.nii
   out=$prefix$i.nii
   inpath=DATA/$i/
   outpath=DATA/$i/slice_correction/
   echo -n "$i> "
-  node "3dTshift \
-    -verbose \
-    -tpattern $ptn \
-    -prefix $out \
-    -Fourier \
-    $in"
-input.error
-organize.files
-unset prefix in out inpath outpath 
+  open.node; if [ $go -eq 1 ]; then
+    #
+    3dTshift \
+      -verbose \
+      -tpattern $ptn \
+      -prefix $out \
+      -Fourier \
+      $in &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! " "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+    #
+  fi; close.node
+  unset in out inpath outpath 
 done
+input.error
 echo
 
 exit

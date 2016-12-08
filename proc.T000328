@@ -14,7 +14,7 @@ echo "execution started: `date`"
 afni -ver
 
 # check that the current AFNI version is recent enough
-afni_history -check_date 7 Nov 2014
+afni_history -check_date 10 Dez 2016
 if ( $status ) then
     echo "** this script requires newer AFNI binaries (than 7 Nov 2014)"
     echo "   (consider: @update.afni.binaries -defaults)"

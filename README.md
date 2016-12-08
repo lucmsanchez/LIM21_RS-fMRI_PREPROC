@@ -31,8 +31,11 @@ bash -vxn ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
 
 ## Limitações
 
-- Script não checa atualizações nas variáveis definidas nas configurações. Caso mude uma das configurações deve-se apagar o output da etapa a que a configuração se refere.
-- Opção e etapa aztec não funciona. 1o) qual dos arquivos de log deve-se usar? 2o) Mesmo com o exemplo fornecido usado o GUI há erro. Incompatibilidade com a versão do matlab? 3o) Na tentativa de usar a função sem GUI é necessário especificar a variável highpass, que não é usado no GUI - como é possivel? que valores usar?
+- Script não checa atualizações nas variáveis definidas nas configurações. Caso mude uma das configurações deve-se apagar o output da etapa a que a configuração se refere.#6
+- Opção -a e etapa aztec não funciona. 
+    - 1o) qual dos arquivos de log deve-se usar? 
+    - 2o) Mesmo com o exemplo fornecido usado o GUI há erro. Incompatibilidade com a versão do matlab? 
+    - 3o) Na tentativa de usar a função sem GUI é necessário especificar a variável highpass, que não é usado no GUI - como é possivel? que valores usar?
  
 
 ## Atalhos

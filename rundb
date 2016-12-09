@@ -1,0 +1,1 @@
+bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log

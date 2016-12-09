@@ -181,7 +181,11 @@ close.node () {
       [ -f ${outpath[$i]}$iii ] ||  e=$((e + 1)) 
     done
     # 
-    [ ! $e -eq 0 ] && echo "OUTPUT CORROMPIDO. CONSULTE O LOG." && ex=$((ex + 1)) 
+    if [ ! $e -eq 0 ]; then
+     printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log" && ex=$((ex + 1))
+    else
+      printf "Processamento da imagem %s realizado com sucesso! \n" "$i"
+    fi
   fi
 
  local files=$( find "${inpath[$i]}" -name "$prefix*" )
@@ -202,7 +206,7 @@ get.info1() {
 }
 
 get.info2 () {
-  local image1=$2
+  local image1=$1
   local image2=$2
 
   #comparações
@@ -272,7 +276,7 @@ check matlab
 Protocolo de pré-processamento de RS-fMRI
 --------------------------------------
 
-RUNTIME: Thu Dec  8 22:36:55 BRST 2016
+RUNTIME: Fri Dec  9 09:27:47 BRST 2016
 
 Programas necessários:
 GNU bash           ...OK
@@ -468,9 +472,8 @@ find . -name "t*_RS_$i.nii"
 + printf ' stc'
  stcfind . -name "rt*_RS_$i.nii"
 ++ find . -name 'rt*_RS_C000917.nii'
-+ '[' ./DATA/C000917/motion_correction/rt_RS_C000917.nii ']'
-+ printf ' mc'
- mc+ printf '\n'
++ '[' ']'
++ printf '\n'
 
 + for i in '$ID'
 + echo -n 'P001543  ... '
@@ -716,7 +719,7 @@ if [ $aztec -eq 1 ]; then
    #  rm 3d/3d* && \
    #  3dTcat -prefix ${out[$i]} -TR $((TR/1000)) 3d/aztec* && \
    #  rm 3d/aztec* 3d azt* && \ 
-      &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! \n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+      &> $prefix$i.log 
       #
     fi; close.node
     log "Aztec"
@@ -750,7 +753,7 @@ for i in $ID; do
       -tpattern $ptn \
       -prefix ${out[$i]} \
       -Fourier \
-      ${in[$i]} &> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! \n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+      ${in[$i]} &> $prefix$i.log 
     #
   fi; close.node
   log "Slice Timing Correction"
@@ -969,7 +972,7 @@ for i in $ID; do
     -volreg -dx $((TR / 1000)) \
     -xlabel Time \
     -thick \
-    ${out_2[$i]} &>> $prefix$i.log && printf "Processamento da imagem %s realizado com sucesso! \n" "$i" || printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefix$i.log"
+    ${out_2[$i]} &>> $prefix$i.log 
   fi; close.node
   log "Motion Correction "
 done
@@ -994,33 +997,52 @@ C000917> + open.node
 + '[' '!' -f DATA/C000917/slice_correction/t_RS_C000917.nii ']'
 + for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
 + '[' '!' -f DATA/C000917/motion_correction/rt_RS_C000917.nii ']'
-+ d=1
-+ '[' DATA/C000917/motion_correction/rt_RS_C000917.nii -ot DATA/C000917/slice_correction/t_RS_C000917.nii ']'
++ b=1
 + for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
 + '[' '!' -f DATA/C000917/motion_correction/rt_RS_mc_C000917.1d ']'
-+ d=2
-+ '[' DATA/C000917/motion_correction/rt_RS_mc_C000917.1d -ot DATA/C000917/slice_correction/t_RS_C000917.nii ']'
++ b=2
 + for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
 + '[' '!' -f DATA/C000917/motion_correction/rt_RS_mcplot_C000917.jpg ']'
-+ d=3
-+ '[' DATA/C000917/motion_correction/rt_RS_mcplot_C000917.jpg -ot DATA/C000917/slice_correction/t_RS_C000917.nii ']'
++ b=3
 + '[' 0 -eq 0 ']'
-+ '[' 0 -eq 0 ']'
++ '[' 3 -eq 0 ']'
 + '[' '!' 0 -eq 0 ']'
-+ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
-OUTPUT JÁ EXISTE. PROSSEGUINDO.
-+ go=0
-+ ex=0
-+ '[' 0 -eq 1 ']'
-+ '[' 0 -eq 1 ']'
++ '[' 1 -eq 1 ']'
++ cd DATA/C000917/slice_correction/
++ '[' 1 -eq 1 ']'
++ 3dvolreg -prefix rt_RS_C000917.nii -base 100 -zpad 2 -twopass -Fourier -verbose -1Dfile rt_RS_mc_C000917.1d t_RS_C000917.nii
++ 1dplot -jpg rt_RS_mcplot_C000917.jpg -volreg -dx 2 -xlabel Time -thick rt_RS_mc_C000917.1d
 + close.node
 + local e=0
-+ '[' 0 -eq 1 ']'
++ '[' 1 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv DATA/C000917/slice_correction/rt_RS_C000917.log DATA/C000917/slice_correction/rt_RS_C000917.nii DATA/C000917/slice_correction/rt_RS_mc_C000917.1d DATA/C000917/slice_correction/rt_RS_mcplot_C000917.jpg DATA/C000917/motion_correction/
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/C000917/motion_correction/rt_RS_C000917.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/C000917/motion_correction/rt_RS_mc_C000917.1d ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f DATA/C000917/motion_correction/rt_RS_mcplot_C000917.jpg ']'
++ '[' '!' 0 -eq 0 ']'
++ printf 'Processamento da imagem %s realizado com sucesso! \n' C000917
+Processamento da imagem C000917 realizado com sucesso! 
  find "${inpath[$i]}" -name "$prefix*" 
 ++ find DATA/C000917/slice_correction/ -name 'rt_RS_*'
 + local files=
 + log 'Motion Correction '
-+ '[' 0 -eq 1 ']'
++ '[' 1 -eq 1 ']'
++ echo
+date
+++ date
++ echo 'ETAPA: Motion Correction   - RUNTIME: Fri Dec  9 09:30:48 BRST 2016'
++ echo
++ echo 'PREFIX: rt_RS_'
++ echo 'INPUT PATH: DATA/C000917/slice_correction/ '
++ echo 'INPUTS: t_RS_C000917.nii   '
++ echo 'OUTPUT PATH: DATA/C000917/motion_correction/'
++ echo 'OUTPUTS: rt_RS_C000917.nii rt_RS_mc_C000917.1d rt_RS_mcplot_C000917.jpg '
++ echo
++ cat DATA/C000917/motion_correction/rt_RS_C000917.log
 + for i in '$ID'
 + in[$i]=t_RS_P001543.nii
 + inpath[$i]=DATA/P001543/slice_correction/
@@ -1171,388 +1193,6 @@ input.error
 echo
 + echo
 
- # <<=======================================================================
 
-# GET INFO====================================================================
-printf "\n=========================GET INFO=======================\n\n"
-+ printf '\n=========================GET INFO=======================\n\n'
-
-=========================GET INFO=======================
-
-pwd=($PWD)
-+ pwd=($PWD)
-echo "RS_ID>   space  oblique   prefix           tr      smode  orient"
-+ echo 'RS_ID>   space  oblique   prefix           tr      smode  orient'
-RS_ID>   space  oblique   prefix           tr      smode  orient
-for i in $ID; do
-  #inputs
-  cd ${outpath[$i]}
-  get.info1 "${out[$i]}"
-  echo -n "$i> "
-  echo $space "   " $is_oblique "   " $afniprefix $tr $smode "" $orient
-  cd $pwd
-done
-+ for i in '$ID'
-+ cd DATA/C000917/motion_correction/
-+ get.info1 rt_RS_C000917.nii
-+ local image=rt_RS_C000917.nii
-3dinfo -space $image
-++ 3dinfo -space rt_RS_C000917.nii
-+ space=ORIG
-3dinfo -is_oblique $image
-++ 3dinfo -is_oblique rt_RS_C000917.nii
-+ is_oblique=1
-3dinfo -prefix $image
-++ 3dinfo -prefix rt_RS_C000917.nii
-+ afniprefix=rt_RS_C000917.nii
-3dinfo -tr $image
-++ 3dinfo -tr rt_RS_C000917.nii
-+ tr=2.000000
-3dinfo -smode $image
-++ 3dinfo -smode rt_RS_C000917.nii
-+ smode=NIFTI
-3dinfo -orient $image
-++ 3dinfo -orient rt_RS_C000917.nii
-+ orient=RAI
-+ echo -n 'C000917> '
-C000917> + echo ORIG '   ' 1 '   ' rt_RS_C000917.nii 2.000000 NIFTI '' RAI
-ORIG     1     rt_RS_C000917.nii 2.000000 NIFTI  RAI
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ for i in '$ID'
-+ cd DATA/P001543/motion_correction/
-+ get.info1 rt_RS_P001543.nii
-+ local image=rt_RS_P001543.nii
-3dinfo -space $image
-++ 3dinfo -space rt_RS_P001543.nii
-+ space=ORIG
-3dinfo -is_oblique $image
-++ 3dinfo -is_oblique rt_RS_P001543.nii
-+ is_oblique=1
-3dinfo -prefix $image
-++ 3dinfo -prefix rt_RS_P001543.nii
-+ afniprefix=rt_RS_P001543.nii
-3dinfo -tr $image
-++ 3dinfo -tr rt_RS_P001543.nii
-+ tr=2.000000
-3dinfo -smode $image
-++ 3dinfo -smode rt_RS_P001543.nii
-+ smode=NIFTI
-3dinfo -orient $image
-++ 3dinfo -orient rt_RS_P001543.nii
-+ orient=RAI
-+ echo -n 'P001543> '
-P001543> + echo ORIG '   ' 1 '   ' rt_RS_P001543.nii 2.000000 NIFTI '' RAI
-ORIG     1     rt_RS_P001543.nii 2.000000 NIFTI  RAI
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ for i in '$ID'
-+ cd DATA/P001562/motion_correction/
-+ get.info1 rt_RS_P001562.nii
-+ local image=rt_RS_P001562.nii
-3dinfo -space $image
-++ 3dinfo -space rt_RS_P001562.nii
-+ space=ORIG
-3dinfo -is_oblique $image
-++ 3dinfo -is_oblique rt_RS_P001562.nii
-+ is_oblique=1
-3dinfo -prefix $image
-++ 3dinfo -prefix rt_RS_P001562.nii
-+ afniprefix=rt_RS_P001562.nii
-3dinfo -tr $image
-++ 3dinfo -tr rt_RS_P001562.nii
-+ tr=2.000000
-3dinfo -smode $image
-++ 3dinfo -smode rt_RS_P001562.nii
-+ smode=NIFTI
-3dinfo -orient $image
-++ 3dinfo -orient rt_RS_P001562.nii
-+ orient=RAI
-+ echo -n 'P001562> '
-P001562> + echo ORIG '   ' 1 '   ' rt_RS_P001562.nii 2.000000 NIFTI '' RAI
-ORIG     1     rt_RS_P001562.nii 2.000000 NIFTI  RAI
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ for i in '$ID'
-+ cd DATA/T000001/motion_correction/
-+ get.info1 rt_RS_T000001.nii
-+ local image=rt_RS_T000001.nii
-3dinfo -space $image
-++ 3dinfo -space rt_RS_T000001.nii
-+ space=ORIG
-3dinfo -is_oblique $image
-++ 3dinfo -is_oblique rt_RS_T000001.nii
-+ is_oblique=1
-3dinfo -prefix $image
-++ 3dinfo -prefix rt_RS_T000001.nii
-+ afniprefix=rt_RS_T000001.nii
-3dinfo -tr $image
-++ 3dinfo -tr rt_RS_T000001.nii
-+ tr=2.000000
-3dinfo -smode $image
-++ 3dinfo -smode rt_RS_T000001.nii
-+ smode=NIFTI
-3dinfo -orient $image
-++ 3dinfo -orient rt_RS_T000001.nii
-+ orient=RAI
-+ echo -n 'T000001> '
-T000001> + echo ORIG '   ' 1 '   ' rt_RS_T000001.nii 2.000000 NIFTI '' RAI
-ORIG     1     rt_RS_T000001.nii 2.000000 NIFTI  RAI
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-echo
-+ echo
-
-echo "T1_ID> space  oblique   prefix           tr      smode  orient"
-+ echo 'T1_ID> space  oblique   prefix           tr      smode  orient'
-T1_ID> space  oblique   prefix           tr      smode  orient
-for i in $ID; do
-  #inputs
-  cd DATA/$i/
-  get.info1 "T1_$i.nii"
-  echo -n "$i> "
-  echo $space "   " $is_oblique "   " $afniprefix $tr $smode "" $orient
-  cd $pwd
-done
-+ for i in '$ID'
-+ cd DATA/C000917/
-+ get.info1 T1_C000917.nii
-+ local image=T1_C000917.nii
-3dinfo -space $image
-++ 3dinfo -space T1_C000917.nii
-+ space=ORIG
-3dinfo -is_oblique $image
-++ 3dinfo -is_oblique T1_C000917.nii
-+ is_oblique=1
-3dinfo -prefix $image
-++ 3dinfo -prefix T1_C000917.nii
-+ afniprefix=T1_C000917.nii
-3dinfo -tr $image
-++ 3dinfo -tr T1_C000917.nii
-+ tr=0.000000
-3dinfo -smode $image
-++ 3dinfo -smode T1_C000917.nii
-+ smode=NIFTI
-3dinfo -orient $image
-++ 3dinfo -orient T1_C000917.nii
-+ orient=ASL
-+ echo -n 'C000917> '
-C000917> + echo ORIG '   ' 1 '   ' T1_C000917.nii 0.000000 NIFTI '' ASL
-ORIG     1     T1_C000917.nii 0.000000 NIFTI  ASL
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ for i in '$ID'
-+ cd DATA/P001543/
-+ get.info1 T1_P001543.nii
-+ local image=T1_P001543.nii
-3dinfo -space $image
-++ 3dinfo -space T1_P001543.nii
-+ space=ORIG
-3dinfo -is_oblique $image
-++ 3dinfo -is_oblique T1_P001543.nii
-+ is_oblique=1
-3dinfo -prefix $image
-++ 3dinfo -prefix T1_P001543.nii
-+ afniprefix=T1_P001543.nii
-3dinfo -tr $image
-++ 3dinfo -tr T1_P001543.nii
-+ tr=0.000000
-3dinfo -smode $image
-++ 3dinfo -smode T1_P001543.nii
-+ smode=NIFTI
-3dinfo -orient $image
-++ 3dinfo -orient T1_P001543.nii
-+ orient=ASL
-+ echo -n 'P001543> '
-P001543> + echo ORIG '   ' 1 '   ' T1_P001543.nii 0.000000 NIFTI '' ASL
-ORIG     1     T1_P001543.nii 0.000000 NIFTI  ASL
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ for i in '$ID'
-+ cd DATA/P001562/
-+ get.info1 T1_P001562.nii
-+ local image=T1_P001562.nii
-3dinfo -space $image
-++ 3dinfo -space T1_P001562.nii
-+ space=ORIG
-3dinfo -is_oblique $image
-++ 3dinfo -is_oblique T1_P001562.nii
-+ is_oblique=1
-3dinfo -prefix $image
-++ 3dinfo -prefix T1_P001562.nii
-+ afniprefix=T1_P001562.nii
-3dinfo -tr $image
-++ 3dinfo -tr T1_P001562.nii
-+ tr=0.000000
-3dinfo -smode $image
-++ 3dinfo -smode T1_P001562.nii
-+ smode=NIFTI
-3dinfo -orient $image
-++ 3dinfo -orient T1_P001562.nii
-+ orient=ASL
-+ echo -n 'P001562> '
-P001562> + echo ORIG '   ' 1 '   ' T1_P001562.nii 0.000000 NIFTI '' ASL
-ORIG     1     T1_P001562.nii 0.000000 NIFTI  ASL
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ for i in '$ID'
-+ cd DATA/T000001/
-+ get.info1 T1_T000001.nii
-+ local image=T1_T000001.nii
-3dinfo -space $image
-++ 3dinfo -space T1_T000001.nii
-+ space=ORIG
-3dinfo -is_oblique $image
-++ 3dinfo -is_oblique T1_T000001.nii
-+ is_oblique=1
-3dinfo -prefix $image
-++ 3dinfo -prefix T1_T000001.nii
-+ afniprefix=T1_T000001.nii
-3dinfo -tr $image
-++ 3dinfo -tr T1_T000001.nii
-+ tr=0.000000
-3dinfo -smode $image
-++ 3dinfo -smode T1_T000001.nii
-+ smode=NIFTI
-3dinfo -orient $image
-++ 3dinfo -orient T1_T000001.nii
-+ orient=ASL
-+ echo -n 'T000001> '
-T000001> + echo ORIG '   ' 1 '   ' T1_T000001.nii 0.000000 NIFTI '' ASL
-ORIG     1     T1_T000001.nii 0.000000 NIFTI  ASL
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-echo
-+ echo
-
-echo ""
-+ echo ''
-
-for i in $ID; do
-  #inputs
-  get.info2 "${outpath[$i]}${out[$i]}" "DATA/$i/T1_$i.nii"
-  echo -n "$i> "
-  echo $same_grid $same_dim $same_delta $same_orient $same_center $same_obl
-done
-+ for i in '$ID'
-+ get.info2 DATA/C000917/motion_correction/rt_RS_C000917.nii DATA/C000917/T1_C000917.nii
-+ local image1=DATA/C000917/T1_C000917.nii
-+ local image2=DATA/C000917/T1_C000917.nii
-3dinfo -same_grid $image1 $image2
-++ 3dinfo -same_grid DATA/C000917/T1_C000917.nii DATA/C000917/T1_C000917.nii
-+ same_grid='1
-1'
-3dinfo -same_dim $image1 $image2
-++ 3dinfo -same_dim DATA/C000917/T1_C000917.nii DATA/C000917/T1_C000917.nii
-+ same_dim='1
-1'
-3dinfo -same_delta $image1 $image2
-++ 3dinfo -same_delta DATA/C000917/T1_C000917.nii DATA/C000917/T1_C000917.nii
-+ same_delta='1
-1'
-3dinfo -same_orient $image1 $image2
-++ 3dinfo -same_orient DATA/C000917/T1_C000917.nii DATA/C000917/T1_C000917.nii
-+ same_orient='1
-1'
-3dinfo -same_center $image1 $image2
-++ 3dinfo -same_center DATA/C000917/T1_C000917.nii DATA/C000917/T1_C000917.nii
-+ same_center='1
-1'
-3dinfo -same_obl $image1 $image2
-++ 3dinfo -same_obl DATA/C000917/T1_C000917.nii DATA/C000917/T1_C000917.nii
-+ same_obl='1
-1'
-+ echo -n 'C000917> '
-C000917> + echo 1 1 1 1 1 1 1 1 1 1 1 1
-1 1 1 1 1 1 1 1 1 1 1 1
-+ for i in '$ID'
-+ get.info2 DATA/P001543/motion_correction/rt_RS_P001543.nii DATA/P001543/T1_P001543.nii
-+ local image1=DATA/P001543/T1_P001543.nii
-+ local image2=DATA/P001543/T1_P001543.nii
-3dinfo -same_grid $image1 $image2
-++ 3dinfo -same_grid DATA/P001543/T1_P001543.nii DATA/P001543/T1_P001543.nii
-+ same_grid='1
-1'
-3dinfo -same_dim $image1 $image2
-++ 3dinfo -same_dim DATA/P001543/T1_P001543.nii DATA/P001543/T1_P001543.nii
-+ same_dim='1
-1'
-3dinfo -same_delta $image1 $image2
-++ 3dinfo -same_delta DATA/P001543/T1_P001543.nii DATA/P001543/T1_P001543.nii
-+ same_delta='1
-1'
-3dinfo -same_orient $image1 $image2
-++ 3dinfo -same_orient DATA/P001543/T1_P001543.nii DATA/P001543/T1_P001543.nii
-+ same_orient='1
-1'
-3dinfo -same_center $image1 $image2
-++ 3dinfo -same_center DATA/P001543/T1_P001543.nii DATA/P001543/T1_P001543.nii
-+ same_center='1
-1'
-3dinfo -same_obl $image1 $image2
-++ 3dinfo -same_obl DATA/P001543/T1_P001543.nii DATA/P001543/T1_P001543.nii
-+ same_obl='1
-1'
-+ echo -n 'P001543> '
-P001543> + echo 1 1 1 1 1 1 1 1 1 1 1 1
-1 1 1 1 1 1 1 1 1 1 1 1
-+ for i in '$ID'
-+ get.info2 DATA/P001562/motion_correction/rt_RS_P001562.nii DATA/P001562/T1_P001562.nii
-+ local image1=DATA/P001562/T1_P001562.nii
-+ local image2=DATA/P001562/T1_P001562.nii
-3dinfo -same_grid $image1 $image2
-++ 3dinfo -same_grid DATA/P001562/T1_P001562.nii DATA/P001562/T1_P001562.nii
-+ same_grid='1
-1'
-3dinfo -same_dim $image1 $image2
-++ 3dinfo -same_dim DATA/P001562/T1_P001562.nii DATA/P001562/T1_P001562.nii
-+ same_dim='1
-1'
-3dinfo -same_delta $image1 $image2
-++ 3dinfo -same_delta DATA/P001562/T1_P001562.nii DATA/P001562/T1_P001562.nii
-+ same_delta='1
-1'
-3dinfo -same_orient $image1 $image2
-++ 3dinfo -same_orient DATA/P001562/T1_P001562.nii DATA/P001562/T1_P001562.nii
-+ same_orient='1
-1'
-3dinfo -same_center $image1 $image2
-++ 3dinfo -same_center DATA/P001562/T1_P001562.nii DATA/P001562/T1_P001562.nii
-+ same_center='1
-1'
-3dinfo -same_obl $image1 $image2
-++ 3dinfo -same_obl DATA/P001562/T1_P001562.nii DATA/P001562/T1_P001562.nii
-+ same_obl='1
-1'
-+ echo -n 'P001562> '
-P001562> + echo 1 1 1 1 1 1 1 1 1 1 1 1
-1 1 1 1 1 1 1 1 1 1 1 1
-+ for i in '$ID'
-+ get.info2 DATA/T000001/motion_correction/rt_RS_T000001.nii DATA/T000001/T1_T000001.nii
-+ local image1=DATA/T000001/T1_T000001.nii
-+ local image2=DATA/T000001/T1_T000001.nii
-3dinfo -same_grid $image1 $image2
-++ 3dinfo -same_grid DATA/T000001/T1_T000001.nii DATA/T000001/T1_T000001.nii
-+ same_grid='1
-1'
-3dinfo -same_dim $image1 $image2
-++ 3dinfo -same_dim DATA/T000001/T1_T000001.nii DATA/T000001/T1_T000001.nii
-+ same_dim='1
-1'
-3dinfo -same_delta $image1 $image2
-++ 3dinfo -same_delta DATA/T000001/T1_T000001.nii DATA/T000001/T1_T000001.nii
-+ same_delta='1
-1'
-3dinfo -same_orient $image1 $image2
-++ 3dinfo -same_orient DATA/T000001/T1_T000001.nii DATA/T000001/T1_T000001.nii
-+ same_orient='1
-1'
-3dinfo -same_center $image1 $image2
-++ 3dinfo -same_center DATA/T000001/T1_T000001.nii DATA/T000001/T1_T000001.nii
-+ same_center='1
-1'
-3dinfo -same_obl $image1 $image2
-++ 3dinfo -same_obl DATA/T000001/T1_T000001.nii DATA/T000001/T1_T000001.nii
-+ same_obl='1
-1'
-+ echo -n 'T000001> '
-T000001> + echo 1 1 1 1 1 1 1 1 1 1 1 1
-1 1 1 1 1 1 1 1 1 1 1 1
-echo
-+ echo
-
- 
-exit # <<=======================================================================
+exit
 + exit

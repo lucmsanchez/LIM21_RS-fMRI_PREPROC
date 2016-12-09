@@ -156,6 +156,30 @@ close.node () {
   done
 }
 
+get.info1() {
+  local image=$1
+
+  space=$(3dinfo -space $image) 
+  is_oblique=$(3dinfo -is_oblique $image) 
+  afniprefix=$(3dinfo -prefix $image) 
+  tr=$(3dinfo -tr $image) 
+  smode=$(3dinfo -smode $image) 
+  orient=$(3dinfo -orient $image) 
+}
+
+get.info2 () {
+  local image1=$1
+  local image2=$2
+
+  #comparações
+  same_grid=$(3dinfo -same_grid $image1 $image2) 
+  same_dim=$(3dinfo -same_dim $image1 $image2) 
+  same_delta=$(3dinfo -same_delta $image1 $image2) 
+  same_orient=$(3dinfo -same_orient $image1 $image2) 
+  same_center=$(3dinfo -same_center $image1 $image2) 
+  same_obl=$(3dinfo -same_obl $image1 $image2) 
+}
+
 log () {
 if [ $go -eq 1 ]; then
   echo >> DATA/preproc_$i.log
@@ -417,8 +441,9 @@ for i in $ID; do
 done
 input.error
 echo
-exit # <<=======================================================================
 
+exit
+ # <<=======================================================================
 
 
 ## DEOBLIQUE: T1 e RS

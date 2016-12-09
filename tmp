@@ -1,11 +1,15 @@
 
-    mkdir 3d && \
-    fsl5.0-fslsplit ${in[$i]}[1] 3d/3d_$i_ -t && \
-    gunzip 3d/3d_$i_* && \
-    matlab -nodesktop -nodisplay 2>&1 << EOF           
-    aztec('${in[$i]}[2]','$(find 3d)',500,$TR,1,$hp,'${out[$i]}path');
-    quit
-    EOF && \
-    rm 3d/3d* && \
-    3dTcat -prefix z_RS_$i.nii -TR 2 3d/aztec* && \
-    rm 3d/aztec*
+space=$(3dinfo -space $image)
+is_oblique=$(3dinfo -is_oblique $image)
+afniprefix=$(3dinfo -prefix $image)
+tr=$(3dinfo -tr $image)
+smode=$(3dinfo -smode $image)
+orient=$(3dinfo -orient $image)
+
+#comparações
+same_grid=$(3dinfo -same_grid $image1 $image2)
+same_dim=$(3dinfo -same_dim $image1 $image2)
+same_delta=$(3dinfo -same_delta $image1 $image2)
+same_orient=$(3dinfo -same_orient $image1 $image2)
+same_center=$(3dinfo -same_center $image1 $image2)
+same_obl=$(3dinfo -same_obl $image1 $image2)

@@ -1,0 +1,121 @@
+
+type = string-attribute
+name = HISTORY_NOTE
+count = 2696
+'[ziad@eomer.nimh.nih.gov: Thu Oct 12 16:57:01 2006] ===================================\n[ziad@eomer.nimh.nih.gov: Thu Oct 12 16:57:01 2006] === History of inputs to 3dcalc ===\n[ziad@eomer.nimh.nih.gov: Thu Oct 12 16:57:01 2006] === Input a:\n[ziad@eomer.nimh.nih.gov: Thu Oct 12 16:57:01 2006] [ziad@eomer.nimh.nih.gov: Thu Oct 12 16:57:01 2006] 3dcopy /Users/ziad/Programs/matlab/spm2/canonical/avg152T1.mnc /Users/ziad/AFNI_Templates_Atlases/SPM_MNI_AVG_TEMPLATES/Post_Oct0606/MNI_sk_avg152T1\n[ziad@eomer.nimh.nih.gov: Thu Oct 12 16:57:01 2006] 3drefit -view +tlrc MNI_sk_avg152T1+orig.HEAD\n[ziad@eomer.nimh.nih.gov: Thu Oct 12 16:57:01 2006] === Input b:\n[ziad@eomer.nimh.nih.gov: Thu Oct 12 16:57:01 2006] [ziad@eomer.nimh.nih.gov: Wed Oct 11 13:50:11 2006] ===================================\n[ziad@eomer.nimh.nih.gov: Wed Oct 11 13:50:11 2006] === History of inputs to 3dcalc ===\n[ziad@eomer.nimh.nih.gov: Wed Oct 11 13:50:11 2006] === Input a:\n[ziad@eomer.nimh.nih.gov: Wed Oct 11 13:50:11 2006] [ziad@eomer.nimh.nih.gov: Wed Oct 11 11:13:23 2006] 3dcopy avg152T1.mnc /Users/ziad/AFNI_Templates_Atlases/TT_Avg_Templates/Post_Oct0606/MNI_sk_avg152T1\n[ziad@eomer.nimh.nih.gov: Wed Oct 11 11:13:23 2006] 3drefit -view +tlrc MNI_sk_avg152T1+orig.HEAD\n[ziad@eomer.nimh.nih.gov: Wed Oct 11 13:50:11 2006] === Input b:\n[ziad@eomer.nimh.nih.gov: Wed Oct 11 13:50:11 2006] [ziad@eomer.nimh.nih.gov: Wed Oct 11 13:22:27 2006] 3dSkullStrip -input avg152T1_mni+tlrc -prefix tt3 -shrink_fac 0.99 -shrink_fac_bot_lim 0.55 -o_ply tt3.ply -debug 1 -visual -interactive\n[ziad@eomer.nimh.nih.gov: Wed Oct 11 13:50:11 2006] ===================================\n[ziad@eomer.nimh.nih.gov: Wed Oct 11 13:50:11 2006] 3dcalc -a MNI_sk_avg152T1+tlrc. -b tt3+tlrc. -expr 'a*step(b)' -prefix T1ns3\n[ziad@eomer.nimh.nih.gov: Wed Oct 11 13:53:08 2006] Drawing plugin COPY: Fill->Data Type->Func\n[ziad@eomer.nimh.nih.gov: Thu Oct 12 16:57:01 2006] ===================================\n[ziad@eomer.nimh.nih.gov: Thu Oct 12 16:57:01 2006] 3dcalc -a MNI_sk_avg152T1+tlrc -b avg152T1_mni_ns+tlrc -expr 'a*step(b)' -prefix MNI_avg152T1\n[dglen@nmrfdhcp162.nmrf.nih.gov: Wed Sep  8 14:15:03 2010] 3drefit -space MNI /Users/dglen/abin/MNI_EPI+tlrc.HEAD /Users/dglen/abin/MNI_avg152T1+tlrc.HEAD\n[dglen@ndsl-lfmi-kocha.nih.gov: Thu Sep  9 14:01:02 2010] 3drefit -space MNI /Users/dglen/abin/MNI_EPI+tlrc.HEAD /Users/dglen/abin/MNI_avg152T1+tlrc.HEAD\n[rwcox@ilmarin.nimh.nih.gov: Thu Feb  7 11:14:22 2013] 3dresample -master anat_002.nii.gz -rmode Linear -prefix MNI152_1mm -inset MNI_avg152T1+tlrc.HEAD\n[rwcox@ilmarin.nimh.nih.gov: Thu Feb 28 16:55:51 2013] 3dUnifize -prefix MNI152_1mm_uni -GM MNI152_1mm+tlrc~
+
+type = string-attribute
+name = TYPESTRING
+count = 15
+'3DIM_HEAD_ANAT~
+
+type = string-attribute
+name = IDCODE_STRING
+count = 27
+'COX_cf7WWriDi4bKf73lhvvE1A~
+
+type = string-attribute
+name = IDCODE_DATE
+count = 25
+'Thu Feb 28 16:55:51 2013~
+
+type = integer-attribute
+name = SCENE_DATA
+count = 8
+ 2 3 0 -999 -999
+ -999 -999 -999
+
+type = string-attribute
+name = LABEL_1
+count = 5
+'zyxt~
+
+type = string-attribute
+name = LABEL_2
+count = 5
+'zyxt~
+
+type = string-attribute
+name = DATASET_NAME
+count = 5
+'zyxt~
+
+type = integer-attribute
+name = ORIENT_SPECIFIC
+count = 3
+ 0 2 4
+
+type  = float-attribute
+name  = ORIGIN
+count = 3
+            -90            126            -72
+
+type  = float-attribute
+name  = DELTA
+count = 3
+              1             -1              1
+
+type  = float-attribute
+name  = IJK_TO_DICOM
+count = 12
+              1              0              0            -90              0
+             -1              0            126              0              0
+              1            -72
+
+type  = float-attribute
+name  = IJK_TO_DICOM_REAL
+count = 12
+              1              0              0            -90              0
+             -1              0            126              0              0
+              1            -72
+
+type  = float-attribute
+name  = BRICK_STATS
+count = 2
+              0       1450.401
+
+type = integer-attribute
+name = DATASET_RANK
+count = 8
+ 3 1 0 0 0
+ 0 0 0
+
+type = integer-attribute
+name = DATASET_DIMENSIONS
+count = 5
+ 182 218 182 0 0
+
+type = integer-attribute
+name = BRICK_TYPES
+count = 1
+ 3
+
+type  = float-attribute
+name  = BRICK_FLOAT_FACS
+count = 1
+              0
+
+type = string-attribute
+name = BRICK_LABS
+count = 8
+'MINC[0]~
+
+type = string-attribute
+name = BRICK_KEYWORDS
+count = 1
+'~
+
+type = string-attribute
+name = TEMPLATE_SPACE
+count = 4
+'MNI~
+
+type = integer-attribute
+name = INT_CMAP
+count = 1
+ 0
+
+type = string-attribute
+name = BYTEORDER_STRING
+count = 10
+'LSB_FIRST~

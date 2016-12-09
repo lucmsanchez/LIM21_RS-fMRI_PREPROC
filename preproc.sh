@@ -510,32 +510,6 @@ echo
 exit
  # <<=======================================================================
 
-## DEOBLIQUE: T1 e RS
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "========= Aplicando estapa Deoblique T1 e fmri às imagens ========"
-echo "===================================================================="
-echo
-### Deoblique T1
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dWarp \
-  -deoblique \
-  -prefix  d_T1_"$i" \
-  T1_"$i".nii
-done
-
-### Deoblique fMRI
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dWarp \
-  -deoblique \
-  -prefix  drt_RS_"$i" \
-  rt_RS_"$i"+orig
-done
 
 ## HOMOGENIZE GRID
 cd "$pathpi"

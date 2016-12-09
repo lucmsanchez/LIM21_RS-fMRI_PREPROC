@@ -92,6 +92,20 @@ input.error () {
 [ $ex -eq ${#ID[@]} ] && exit
 }
 
+inputs () {
+    in[$i]="$1"
+    in_2[$i]="$2"
+    in_3[$i]="$3"
+    in_4[$i]="$4"
+}
+
+outputs () {
+    out[$i]="$1"
+    out_2[$i]="$2"
+    out_3[$i]="$3"
+    out_4[$i]="$4"
+}
+
 open.node () {
   [ -d ${outpath[$i]} ] || mkdir ${outpath[$i]}
   #
@@ -143,19 +157,22 @@ close.node () {
   local e=0
   if [ $go -eq 1 ]; then  
     cd $pwd
-    mv ${inpath[$i]}$prefixrs* ${outpath[$i]}
+    mv ${inpath[$i]}${prefixrs[$i]}* ${outpath[$i]} 2> /dev/null
+    mv ${inpath[$i]}${prefixt1[$i]}* ${outpath[$i]} 2> /dev/null
      for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do 
       [ -f ${outpath[$i]}$iii ] ||  e=$((e + 1)) 
     done
     # 
     if [ ! $e -eq 0 ]; then
-     printf "Houve um erro no processamento da imagem %s, consulte o log %s. " "$i" "$prefixrs$i.log" && ex=$((ex + 1))
+     printf "Houve um erro no processamento da imagem %s, consulte o log. \n" "$i" && ex=$((ex + 1))
     else
       printf "Processamento da imagem %s realizado com sucesso! \n" "$i"
     fi
   fi
 
- local files=$( find "${inpath[$i]}" -name "$prefixrs*" )
+ files1=$( find "${inpath[$i]}" -name "${prefixrs[$i]}*" )
+ files2=$( find "${inpath[$i]}" -name "${prefixt1[$i]}*" )
+ files=$files1$files2
   for f in $files; do
     mv $f ${outpath[$i]} 2> /dev/null
   done
@@ -190,13 +207,13 @@ if [ $go -eq 1 ]; then
   echo >> DATA/preproc_$i.log
   echo "ETAPA: $1  - RUNTIME: $(date)" >> DATA/preproc_$i.log
   echo >> DATA/preproc_$i.log
-  echo "PREFIX: $prefixrs" >> DATA/preproc_$i.log
+  echo "PREFIX: ${prefixrs[$i]}" >> DATA/preproc_$i.log
   echo "INPUT PATH: ${inpath[$i]} "  >> DATA/preproc_$i.log
   echo "INPUTS: ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}" >>DATA/preproc_$i.log
   echo "OUTPUT PATH: ${outpath[$i]}" >> DATA/preproc_$i.log
   echo "OUTPUTS: ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}" >> DATA/preproc_$i.log
   echo >> DATA/preproc_$i.log
-  cat ${outpath[$i]}$prefixrs$i.log >> DATA/preproc_$i.log
+  cat ${outpath[$i]}${prefixrs[$i]}$i.log >> DATA/preproc_$i.log
 fi
 }
 # ==============================================================================
@@ -338,13 +355,15 @@ if [ ! $a -eq 0 ]; then
   echo
 fi
 
-prefixt1=_RS_
-prefixrs=_RS_
+declare -A prefixt1
+declare -A prefixrs
 declare -A in in_2 in_3 in_4 in_5
 declare -A inpath
 declare -A out out_2 out_3 ou_4 out_5
 declare -A outpath
 for i in $ID; do
+prefixrs[$i]=_RS_
+prefixt1[$i]=_T1_
 out[$i]=RS_$i.nii
 outpath[$i]=DATA/$i/
 done
@@ -354,14 +373,11 @@ done
 if [ $aztec -eq 1 ]; then
   printf "=============================AZTEC==================================\n\n"
   pwd=($PWD)
-  prefixrs=z$prefixrs
   for i in $ID; do
-    #inputs
-    in[$i]=${out[$i]}
-    in_2[$i]=RS_$i.log
+    prefixrs[$i]=z${prefixrs[$i]}
+    inputs "${out[$i]}" "RS_$i.log"
     inpath[$i]=${outpath[$i]}
-    #outputs
-    out[$i]=$prefixrs$i.nii
+    outputs "${prefixrs[$i]}$i.nii"
     outpath[$i]=DATA/$i/aztec/
     echo -n "$i> "
     open.node; if [ $go -eq 1 ]; then
@@ -376,7 +392,7 @@ if [ $aztec -eq 1 ]; then
    #  rm 3d/3d* && \
    #  3dTcat -prefix ${out[$i]} -TR $TR 3d/aztec* && \
    #  rm 3d/aztec* 3d azt* && \ 
-      &> $prefixrs$i.log 
+      &> ${prefixrs[$i]}$i.log 
       #
     fi; close.node
     log "Aztec"
@@ -388,13 +404,11 @@ fi
 # SLICE TIMING CORRECTION=======================================================
 printf "=======================SLICE TIMING CORRECTION====================\n\n"
 pwd=($PWD)
-prefixrs=t$prefixrs
 for i in $ID; do
-  #inputs
-  in[$i]=${out[$i]}
+  prefixrs[$i]=t${prefixrs[$i]}
+  inputs "${out[$i]}"
   inpath[$i]=${outpath[$i]}
-  #outputs
-  out[$i]=$prefixrs$i.nii
+  outputs "${prefixrs[$i]}$i.nii"
   outpath[$i]=DATA/$i/slice_correction/
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
@@ -404,7 +418,7 @@ for i in $ID; do
       -tpattern $ptn \
       -prefix ${out[$i]} \
       -Fourier \
-      ${in[$i]} &> $prefixrs$i.log 
+      ${in[$i]} &> ${prefixrs[$i]}$i.log 
     #
   fi; close.node
   log "Slice Timing Correction"
@@ -415,15 +429,11 @@ echo
 # MOTION CORRECTION============================================================
 printf "\n=========================MOTION CORRECTION=======================\n\n"
 pwd=($PWD)
-prefixrs=r$prefixrs
 for i in $ID; do
-  #inputs
-  in[$i]=${out[$i]}
+  prefixrs[$i]=r${prefixrs[$i]}
+  inputs "${out[$i]}"
   inpath[$i]=${outpath[$i]}
-  #outputs
-  out[$i]=$prefixrs$i.nii
-  out_2[$i]="$prefixrs"mc_$i.1d
-  out_3[$i]="$prefixrs"mcplot_$i.jpg
+  outputs "${prefixrs[$i]}$i.nii" "${prefixrs[$i]}mc_$i.1d" "${prefixrs[$i]}mcplot_$i.jpg"
   outpath[$i]=DATA/$i/motion_correction/
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
@@ -435,22 +445,70 @@ for i in $ID; do
     -Fourier \
     -verbose \
     -1Dfile ${out_2[$i]} \
-    ${in[$i]} &>> $prefixrs$i.log && \
+    ${in[$i]} &>> ${prefixrs[$i]}$i.log && \
     1dplot \
     -jpg ${out_3[$i]} \
     -volreg -dx $TR \
     -xlabel Time \
     -thick \
-    ${out_2[$i]} &>> $prefixrs$i.log 
+    ${out_2[$i]} &>> ${prefixrs[$i]}$i.log 
   fi; close.node
   log "Motion Correction "
 done
 input.error
 echo
 
+# DEOBLIQUE RS============================================================
+printf "\n=========================DEOBLIQUE RS=======================\n\n"
+pwd=($PWD)
+for i in $ID; do
+  get.info1 "${outpath[$i]}${out[$i]}"; if [ $is_oblique -eq 1 ]; then 
+  prefixrs[$i]=d${prefixrs[$i]}
+  inputs "${out[$i]}"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefixrs[$i]}$i.nii"
+  outpath[$i]=DATA/$i/deoblique/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dWarp \
+    -verb \
+    -deoblique \
+    -prefix  ${out[$i]} \
+    ${in[$i]} &> ${prefixrs[$i]}$i.log 
+  fi; close.node
+  else echo "$i não é obliquo"
+  log "DEOBLIQUE RS "; fi
+  declare -A outrs[$i]=${prefixrs[$i]}$i.nii
+done
+input.error
+echo
+
+# DEOBLIQUE T1============================================================
+printf "\n=========================DEOBLIQUE T1=======================\n\n"
+pwd=($PWD)
+for i in $ID; do
+  get.info1 "DATA/$i/T1_$i.nii"; if [ $is_oblique -eq 1 ]; then 
+  prefixt1[$i]=d${prefixt1[$i]}
+  inputs "T1_$i.nii"
+  inpath[$i]=DATA/$i/
+  outputs "${prefixt1[$i]}$i.nii"
+  outpath[$i]=DATA/$i/deoblique/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dWarp \
+    -verb \
+    -deoblique \
+    -prefix  ${out[$i]} \
+    ${in[$i]} &> ${prefixt1[$i]}$i.log 
+  fi; close.node
+  else echo "$i não é obliquo"
+  log "DEOBLIQUE T1 "; fi
+  #declare -A outrs[$i]=${prefixrs[$i]}$i.nii
+done
+input.error
+echo
 exit
  # <<=======================================================================
-
 
 ## DEOBLIQUE: T1 e RS
 cd "$pathpi"

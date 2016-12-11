@@ -79,6 +79,15 @@ done
 
 # ==============================================================================
 
+# DECLARANDO VARIÁVEIS ===========================================================
+declare -A prefix
+declare -A in in_2 in_3 in_4 in_5
+declare -A inpath
+declare -A out out_2 out_3 ou_4 out_5
+declare -A outpath
+declare -A outrs outt1 outpathrs outpatht1 prefixrs prefixt1
+# ==============================================================================
+
 # DECLARANDO FUNÇÕES ===========================================================
 check () {
   if command -v $1 > /dev/null; then
@@ -157,8 +166,7 @@ close.node () {
   local e=0
   if [ $go -eq 1 ]; then  
     cd $pwd
-    mv ${inpath[$i]}${prefixrs[$i]}* ${outpath[$i]} 2> /dev/null
-    mv ${inpath[$i]}${prefixt1[$i]}* ${outpath[$i]} 2> /dev/null
+    mv ${inpath[$i]}${prefix[$i]}* ${outpath[$i]} 2> /dev/null
      for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do 
       [ -f ${outpath[$i]}$iii ] ||  e=$((e + 1)) 
     done
@@ -170,9 +178,7 @@ close.node () {
     fi
   fi
 
- files1=$( find "${inpath[$i]}" -name "${prefixrs[$i]}*" )
- files2=$( find "${inpath[$i]}" -name "${prefixt1[$i]}*" )
- files=$files1$files2
+ files=$( find "${inpath[$i]}" -name "${prefix[$i]}*" )
   for f in $files; do
     mv $f ${outpath[$i]} 2> /dev/null
   done
@@ -207,14 +213,38 @@ if [ $go -eq 1 ]; then
   echo >> DATA/preproc_$i.log
   echo "ETAPA: $1  - RUNTIME: $(date)" >> DATA/preproc_$i.log
   echo >> DATA/preproc_$i.log
-  echo "PREFIX: ${prefixrs[$i]}" >> DATA/preproc_$i.log
+  echo "PREFIX: ${prefix[$i]}" >> DATA/preproc_$i.log
   echo "INPUT PATH: ${inpath[$i]} "  >> DATA/preproc_$i.log
   echo "INPUTS: ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}" >>DATA/preproc_$i.log
   echo "OUTPUT PATH: ${outpath[$i]}" >> DATA/preproc_$i.log
   echo "OUTPUTS: ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}" >> DATA/preproc_$i.log
   echo >> DATA/preproc_$i.log
-  cat ${outpath[$i]}${prefixrs[$i]}$i.log >> DATA/preproc_$i.log
+  cat ${outpath[$i]}${prefix[$i]}$i.log >> DATA/preproc_$i.log
 fi
+}
+
+toRS () {
+  outrs[$i]=${out[$i]}
+  outpathrs[$i]=${outpath[$i]}
+  prefixrs[$i]=${prefix[$i]}
+  }
+
+toT1 () {
+  outt1[$i]=${out[$i]}
+  outpatht1[$i]=${outpath[$i]}
+  prefixt1[$i]=${prefix[$i]}
+}
+
+fromRS () {
+  out[$i]=${outrs[$i]}
+  outpath[$i]=${outpathrs[$i]}
+  prefix[$i]=${prefixrs[$i]}
+}
+
+fromT1 () {
+  out[$i]=${outt1[$i]}
+  outpath[$i]=${outpatht1[$i]}
+  prefix[$i]=${prefixt1[$i]}
 }
 # ==============================================================================
 
@@ -248,7 +278,7 @@ if [ ! -z $config ]; then
   if [ -f $config ]; then
     source $config
     a=0
-    for var in ptn mcbase gRL gAP gIS orient template blur; do
+    for var in ptn mcbase gRL gAP gIS TR template blur; do
       if [[ -z "${!var:-}" ]]; then
       echo "Variável $var não encontrada"
       a=$(($a + 1))
@@ -277,7 +307,7 @@ mcbase=100
 gRL=90
 gAP=90
 gIS=60
-orient="rpi"
+#orient="rpi"
 template="MNI152_1mm_uni+tlrc"
 blur=6
 EOL
@@ -296,6 +326,8 @@ Aztec                   - Tempo de repetição(s)   => $TR
 Slice timing correction - sequência de aquisição  => $ptn
 Motion correction       - valor base              => $mcbase
 Homogenize Grid         - tamanho da grade        => $gRL $gAP $gIS
+
+TEMPLATE: $template
 
 EOF
 
@@ -338,6 +370,17 @@ if [ ! $a -eq 0 ]; then
     exit
 fi
 
+# BUSCANDO O TEMPLATE
+temp=$(find . -name "$template*")
+if [ ! -z "$temp" ];then
+  [ ! -d template ] && mkdir template 
+  for tp in $temp; do
+    mv $tp template 2> /dev/null
+  done
+else
+  echo "Template $template não encontrado." && exit
+fi
+
 [ -d DATA ] || mkdir DATA
 [ -d OUTPUT ] || mkdir OUTPUT
 
@@ -355,14 +398,9 @@ if [ ! $a -eq 0 ]; then
   echo
 fi
 
-declare -A prefixt1
-declare -A prefixrs
-declare -A in in_2 in_3 in_4 in_5
-declare -A inpath
-declare -A out out_2 out_3 ou_4 out_5
-declare -A outpath
+
 for i in $ID; do
-prefixrs[$i]=_RS_
+prefix[$i]=_RS_
 prefixt1[$i]=_T1_
 out[$i]=RS_$i.nii
 outpath[$i]=DATA/$i/
@@ -374,10 +412,10 @@ if [ $aztec -eq 1 ]; then
   printf "=============================AZTEC==================================\n\n"
   pwd=($PWD)
   for i in $ID; do
-    prefixrs[$i]=z${prefixrs[$i]}
+    prefix[$i]=z${prefix[$i]}
     inputs "${out[$i]}" "RS_$i.log"
     inpath[$i]=${outpath[$i]}
-    outputs "${prefixrs[$i]}$i.nii"
+    outputs "${prefix[$i]}$i.nii"
     outpath[$i]=DATA/$i/aztec/
     echo -n "$i> "
     open.node; if [ $go -eq 1 ]; then
@@ -392,7 +430,7 @@ if [ $aztec -eq 1 ]; then
    #  rm 3d/3d* && \
    #  3dTcat -prefix ${out[$i]} -TR $TR 3d/aztec* && \
    #  rm 3d/aztec* 3d azt* && \ 
-      &> ${prefixrs[$i]}$i.log 
+     &> ${prefix[$i]}$i.log 
       #
     fi; close.node
     log "Aztec"
@@ -405,10 +443,10 @@ fi
 printf "=======================SLICE TIMING CORRECTION====================\n\n"
 pwd=($PWD)
 for i in $ID; do
-  prefixrs[$i]=t${prefixrs[$i]}
+  prefix[$i]=t${prefix[$i]}
   inputs "${out[$i]}"
   inpath[$i]=${outpath[$i]}
-  outputs "${prefixrs[$i]}$i.nii"
+  outputs "${prefix[$i]}$i.nii"
   outpath[$i]=DATA/$i/slice_correction/
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
@@ -418,7 +456,7 @@ for i in $ID; do
       -tpattern $ptn \
       -prefix ${out[$i]} \
       -Fourier \
-      ${in[$i]} &> ${prefixrs[$i]}$i.log 
+      ${in[$i]} &> ${prefix[$i]}$i.log 
     #
   fi; close.node
   log "Slice Timing Correction"
@@ -430,10 +468,10 @@ echo
 printf "\n=========================MOTION CORRECTION=======================\n\n"
 pwd=($PWD)
 for i in $ID; do
-  prefixrs[$i]=r${prefixrs[$i]}
+  prefix[$i]=r${prefix[$i]}
   inputs "${out[$i]}"
   inpath[$i]=${outpath[$i]}
-  outputs "${prefixrs[$i]}$i.nii" "${prefixrs[$i]}mc_$i.1d" "${prefixrs[$i]}mcplot_$i.jpg"
+  outputs "${prefix[$i]}$i.nii" "${prefix[$i]}mc_$i.1d" "${prefix[$i]}mcplot_$i.jpg"
   outpath[$i]=DATA/$i/motion_correction/
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
@@ -445,13 +483,13 @@ for i in $ID; do
     -Fourier \
     -verbose \
     -1Dfile ${out_2[$i]} \
-    ${in[$i]} &>> ${prefixrs[$i]}$i.log && \
+    ${in[$i]} &>> ${prefix[$i]}$i.log && \
     1dplot \
     -jpg ${out_3[$i]} \
     -volreg -dx $TR \
     -xlabel Time \
     -thick \
-    ${out_2[$i]} &>> ${prefixrs[$i]}$i.log 
+    ${out_2[$i]} &>> ${prefix[$i]}$i.log 
   fi; close.node
   log "Motion Correction "
 done
@@ -463,10 +501,10 @@ printf "\n=========================DEOBLIQUE RS=======================\n\n"
 pwd=($PWD)
 for i in $ID; do
   get.info1 "${outpath[$i]}${out[$i]}"; if [ $is_oblique -eq 1 ]; then 
-  prefixrs[$i]=d${prefixrs[$i]}
+  prefix[$i]=d${prefix[$i]}
   inputs "${out[$i]}"
   inpath[$i]=${outpath[$i]}
-  outputs "${prefixrs[$i]}$i.nii"
+  outputs "${prefix[$i]}$i.nii"
   outpath[$i]=DATA/$i/deoblique/
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
@@ -474,11 +512,11 @@ for i in $ID; do
     -verb \
     -deoblique \
     -prefix  ${out[$i]} \
-    ${in[$i]} &> ${prefixrs[$i]}$i.log 
+    ${in[$i]} &> ${prefix[$i]}$i.log 
   fi; close.node
   else echo "$i não é obliquo"
   log "DEOBLIQUE RS "; fi
-  declare -A outrs[$i]=${prefixrs[$i]}$i.nii
+  toRS
 done
 input.error
 echo
@@ -488,10 +526,10 @@ printf "\n=========================DEOBLIQUE T1=======================\n\n"
 pwd=($PWD)
 for i in $ID; do
   get.info1 "DATA/$i/T1_$i.nii"; if [ $is_oblique -eq 1 ]; then 
-  prefixt1[$i]=d${prefixt1[$i]}
+  prefix[$i]=d_T1_
   inputs "T1_$i.nii"
   inpath[$i]=DATA/$i/
-  outputs "${prefixt1[$i]}$i.nii"
+  outputs "${prefix[$i]}$i.nii"
   outpath[$i]=DATA/$i/deoblique/
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
@@ -499,77 +537,138 @@ for i in $ID; do
     -verb \
     -deoblique \
     -prefix  ${out[$i]} \
-    ${in[$i]} &> ${prefixt1[$i]}$i.log 
+    ${in[$i]} &> ${prefix[$i]}$i.log 
   fi; close.node
   else echo "$i não é obliquo"
   log "DEOBLIQUE T1 "; fi
-  #declare -A outrs[$i]=${prefixrs[$i]}$i.nii
+  toT1
+done 
+input.error
+echo
+ # LEMBAR DE PRINTAR OS DADOS DO GRID NO RELATORIO DO CONTROLE DE QUALIDADE
+
+# HOMOGENIZE RS============================================================
+printf "\n=========================HOMOGENIZE RS=======================\n\n"
+pwd=($PWD)
+for i in $ID; do 
+  fromRS
+  prefix[$i]=p${prefix[$i]}
+  inputs "${out[$i]}"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/homogenize/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dZeropad \
+    -RL "$gRL" \
+    -AP "$gAP" \
+    -IS "$gIS" \
+    -prefix ${out[$i]} \
+    ${in[$i]} &> ${prefix[$i]}$i.log 
+  fi; close.node
+  log "HOMOGENIZE RS ";
+  toRS
 done
 input.error
 echo
+
+
+# REORIENT T1 TO TEMPLATE================================================
+printf "\n====================REORIENT T1 TO TEMPLATE===================\n\n"
+pwd=($PWD)
+for i in $ID; do
+  fromT1
+  get.info1 "template/MNI152_1mm_uni+tlrc"
+  prefix[$i]=r${prefix[$i]}
+  inputs "${out[$i]}"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/reorient_template/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dresample \
+    -orient "$orient" \
+    -prefix ${out[$i]} \
+    -inset ${in[$i]} &> ${prefix[$i]}$i.log 
+  fi; close.node
+  log "REORIENT T1 TO TEMP "
+  toT1
+done 
+input.error
+echo
+
+# REORIENT RS TO TEMPLATE================================================
+printf "\n====================REORIENT RS TO TEMPLATE===================\n\n"
+pwd=($PWD)
+for i in $ID; do
+  fromRS
+  get.info1 "template/MNI152_1mm_uni+tlrc"
+  prefix[$i]=r${prefix[$i]}
+  inputs "${out[$i]}"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/reorient_template/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dresample \
+    -orient "$orient" \
+    -prefix ${out[$i]} \
+    -inset ${in[$i]} &> ${prefix[$i]}$i.log 
+  fi; close.node
+  log "REORIENT RS TO TEMP "
+  toRS
+done 
+input.error
+echo
+
+
+# Align center T1 TO TEMPLATE================================================
+printf "\n====================Align center T1 TO TEMPLATE===================\n\n"
+pwd=($PWD)
+for i in $ID; do
+  fromT1
+  prefix[$i]=a${prefix[$i]}
+  inputs "${out[$i]}"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/align_center/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    @Align_Centers \
+    -base "$template" \
+    -dset ${in[$i]} &> ${prefix[$i]}$i.log 
+    mv rd_T1_"$i"_shft.nii ${prefix[$i]}$i.nii &>> ${prefix[$i]}$i.log 
+    mv rd_T1_"$i"_shft.1D ${prefix[$i]}$i.1D &>> ${prefix[$i]}$i.log 
+  fi; close.node
+  log "Align center T1 TO TEMP "
+done 
+input.error
+echo
+
+# Unifaze T1 ===========================================================
+printf "\n=========================Unifaze T1========================\n\n"
+pwd=($PWD)
+for i in $ID; do
+  prefix[$i]=u${prefix[$i]}
+  inputs "${out[$i]}"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/unifaze/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dUnifize \
+    -prefix ${out[$i]} \
+    -input ${in[$i]} &> ${prefix[$i]}$i.log 
+  fi; close.node
+  log "Unifaze T1 "
+done 
+input.error
+echo
 exit
- # <<=======================================================================
 
-
-## HOMOGENIZE GRID
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Aplicando etapa Homogenize Grid às imagens ============"
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dZeropad \
-  -RL "$gRL" \
-  -AP "$gAP" \
-  -IS "$gIS" \
-  -prefix pdrt_RS_"$i" \
-  drt_RS_"$i"+orig
-done
-
-## REORIENT TO TEMPLATE
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Aplicando etapa Reorient to templete às imagens =========="
-echo "===================================================================="
-echo
-### Reorient T1
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dresample \
-  -orient "$orient" \
-  -prefix rd_T1_"$i" \
-  -inset d_T1_"$i"+orig
-done
-
-### Reorient fMRI
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dresample \
-  -orient "$orient" \
-  -prefix rpdrt_RS_"$i" \
-  -inset pdrt_RS_"$i"+orig
-done
-
-## ALIGN CENTER T1 TO TEMPLATE
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "==== Aplicando etapa Align center of T1 to template às imagens ====="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  @Align_Centers \
-  -base "$template" \
-  -dset rd_T1_"$i"+orig
-done
+## =============================================================================
+## ====================== SKULLSTRIP MANUAL=====================================
+## =============================================================================
 
 ## UNIFORMIZE T1
 cd "$pathpi"

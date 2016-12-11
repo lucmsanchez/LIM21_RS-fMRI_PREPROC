@@ -113,6 +113,21 @@ done
 
 # ==============================================================================
 
+# DECLARANDO VARIÁVEIS ===========================================================
+declare -A prefix
++ declare -A prefix
+declare -A in in_2 in_3 in_4 in_5
++ declare -A in in_2 in_3 in_4 in_5
+declare -A inpath
++ declare -A inpath
+declare -A out out_2 out_3 ou_4 out_5
++ declare -A out out_2 out_3 ou_4 out_5
+declare -A outpath
++ declare -A outpath
+declare -A outrs outt1 outpathrs outpatht1 prefixrs prefixt1
++ declare -A outrs outt1 outpathrs outpatht1 prefixrs prefixt1
+# ==============================================================================
+
 # DECLARANDO FUNÇÕES ===========================================================
 check () {
   if command -v $1 > /dev/null; then
@@ -191,8 +206,7 @@ close.node () {
   local e=0
   if [ $go -eq 1 ]; then  
     cd $pwd
-    mv ${inpath[$i]}${prefixrs[$i]}* ${outpath[$i]} 2> /dev/null
-    mv ${inpath[$i]}${prefixt1[$i]}* ${outpath[$i]} 2> /dev/null
+    mv ${inpath[$i]}${prefix[$i]}* ${outpath[$i]} 2> /dev/null
      for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do 
       [ -f ${outpath[$i]}$iii ] ||  e=$((e + 1)) 
     done
@@ -204,9 +218,7 @@ close.node () {
     fi
   fi
 
- files1=$( find "${inpath[$i]}" -name "${prefixrs[$i]}*" )
- files2=$( find "${inpath[$i]}" -name "${prefixt1[$i]}*" )
- files=$files1$files2
+ files=$( find "${inpath[$i]}" -name "${prefix[$i]}*" )
   for f in $files; do
     mv $f ${outpath[$i]} 2> /dev/null
   done
@@ -241,14 +253,38 @@ if [ $go -eq 1 ]; then
   echo >> DATA/preproc_$i.log
   echo "ETAPA: $1  - RUNTIME: $(date)" >> DATA/preproc_$i.log
   echo >> DATA/preproc_$i.log
-  echo "PREFIX: ${prefixrs[$i]}" >> DATA/preproc_$i.log
+  echo "PREFIX: ${prefix[$i]}" >> DATA/preproc_$i.log
   echo "INPUT PATH: ${inpath[$i]} "  >> DATA/preproc_$i.log
   echo "INPUTS: ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}" >>DATA/preproc_$i.log
   echo "OUTPUT PATH: ${outpath[$i]}" >> DATA/preproc_$i.log
   echo "OUTPUTS: ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}" >> DATA/preproc_$i.log
   echo >> DATA/preproc_$i.log
-  cat ${outpath[$i]}${prefixrs[$i]}$i.log >> DATA/preproc_$i.log
+  cat ${outpath[$i]}${prefix[$i]}$i.log >> DATA/preproc_$i.log
 fi
+}
+
+toRS () {
+  outrs[$i]=${out[$i]}
+  outpathrs[$i]=${outpath[$i]}
+  prefixrs[$i]=${prefix[$i]}
+  }
+
+toT1 () {
+  outt1[$i]=${out[$i]}
+  outpatht1[$i]=${outpath[$i]}
+  prefixt1[$i]=${prefix[$i]}
+}
+
+fromRS () {
+  out[$i]=${outrs[$i]}
+  outpath[$i]=${outpathrs[$i]}
+  prefix[$i]=${prefixrs[$i]}
+}
+
+fromT1 () {
+  out[$i]=${outt1[$i]}
+  outpath[$i]=${outpatht1[$i]}
+  prefix[$i]=${prefixt1[$i]}
 }
 # ==============================================================================
 
@@ -294,7 +330,7 @@ check matlab
 Protocolo de pré-processamento de RS-fMRI
 --------------------------------------
 
-RUNTIME: Fri Dec  9 11:24:13 BRST 2016
+RUNTIME: Fri Dec  9 17:20:10 BRST 2016
 
 Programas necessários:
 GNU bash           ...OK
@@ -319,7 +355,7 @@ if [ ! -z $config ]; then
   if [ -f $config ]; then
     source $config
     a=0
-    for var in ptn mcbase gRL gAP gIS orient template blur; do
+    for var in ptn mcbase gRL gAP gIS TR template blur; do
       if [[ -z "${!var:-}" ]]; then
       echo "Variável $var não encontrada"
       a=$(($a + 1))
@@ -348,7 +384,7 @@ mcbase=100
 gRL=90
 gAP=90
 gIS=60
-orient="rpi"
+#orient="rpi"
 template="MNI152_1mm_uni+tlrc"
 blur=6
 EOL
@@ -365,8 +401,6 @@ fi
 
 TR=2
 ++ TR=2
-hp=0
-++ hp=0
 ptn=seq+z
 ++ ptn=seq+z
 mcbase=100
@@ -377,28 +411,27 @@ gAP=90
 ++ gAP=90
 gIS=60
 ++ gIS=60
-orient="rpi"
-++ orient=rpi
+#orient="rpi"
 template="MNI152_1mm_uni+tlrc"
 ++ template=MNI152_1mm_uni+tlrc
 blur=6
 ++ blur=6
 + a=0
-+ for var in ptn mcbase gRL gAP gIS orient template blur
++ for var in ptn mcbase gRL gAP gIS TR template blur
 + [[ -z seq+z ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
++ for var in ptn mcbase gRL gAP gIS TR template blur
 + [[ -z 100 ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
++ for var in ptn mcbase gRL gAP gIS TR template blur
 + [[ -z 90 ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
++ for var in ptn mcbase gRL gAP gIS TR template blur
 + [[ -z 90 ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
++ for var in ptn mcbase gRL gAP gIS TR template blur
 + [[ -z 60 ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
-+ [[ -z rpi ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
++ for var in ptn mcbase gRL gAP gIS TR template blur
++ [[ -z 2 ]]
++ for var in ptn mcbase gRL gAP gIS TR template blur
 + [[ -z MNI152_1mm_uni+tlrc ]]
-+ for var in ptn mcbase gRL gAP gIS orient template blur
++ for var in ptn mcbase gRL gAP gIS TR template blur
 + [[ -z 6 ]]
 + '[' '!' 0 -eq 0 ']'
 + unset a
@@ -412,6 +445,8 @@ Slice timing correction - sequência de aquisição  => $ptn
 Motion correction       - valor base              => $mcbase
 Homogenize Grid         - tamanho da grade        => $gRL $gAP $gIS
 
+TEMPLATE: $template
+
 EOF
 + fold -s
 As variáveis que serão usadas como parametros para as análises são:
@@ -419,6 +454,8 @@ Aztec                   - Tempo de repetição(s)   => 2
 Slice timing correction - sequência de aquisição  => seq+z
 Motion correction       - valor base              => 100
 Homogenize Grid         - tamanho da grade        => 90 90 60
+
+TEMPLATE: MNI152_1mm_uni+tlrc
 
 
 # Checando arquivo com nome dos indivíduos
@@ -590,6 +627,28 @@ if [ ! $a -eq 0 ]; then
 fi
 + '[' '!' 0 -eq 0 ']'
 
+# BUSCANDO O TEMPLATE
+temp=$(find . -name "$template*")
+find . -name "$template*"
+++ find . -name 'MNI152_1mm_uni+tlrc*'
++ temp='./template/MNI152_1mm_uni+tlrc.HEAD
+./template/MNI152_1mm_uni+tlrc.BRIK.gz'
+if [ ! -z "$temp" ];then
+  [ ! -d template ] && mkdir template 
+  for tp in $temp; do
+    mv $tp template 2> /dev/null
+  done
+else
+  echo "Template $template não encontrado." && exit
+fi
++ '[' '!' -z './template/MNI152_1mm_uni+tlrc.HEAD
+./template/MNI152_1mm_uni+tlrc.BRIK.gz' ']'
++ '[' '!' -d template ']'
++ for tp in '$temp'
++ mv ./template/MNI152_1mm_uni+tlrc.HEAD template
++ for tp in '$temp'
++ mv ./template/MNI152_1mm_uni+tlrc.BRIK.gz template
+
 [ -d DATA ] || mkdir DATA
 + '[' -d DATA ']'
 [ -d OUTPUT ] || mkdir OUTPUT
@@ -684,41 +743,30 @@ if [ ! $a -eq 0 ]; then
 fi
 + '[' '!' 0 -eq 0 ']'
 
-declare -A prefixt1
-+ declare -A prefixt1
-declare -A prefixrs
-+ declare -A prefixrs
-declare -A in in_2 in_3 in_4 in_5
-+ declare -A in in_2 in_3 in_4 in_5
-declare -A inpath
-+ declare -A inpath
-declare -A out out_2 out_3 ou_4 out_5
-+ declare -A out out_2 out_3 ou_4 out_5
-declare -A outpath
-+ declare -A outpath
+
 for i in $ID; do
-prefixrs[$i]=_RS_
+prefix[$i]=_RS_
 prefixt1[$i]=_T1_
 out[$i]=RS_$i.nii
 outpath[$i]=DATA/$i/
 done
 + for i in '$ID'
-+ prefixrs[$i]=_RS_
++ prefix[$i]=_RS_
 + prefixt1[$i]=_T1_
 + out[$i]=RS_C000917.nii
 + outpath[$i]=DATA/C000917/
 + for i in '$ID'
-+ prefixrs[$i]=_RS_
++ prefix[$i]=_RS_
 + prefixt1[$i]=_T1_
 + out[$i]=RS_P001543.nii
 + outpath[$i]=DATA/P001543/
 + for i in '$ID'
-+ prefixrs[$i]=_RS_
++ prefix[$i]=_RS_
 + prefixt1[$i]=_T1_
 + out[$i]=RS_P001562.nii
 + outpath[$i]=DATA/P001562/
 + for i in '$ID'
-+ prefixrs[$i]=_RS_
++ prefix[$i]=_RS_
 + prefixt1[$i]=_T1_
 + out[$i]=RS_T000001.nii
 + outpath[$i]=DATA/T000001/
@@ -729,10 +777,10 @@ if [ $aztec -eq 1 ]; then
   printf "=============================AZTEC==================================\n\n"
   pwd=($PWD)
   for i in $ID; do
-    prefixrs[$i]=z${prefixrs[$i]}
+    prefix[$i]=z${prefix[$i]}
     inputs "${out[$i]}" "RS_$i.log"
     inpath[$i]=${outpath[$i]}
-    outputs "${prefixrs[$i]}$i.nii"
+    outputs "${prefix[$i]}$i.nii"
     outpath[$i]=DATA/$i/aztec/
     echo -n "$i> "
     open.node; if [ $go -eq 1 ]; then
@@ -747,7 +795,7 @@ if [ $aztec -eq 1 ]; then
    #  rm 3d/3d* && \
    #  3dTcat -prefix ${out[$i]} -TR $TR 3d/aztec* && \
    #  rm 3d/aztec* 3d azt* && \ 
-      &> ${prefixrs[$i]}$i.log 
+     &> ${prefix[$i]}$i.log 
       #
     fi; close.node
     log "Aztec"
@@ -765,10 +813,10 @@ printf "=======================SLICE TIMING CORRECTION====================\n\n"
 pwd=($PWD)
 + pwd=($PWD)
 for i in $ID; do
-  prefixrs[$i]=t${prefixrs[$i]}
+  prefix[$i]=t${prefix[$i]}
   inputs "${out[$i]}"
   inpath[$i]=${outpath[$i]}
-  outputs "${prefixrs[$i]}$i.nii"
+  outputs "${prefix[$i]}$i.nii"
   outpath[$i]=DATA/$i/slice_correction/
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
@@ -778,13 +826,13 @@ for i in $ID; do
       -tpattern $ptn \
       -prefix ${out[$i]} \
       -Fourier \
-      ${in[$i]} &> ${prefixrs[$i]}$i.log 
+      ${in[$i]} &> ${prefix[$i]}$i.log 
     #
   fi; close.node
   log "Slice Timing Correction"
 done
 + for i in '$ID'
-+ prefixrs[$i]=t_RS_
++ prefix[$i]=t_RS_
 + inputs RS_C000917.nii
 + in[$i]=RS_C000917.nii
 + in_2[$i]=
@@ -826,13 +874,8 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
- find "${inpath[$i]}" -name "${prefixrs[$i]}*" 
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/C000917/ -name 't_RS_*'
-+ files1='DATA/C000917/slice_correction/t_RS_C000917.nii
-DATA/C000917/slice_correction/t_RS_C000917.log'
- find "${inpath[$i]}" -name "${prefixt1[$i]}*" 
-++ find DATA/C000917/ -name '_T1_*'
-+ files2=
 + files='DATA/C000917/slice_correction/t_RS_C000917.nii
 DATA/C000917/slice_correction/t_RS_C000917.log'
 + for f in '$files'
@@ -842,7 +885,7 @@ DATA/C000917/slice_correction/t_RS_C000917.log'
 + log 'Slice Timing Correction'
 + '[' 0 -eq 1 ']'
 + for i in '$ID'
-+ prefixrs[$i]=t_RS_
++ prefix[$i]=t_RS_
 + inputs RS_P001543.nii
 + in[$i]=RS_P001543.nii
 + in_2[$i]=
@@ -884,13 +927,8 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
- find "${inpath[$i]}" -name "${prefixrs[$i]}*" 
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001543/ -name 't_RS_*'
-+ files1='DATA/P001543/slice_correction/t_RS_P001543.log
-DATA/P001543/slice_correction/t_RS_P001543.nii'
- find "${inpath[$i]}" -name "${prefixt1[$i]}*" 
-++ find DATA/P001543/ -name '_T1_*'
-+ files2=
 + files='DATA/P001543/slice_correction/t_RS_P001543.log
 DATA/P001543/slice_correction/t_RS_P001543.nii'
 + for f in '$files'
@@ -900,7 +938,7 @@ DATA/P001543/slice_correction/t_RS_P001543.nii'
 + log 'Slice Timing Correction'
 + '[' 0 -eq 1 ']'
 + for i in '$ID'
-+ prefixrs[$i]=t_RS_
++ prefix[$i]=t_RS_
 + inputs RS_P001562.nii
 + in[$i]=RS_P001562.nii
 + in_2[$i]=
@@ -942,13 +980,8 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
- find "${inpath[$i]}" -name "${prefixrs[$i]}*" 
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001562/ -name 't_RS_*'
-+ files1='DATA/P001562/slice_correction/t_RS_P001562.nii
-DATA/P001562/slice_correction/t_RS_P001562.log'
- find "${inpath[$i]}" -name "${prefixt1[$i]}*" 
-++ find DATA/P001562/ -name '_T1_*'
-+ files2=
 + files='DATA/P001562/slice_correction/t_RS_P001562.nii
 DATA/P001562/slice_correction/t_RS_P001562.log'
 + for f in '$files'
@@ -958,7 +991,7 @@ DATA/P001562/slice_correction/t_RS_P001562.log'
 + log 'Slice Timing Correction'
 + '[' 0 -eq 1 ']'
 + for i in '$ID'
-+ prefixrs[$i]=t_RS_
++ prefix[$i]=t_RS_
 + inputs RS_T000001.nii
 + in[$i]=RS_T000001.nii
 + in_2[$i]=
@@ -1000,13 +1033,8 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
- find "${inpath[$i]}" -name "${prefixrs[$i]}*" 
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/T000001/ -name 't_RS_*'
-+ files1='DATA/T000001/slice_correction/t_RS_T000001.log
-DATA/T000001/slice_correction/t_RS_T000001.nii'
- find "${inpath[$i]}" -name "${prefixt1[$i]}*" 
-++ find DATA/T000001/ -name '_T1_*'
-+ files2=
 + files='DATA/T000001/slice_correction/t_RS_T000001.log
 DATA/T000001/slice_correction/t_RS_T000001.nii'
 + for f in '$files'
@@ -1031,10 +1059,10 @@ printf "\n=========================MOTION CORRECTION=======================\n\n"
 pwd=($PWD)
 + pwd=($PWD)
 for i in $ID; do
-  prefixrs[$i]=r${prefixrs[$i]}
+  prefix[$i]=r${prefix[$i]}
   inputs "${out[$i]}"
   inpath[$i]=${outpath[$i]}
-  outputs "${prefixrs[$i]}$i.nii" "${prefixrs[$i]}mc_$i.1d" "${prefixrs[$i]}mcplot_$i.jpg"
+  outputs "${prefix[$i]}$i.nii" "${prefix[$i]}mc_$i.1d" "${prefix[$i]}mcplot_$i.jpg"
   outpath[$i]=DATA/$i/motion_correction/
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
@@ -1046,18 +1074,18 @@ for i in $ID; do
     -Fourier \
     -verbose \
     -1Dfile ${out_2[$i]} \
-    ${in[$i]} &>> ${prefixrs[$i]}$i.log && \
+    ${in[$i]} &>> ${prefix[$i]}$i.log && \
     1dplot \
     -jpg ${out_3[$i]} \
     -volreg -dx $TR \
     -xlabel Time \
     -thick \
-    ${out_2[$i]} &>> ${prefixrs[$i]}$i.log 
+    ${out_2[$i]} &>> ${prefix[$i]}$i.log 
   fi; close.node
   log "Motion Correction "
 done
 + for i in '$ID'
-+ prefixrs[$i]=rt_RS_
++ prefix[$i]=rt_RS_
 + inputs t_RS_C000917.nii
 + in[$i]=t_RS_C000917.nii
 + in_2[$i]=
@@ -1107,17 +1135,13 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
- find "${inpath[$i]}" -name "${prefixrs[$i]}*" 
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/C000917/slice_correction/ -name 'rt_RS_*'
-+ files1=
- find "${inpath[$i]}" -name "${prefixt1[$i]}*" 
-++ find DATA/C000917/slice_correction/ -name '_T1_*'
-+ files2=
 + files=
 + log 'Motion Correction '
 + '[' 0 -eq 1 ']'
 + for i in '$ID'
-+ prefixrs[$i]=rt_RS_
++ prefix[$i]=rt_RS_
 + inputs t_RS_P001543.nii
 + in[$i]=t_RS_P001543.nii
 + in_2[$i]=
@@ -1167,17 +1191,13 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
- find "${inpath[$i]}" -name "${prefixrs[$i]}*" 
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001543/slice_correction/ -name 'rt_RS_*'
-+ files1=
- find "${inpath[$i]}" -name "${prefixt1[$i]}*" 
-++ find DATA/P001543/slice_correction/ -name '_T1_*'
-+ files2=
 + files=
 + log 'Motion Correction '
 + '[' 0 -eq 1 ']'
 + for i in '$ID'
-+ prefixrs[$i]=rt_RS_
++ prefix[$i]=rt_RS_
 + inputs t_RS_P001562.nii
 + in[$i]=t_RS_P001562.nii
 + in_2[$i]=
@@ -1227,17 +1247,13 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
- find "${inpath[$i]}" -name "${prefixrs[$i]}*" 
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001562/slice_correction/ -name 'rt_RS_*'
-+ files1=
- find "${inpath[$i]}" -name "${prefixt1[$i]}*" 
-++ find DATA/P001562/slice_correction/ -name '_T1_*'
-+ files2=
 + files=
 + log 'Motion Correction '
 + '[' 0 -eq 1 ']'
 + for i in '$ID'
-+ prefixrs[$i]=rt_RS_
++ prefix[$i]=rt_RS_
 + inputs t_RS_T000001.nii
 + in[$i]=t_RS_T000001.nii
 + in_2[$i]=
@@ -1287,12 +1303,8 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
- find "${inpath[$i]}" -name "${prefixrs[$i]}*" 
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/T000001/slice_correction/ -name 'rt_RS_*'
-+ files1=
- find "${inpath[$i]}" -name "${prefixt1[$i]}*" 
-++ find DATA/T000001/slice_correction/ -name '_T1_*'
-+ files2=
 + files=
 + log 'Motion Correction '
 + '[' 0 -eq 1 ']'
@@ -1313,22 +1325,22 @@ pwd=($PWD)
 + pwd=($PWD)
 for i in $ID; do
   get.info1 "${outpath[$i]}${out[$i]}"; if [ $is_oblique -eq 1 ]; then 
-  prefixrs[$i]=d${prefixrs[$i]}
+  prefix[$i]=d${prefix[$i]}
   inputs "${out[$i]}"
   inpath[$i]=${outpath[$i]}
-  outputs "${prefixrs[$i]}$i.nii"
+  outputs "${prefix[$i]}$i.nii"
   outpath[$i]=DATA/$i/deoblique/
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
     3dWarp \
-    -verb
+    -verb \
     -deoblique \
     -prefix  ${out[$i]} \
-    ${in[$i]} &> ${prefixrs[$i]}$i.log 
+    ${in[$i]} &> ${prefix[$i]}$i.log 
   fi; close.node
   else echo "$i não é obliquo"
   log "DEOBLIQUE RS "; fi
-  declare -A outrs[$i]=${prefixrs[$i]}$i.nii
+  toRS
 done
 + for i in '$ID'
 + get.info1 DATA/C000917/motion_correction/rt_RS_C000917.nii
@@ -1352,7 +1364,7 @@ done
 ++ 3dinfo -orient DATA/C000917/motion_correction/rt_RS_C000917.nii
 + orient=RAI
 + '[' 1 -eq 1 ']'
-+ prefixrs[$i]=drt_RS_
++ prefix[$i]=drt_RS_
 + inputs rt_RS_C000917.nii
 + in[$i]=rt_RS_C000917.nii
 + in_2[$i]=
@@ -1379,41 +1391,28 @@ C000917> + open.node
 + '[' '!' -f DATA/C000917/motion_correction/rt_RS_C000917.nii ']'
 + for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
 + '[' '!' -f DATA/C000917/deoblique/drt_RS_C000917.nii ']'
-+ b=1
++ d=1
++ '[' DATA/C000917/deoblique/drt_RS_C000917.nii -ot DATA/C000917/motion_correction/rt_RS_C000917.nii ']'
 + '[' '!' 0 -eq 0 ']'
 + '[' 0 -eq 0 ']'
-+ '[' 1 -eq 0 ']'
++ '[' 0 -eq 0 ']'
 + '[' '!' 0 -eq 0 ']'
-+ '[' 1 -eq 1 ']'
-+ cd DATA/C000917/motion_correction/
-+ '[' 1 -eq 1 ']'
-+ 3dWarp -verb
-++ 3dWarp: AFNI version=AFNI_2011_12_21_1014 (Mar  6 2016) [64-bit]
-++ Authored by: RW Cox
-** FATAL ERROR: No transformation on command line!?
-** Program compile date = Mar  6 2016
-+ -deoblique -prefix drt_RS_C000917.nii rt_RS_C000917.nii
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
 + close.node
 + local e=0
-+ '[' 1 -eq 1 ']'
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ mv DATA/C000917/motion_correction/drt_RS_C000917.log DATA/C000917/deoblique/
-+ mv 'DATA/C000917/motion_correction/_T1_*' DATA/C000917/deoblique/
-+ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
-+ '[' -f DATA/C000917/deoblique/drt_RS_C000917.nii ']'
-+ e=1
-+ '[' '!' 1 -eq 0 ']'
-+ printf 'Houve um erro no processamento da imagem %s, consulte o log. \n' C000917
-Houve um erro no processamento da imagem C000917, consulte o log. 
-+ ex=1
- find "${inpath[$i]}" -name "${prefixrs[$i]}*" 
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/C000917/motion_correction/ -name 'drt_RS_*'
-+ files1=
- find "${inpath[$i]}" -name "${prefixt1[$i]}*" 
-++ find DATA/C000917/motion_correction/ -name '_T1_*'
-+ files2=
 + files=
-+ declare -A 'outrs[C000917]=drt_RS_C000917.nii'
++ toRS
++ outrs[$i]=drt_RS_C000917.nii
++ outpathrs[$i]=DATA/C000917/deoblique/
++ prefixrs[$i]=drt_RS_
 + for i in '$ID'
 + get.info1 DATA/P001543/motion_correction/rt_RS_P001543.nii
 + local image=DATA/P001543/motion_correction/rt_RS_P001543.nii
@@ -1436,7 +1435,7 @@ Houve um erro no processamento da imagem C000917, consulte o log.
 ++ 3dinfo -orient DATA/P001543/motion_correction/rt_RS_P001543.nii
 + orient=RAI
 + '[' 1 -eq 1 ']'
-+ prefixrs[$i]=drt_RS_
++ prefix[$i]=drt_RS_
 + inputs rt_RS_P001543.nii
 + in[$i]=rt_RS_P001543.nii
 + in_2[$i]=
@@ -1463,41 +1462,28 @@ P001543> + open.node
 + '[' '!' -f DATA/P001543/motion_correction/rt_RS_P001543.nii ']'
 + for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
 + '[' '!' -f DATA/P001543/deoblique/drt_RS_P001543.nii ']'
-+ b=1
++ d=1
++ '[' DATA/P001543/deoblique/drt_RS_P001543.nii -ot DATA/P001543/motion_correction/rt_RS_P001543.nii ']'
 + '[' '!' 0 -eq 0 ']'
 + '[' 0 -eq 0 ']'
-+ '[' 1 -eq 0 ']'
++ '[' 0 -eq 0 ']'
 + '[' '!' 0 -eq 0 ']'
-+ '[' 1 -eq 1 ']'
-+ cd DATA/P001543/motion_correction/
-+ '[' 1 -eq 1 ']'
-+ 3dWarp -verb
-++ 3dWarp: AFNI version=AFNI_2011_12_21_1014 (Mar  6 2016) [64-bit]
-++ Authored by: RW Cox
-** FATAL ERROR: No transformation on command line!?
-** Program compile date = Mar  6 2016
-+ -deoblique -prefix drt_RS_P001543.nii rt_RS_P001543.nii
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
 + close.node
 + local e=0
-+ '[' 1 -eq 1 ']'
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ mv DATA/P001543/motion_correction/drt_RS_P001543.log DATA/P001543/deoblique/
-+ mv 'DATA/P001543/motion_correction/_T1_*' DATA/P001543/deoblique/
-+ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
-+ '[' -f DATA/P001543/deoblique/drt_RS_P001543.nii ']'
-+ e=1
-+ '[' '!' 1 -eq 0 ']'
-+ printf 'Houve um erro no processamento da imagem %s, consulte o log. \n' P001543
-Houve um erro no processamento da imagem P001543, consulte o log. 
-+ ex=1
- find "${inpath[$i]}" -name "${prefixrs[$i]}*" 
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001543/motion_correction/ -name 'drt_RS_*'
-+ files1=
- find "${inpath[$i]}" -name "${prefixt1[$i]}*" 
-++ find DATA/P001543/motion_correction/ -name '_T1_*'
-+ files2=
 + files=
-+ declare -A 'outrs[P001543]=drt_RS_P001543.nii'
++ toRS
++ outrs[$i]=drt_RS_P001543.nii
++ outpathrs[$i]=DATA/P001543/deoblique/
++ prefixrs[$i]=drt_RS_
 + for i in '$ID'
 + get.info1 DATA/P001562/motion_correction/rt_RS_P001562.nii
 + local image=DATA/P001562/motion_correction/rt_RS_P001562.nii
@@ -1520,7 +1506,7 @@ Houve um erro no processamento da imagem P001543, consulte o log.
 ++ 3dinfo -orient DATA/P001562/motion_correction/rt_RS_P001562.nii
 + orient=RAI
 + '[' 1 -eq 1 ']'
-+ prefixrs[$i]=drt_RS_
++ prefix[$i]=drt_RS_
 + inputs rt_RS_P001562.nii
 + in[$i]=rt_RS_P001562.nii
 + in_2[$i]=
@@ -1547,41 +1533,28 @@ P001562> + open.node
 + '[' '!' -f DATA/P001562/motion_correction/rt_RS_P001562.nii ']'
 + for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
 + '[' '!' -f DATA/P001562/deoblique/drt_RS_P001562.nii ']'
-+ b=1
++ d=1
++ '[' DATA/P001562/deoblique/drt_RS_P001562.nii -ot DATA/P001562/motion_correction/rt_RS_P001562.nii ']'
 + '[' '!' 0 -eq 0 ']'
 + '[' 0 -eq 0 ']'
-+ '[' 1 -eq 0 ']'
++ '[' 0 -eq 0 ']'
 + '[' '!' 0 -eq 0 ']'
-+ '[' 1 -eq 1 ']'
-+ cd DATA/P001562/motion_correction/
-+ '[' 1 -eq 1 ']'
-+ 3dWarp -verb
-++ 3dWarp: AFNI version=AFNI_2011_12_21_1014 (Mar  6 2016) [64-bit]
-++ Authored by: RW Cox
-** FATAL ERROR: No transformation on command line!?
-** Program compile date = Mar  6 2016
-+ -deoblique -prefix drt_RS_P001562.nii rt_RS_P001562.nii
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
 + close.node
 + local e=0
-+ '[' 1 -eq 1 ']'
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ mv DATA/P001562/motion_correction/drt_RS_P001562.log DATA/P001562/deoblique/
-+ mv 'DATA/P001562/motion_correction/_T1_*' DATA/P001562/deoblique/
-+ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
-+ '[' -f DATA/P001562/deoblique/drt_RS_P001562.nii ']'
-+ e=1
-+ '[' '!' 1 -eq 0 ']'
-+ printf 'Houve um erro no processamento da imagem %s, consulte o log. \n' P001562
-Houve um erro no processamento da imagem P001562, consulte o log. 
-+ ex=1
- find "${inpath[$i]}" -name "${prefixrs[$i]}*" 
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001562/motion_correction/ -name 'drt_RS_*'
-+ files1=
- find "${inpath[$i]}" -name "${prefixt1[$i]}*" 
-++ find DATA/P001562/motion_correction/ -name '_T1_*'
-+ files2=
 + files=
-+ declare -A 'outrs[P001562]=drt_RS_P001562.nii'
++ toRS
++ outrs[$i]=drt_RS_P001562.nii
++ outpathrs[$i]=DATA/P001562/deoblique/
++ prefixrs[$i]=drt_RS_
 + for i in '$ID'
 + get.info1 DATA/T000001/motion_correction/rt_RS_T000001.nii
 + local image=DATA/T000001/motion_correction/rt_RS_T000001.nii
@@ -1604,7 +1577,7 @@ Houve um erro no processamento da imagem P001562, consulte o log.
 ++ 3dinfo -orient DATA/T000001/motion_correction/rt_RS_T000001.nii
 + orient=RAI
 + '[' 1 -eq 1 ']'
-+ prefixrs[$i]=drt_RS_
++ prefix[$i]=drt_RS_
 + inputs rt_RS_T000001.nii
 + in[$i]=rt_RS_T000001.nii
 + in_2[$i]=
@@ -1631,42 +1604,1306 @@ T000001> + open.node
 + '[' '!' -f DATA/T000001/motion_correction/rt_RS_T000001.nii ']'
 + for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
 + '[' '!' -f DATA/T000001/deoblique/drt_RS_T000001.nii ']'
-+ b=1
++ d=1
++ '[' DATA/T000001/deoblique/drt_RS_T000001.nii -ot DATA/T000001/motion_correction/rt_RS_T000001.nii ']'
 + '[' '!' 0 -eq 0 ']'
 + '[' 0 -eq 0 ']'
-+ '[' 1 -eq 0 ']'
++ '[' 0 -eq 0 ']'
 + '[' '!' 0 -eq 0 ']'
-+ '[' 1 -eq 1 ']'
-+ cd DATA/T000001/motion_correction/
-+ '[' 1 -eq 1 ']'
-+ 3dWarp -verb
-++ 3dWarp: AFNI version=AFNI_2011_12_21_1014 (Mar  6 2016) [64-bit]
-++ Authored by: RW Cox
-** FATAL ERROR: No transformation on command line!?
-** Program compile date = Mar  6 2016
-+ -deoblique -prefix drt_RS_T000001.nii rt_RS_T000001.nii
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
 + close.node
 + local e=0
-+ '[' 1 -eq 1 ']'
-+ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
-+ mv DATA/T000001/motion_correction/drt_RS_T000001.log DATA/T000001/deoblique/
-+ mv 'DATA/T000001/motion_correction/_T1_*' DATA/T000001/deoblique/
-+ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
-+ '[' -f DATA/T000001/deoblique/drt_RS_T000001.nii ']'
-+ e=1
-+ '[' '!' 1 -eq 0 ']'
-+ printf 'Houve um erro no processamento da imagem %s, consulte o log. \n' T000001
-Houve um erro no processamento da imagem T000001, consulte o log. 
-+ ex=1
- find "${inpath[$i]}" -name "${prefixrs[$i]}*" 
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/T000001/motion_correction/ -name 'drt_RS_*'
-+ files1=
- find "${inpath[$i]}" -name "${prefixt1[$i]}*" 
-++ find DATA/T000001/motion_correction/ -name '_T1_*'
-+ files2=
 + files=
-+ declare -A 'outrs[T000001]=drt_RS_T000001.nii'
++ toRS
++ outrs[$i]=drt_RS_T000001.nii
++ outpathrs[$i]=DATA/T000001/deoblique/
++ prefixrs[$i]=drt_RS_
 input.error
 + input.error
++ '[' 0 -eq 1 ']'
+echo
++ echo
+
+
+# DEOBLIQUE T1============================================================
+printf "\n=========================DEOBLIQUE T1=======================\n\n"
++ printf '\n=========================DEOBLIQUE T1=======================\n\n'
+
+=========================DEOBLIQUE T1=======================
+
+pwd=($PWD)
++ pwd=($PWD)
+for i in $ID; do
+  get.info1 "DATA/$i/T1_$i.nii"; if [ $is_oblique -eq 1 ]; then 
+  prefix[$i]=d_T1_
+  inputs "T1_$i.nii"
+  inpath[$i]=DATA/$i/
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/deoblique/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dWarp \
+    -verb \
+    -deoblique \
+    -prefix  ${out[$i]} \
+    ${in[$i]} &> ${prefix[$i]}$i.log 
+  fi; close.node
+  else echo "$i não é obliquo"
+  log "DEOBLIQUE T1 "; fi
+  toT1
+done 
++ for i in '$ID'
++ get.info1 DATA/C000917/T1_C000917.nii
++ local image=DATA/C000917/T1_C000917.nii
+3dinfo -space $image
+++ 3dinfo -space DATA/C000917/T1_C000917.nii
++ space=ORIG
+3dinfo -is_oblique $image
+++ 3dinfo -is_oblique DATA/C000917/T1_C000917.nii
++ is_oblique=1
+3dinfo -prefix $image
+++ 3dinfo -prefix DATA/C000917/T1_C000917.nii
++ afniprefix=T1_C000917.nii
+3dinfo -tr $image
+++ 3dinfo -tr DATA/C000917/T1_C000917.nii
++ tr=0.000000
+3dinfo -smode $image
+++ 3dinfo -smode DATA/C000917/T1_C000917.nii
++ smode=NIFTI
+3dinfo -orient $image
+++ 3dinfo -orient DATA/C000917/T1_C000917.nii
++ orient=ASL
 + '[' 1 -eq 1 ']'
++ prefix[$i]=d_T1_
++ inputs T1_C000917.nii
++ in[$i]=T1_C000917.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/C000917/
++ outputs d_T1_C000917.nii
++ out[$i]=d_T1_C000917.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/C000917/deoblique/
++ echo -n 'C000917> '
+C000917> + open.node
++ '[' -d DATA/C000917/deoblique/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/C000917/T1_C000917.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/C000917/deoblique/d_T1_C000917.nii ']'
++ d=1
++ '[' DATA/C000917/deoblique/d_T1_C000917.nii -ot DATA/C000917/T1_C000917.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/C000917/ -name 'd_T1_*'
++ files='DATA/C000917/deoblique/d_T1_C000917.nii
+DATA/C000917/deoblique/d_T1_C000917.log'
++ for f in '$files'
++ mv DATA/C000917/deoblique/d_T1_C000917.nii DATA/C000917/deoblique/
++ for f in '$files'
++ mv DATA/C000917/deoblique/d_T1_C000917.log DATA/C000917/deoblique/
++ toT1
++ outt1[$i]=d_T1_C000917.nii
++ outpatht1[$i]=DATA/C000917/deoblique/
++ prefixt1[$i]=d_T1_
++ for i in '$ID'
++ get.info1 DATA/P001543/T1_P001543.nii
++ local image=DATA/P001543/T1_P001543.nii
+3dinfo -space $image
+++ 3dinfo -space DATA/P001543/T1_P001543.nii
++ space=ORIG
+3dinfo -is_oblique $image
+++ 3dinfo -is_oblique DATA/P001543/T1_P001543.nii
++ is_oblique=1
+3dinfo -prefix $image
+++ 3dinfo -prefix DATA/P001543/T1_P001543.nii
++ afniprefix=T1_P001543.nii
+3dinfo -tr $image
+++ 3dinfo -tr DATA/P001543/T1_P001543.nii
++ tr=0.000000
+3dinfo -smode $image
+++ 3dinfo -smode DATA/P001543/T1_P001543.nii
++ smode=NIFTI
+3dinfo -orient $image
+++ 3dinfo -orient DATA/P001543/T1_P001543.nii
++ orient=ASL
++ '[' 1 -eq 1 ']'
++ prefix[$i]=d_T1_
++ inputs T1_P001543.nii
++ in[$i]=T1_P001543.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001543/
++ outputs d_T1_P001543.nii
++ out[$i]=d_T1_P001543.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/P001543/deoblique/
++ echo -n 'P001543> '
+P001543> + open.node
++ '[' -d DATA/P001543/deoblique/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001543/T1_P001543.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001543/deoblique/d_T1_P001543.nii ']'
++ d=1
++ '[' DATA/P001543/deoblique/d_T1_P001543.nii -ot DATA/P001543/T1_P001543.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001543/ -name 'd_T1_*'
++ files='DATA/P001543/deoblique/d_T1_P001543.nii
+DATA/P001543/deoblique/d_T1_P001543.log'
++ for f in '$files'
++ mv DATA/P001543/deoblique/d_T1_P001543.nii DATA/P001543/deoblique/
++ for f in '$files'
++ mv DATA/P001543/deoblique/d_T1_P001543.log DATA/P001543/deoblique/
++ toT1
++ outt1[$i]=d_T1_P001543.nii
++ outpatht1[$i]=DATA/P001543/deoblique/
++ prefixt1[$i]=d_T1_
++ for i in '$ID'
++ get.info1 DATA/P001562/T1_P001562.nii
++ local image=DATA/P001562/T1_P001562.nii
+3dinfo -space $image
+++ 3dinfo -space DATA/P001562/T1_P001562.nii
++ space=ORIG
+3dinfo -is_oblique $image
+++ 3dinfo -is_oblique DATA/P001562/T1_P001562.nii
++ is_oblique=1
+3dinfo -prefix $image
+++ 3dinfo -prefix DATA/P001562/T1_P001562.nii
++ afniprefix=T1_P001562.nii
+3dinfo -tr $image
+++ 3dinfo -tr DATA/P001562/T1_P001562.nii
++ tr=0.000000
+3dinfo -smode $image
+++ 3dinfo -smode DATA/P001562/T1_P001562.nii
++ smode=NIFTI
+3dinfo -orient $image
+++ 3dinfo -orient DATA/P001562/T1_P001562.nii
++ orient=ASL
++ '[' 1 -eq 1 ']'
++ prefix[$i]=d_T1_
++ inputs T1_P001562.nii
++ in[$i]=T1_P001562.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001562/
++ outputs d_T1_P001562.nii
++ out[$i]=d_T1_P001562.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/P001562/deoblique/
++ echo -n 'P001562> '
+P001562> + open.node
++ '[' -d DATA/P001562/deoblique/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001562/T1_P001562.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001562/deoblique/d_T1_P001562.nii ']'
++ d=1
++ '[' DATA/P001562/deoblique/d_T1_P001562.nii -ot DATA/P001562/T1_P001562.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001562/ -name 'd_T1_*'
++ files='DATA/P001562/deoblique/d_T1_P001562.nii
+DATA/P001562/deoblique/d_T1_P001562.log'
++ for f in '$files'
++ mv DATA/P001562/deoblique/d_T1_P001562.nii DATA/P001562/deoblique/
++ for f in '$files'
++ mv DATA/P001562/deoblique/d_T1_P001562.log DATA/P001562/deoblique/
++ toT1
++ outt1[$i]=d_T1_P001562.nii
++ outpatht1[$i]=DATA/P001562/deoblique/
++ prefixt1[$i]=d_T1_
++ for i in '$ID'
++ get.info1 DATA/T000001/T1_T000001.nii
++ local image=DATA/T000001/T1_T000001.nii
+3dinfo -space $image
+++ 3dinfo -space DATA/T000001/T1_T000001.nii
++ space=ORIG
+3dinfo -is_oblique $image
+++ 3dinfo -is_oblique DATA/T000001/T1_T000001.nii
++ is_oblique=1
+3dinfo -prefix $image
+++ 3dinfo -prefix DATA/T000001/T1_T000001.nii
++ afniprefix=T1_T000001.nii
+3dinfo -tr $image
+++ 3dinfo -tr DATA/T000001/T1_T000001.nii
++ tr=0.000000
+3dinfo -smode $image
+++ 3dinfo -smode DATA/T000001/T1_T000001.nii
++ smode=NIFTI
+3dinfo -orient $image
+++ 3dinfo -orient DATA/T000001/T1_T000001.nii
++ orient=ASL
++ '[' 1 -eq 1 ']'
++ prefix[$i]=d_T1_
++ inputs T1_T000001.nii
++ in[$i]=T1_T000001.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/T000001/
++ outputs d_T1_T000001.nii
++ out[$i]=d_T1_T000001.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/T000001/deoblique/
++ echo -n 'T000001> '
+T000001> + open.node
++ '[' -d DATA/T000001/deoblique/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/T000001/T1_T000001.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/T000001/deoblique/d_T1_T000001.nii ']'
++ d=1
++ '[' DATA/T000001/deoblique/d_T1_T000001.nii -ot DATA/T000001/T1_T000001.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/T000001/ -name 'd_T1_*'
++ files='DATA/T000001/deoblique/d_T1_T000001.log
+DATA/T000001/deoblique/d_T1_T000001.nii'
++ for f in '$files'
++ mv DATA/T000001/deoblique/d_T1_T000001.log DATA/T000001/deoblique/
++ for f in '$files'
++ mv DATA/T000001/deoblique/d_T1_T000001.nii DATA/T000001/deoblique/
++ toT1
++ outt1[$i]=d_T1_T000001.nii
++ outpatht1[$i]=DATA/T000001/deoblique/
++ prefixt1[$i]=d_T1_
+input.error
++ input.error
++ '[' 0 -eq 1 ']'
+echo
++ echo
+
+ # LEMBAR DE PRINTAR OS DADOS DO GRID NO RELATORIO DO CONTROLE DE QUALIDADE
+
+# HOMOGENIZE RS============================================================
+printf "\n=========================HOMOGENIZE RS=======================\n\n"
++ printf '\n=========================HOMOGENIZE RS=======================\n\n'
+
+=========================HOMOGENIZE RS=======================
+
+pwd=($PWD)
++ pwd=($PWD)
+for i in $ID; do 
+  fromRS
+  prefix[$i]=p${prefix[$i]}
+  inputs "${out[$i]}"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/homogenize/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dZeropad \
+    -RL "$gRL" \
+    -AP "$gAP" \
+    -IS "$gIS" \
+    -prefix ${out[$i]} \
+    ${in[$i]} &> ${prefix[$i]}$i.log 
+  fi; close.node
+  log "HOMOGENIZE RS ";
+  toRS
+done
++ for i in '$ID'
++ fromRS
++ out[$i]=drt_RS_C000917.nii
++ outpath[$i]=DATA/C000917/deoblique/
++ prefix[$i]=drt_RS_
++ prefix[$i]=pdrt_RS_
++ inputs drt_RS_C000917.nii
++ in[$i]=drt_RS_C000917.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/C000917/deoblique/
++ outputs pdrt_RS_C000917.nii
++ out[$i]=pdrt_RS_C000917.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/C000917/homogenize/
++ echo -n 'C000917> '
+C000917> + open.node
++ '[' -d DATA/C000917/homogenize/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/C000917/deoblique/drt_RS_C000917.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/C000917/homogenize/pdrt_RS_C000917.nii ']'
++ d=1
++ '[' DATA/C000917/homogenize/pdrt_RS_C000917.nii -ot DATA/C000917/deoblique/drt_RS_C000917.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/C000917/deoblique/ -name 'pdrt_RS_*'
++ files=
++ log 'HOMOGENIZE RS '
++ '[' 0 -eq 1 ']'
++ toRS
++ outrs[$i]=pdrt_RS_C000917.nii
++ outpathrs[$i]=DATA/C000917/homogenize/
++ prefixrs[$i]=pdrt_RS_
++ for i in '$ID'
++ fromRS
++ out[$i]=drt_RS_P001543.nii
++ outpath[$i]=DATA/P001543/deoblique/
++ prefix[$i]=drt_RS_
++ prefix[$i]=pdrt_RS_
++ inputs drt_RS_P001543.nii
++ in[$i]=drt_RS_P001543.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001543/deoblique/
++ outputs pdrt_RS_P001543.nii
++ out[$i]=pdrt_RS_P001543.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/P001543/homogenize/
++ echo -n 'P001543> '
+P001543> + open.node
++ '[' -d DATA/P001543/homogenize/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001543/deoblique/drt_RS_P001543.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001543/homogenize/pdrt_RS_P001543.nii ']'
++ d=1
++ '[' DATA/P001543/homogenize/pdrt_RS_P001543.nii -ot DATA/P001543/deoblique/drt_RS_P001543.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001543/deoblique/ -name 'pdrt_RS_*'
++ files=
++ log 'HOMOGENIZE RS '
++ '[' 0 -eq 1 ']'
++ toRS
++ outrs[$i]=pdrt_RS_P001543.nii
++ outpathrs[$i]=DATA/P001543/homogenize/
++ prefixrs[$i]=pdrt_RS_
++ for i in '$ID'
++ fromRS
++ out[$i]=drt_RS_P001562.nii
++ outpath[$i]=DATA/P001562/deoblique/
++ prefix[$i]=drt_RS_
++ prefix[$i]=pdrt_RS_
++ inputs drt_RS_P001562.nii
++ in[$i]=drt_RS_P001562.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001562/deoblique/
++ outputs pdrt_RS_P001562.nii
++ out[$i]=pdrt_RS_P001562.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/P001562/homogenize/
++ echo -n 'P001562> '
+P001562> + open.node
++ '[' -d DATA/P001562/homogenize/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001562/deoblique/drt_RS_P001562.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001562/homogenize/pdrt_RS_P001562.nii ']'
++ d=1
++ '[' DATA/P001562/homogenize/pdrt_RS_P001562.nii -ot DATA/P001562/deoblique/drt_RS_P001562.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001562/deoblique/ -name 'pdrt_RS_*'
++ files=
++ log 'HOMOGENIZE RS '
++ '[' 0 -eq 1 ']'
++ toRS
++ outrs[$i]=pdrt_RS_P001562.nii
++ outpathrs[$i]=DATA/P001562/homogenize/
++ prefixrs[$i]=pdrt_RS_
++ for i in '$ID'
++ fromRS
++ out[$i]=drt_RS_T000001.nii
++ outpath[$i]=DATA/T000001/deoblique/
++ prefix[$i]=drt_RS_
++ prefix[$i]=pdrt_RS_
++ inputs drt_RS_T000001.nii
++ in[$i]=drt_RS_T000001.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/T000001/deoblique/
++ outputs pdrt_RS_T000001.nii
++ out[$i]=pdrt_RS_T000001.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/T000001/homogenize/
++ echo -n 'T000001> '
+T000001> + open.node
++ '[' -d DATA/T000001/homogenize/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/T000001/deoblique/drt_RS_T000001.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/T000001/homogenize/pdrt_RS_T000001.nii ']'
++ d=1
++ '[' DATA/T000001/homogenize/pdrt_RS_T000001.nii -ot DATA/T000001/deoblique/drt_RS_T000001.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/T000001/deoblique/ -name 'pdrt_RS_*'
++ files=
++ log 'HOMOGENIZE RS '
++ '[' 0 -eq 1 ']'
++ toRS
++ outrs[$i]=pdrt_RS_T000001.nii
++ outpathrs[$i]=DATA/T000001/homogenize/
++ prefixrs[$i]=pdrt_RS_
+input.error
++ input.error
++ '[' 0 -eq 1 ']'
+echo
++ echo
+
+
+
+# REORIENT T1 TO TEMPLATE================================================
+printf "\n====================REORIENT T1 TO TEMPLATE===================\n\n"
++ printf '\n====================REORIENT T1 TO TEMPLATE===================\n\n'
+
+====================REORIENT T1 TO TEMPLATE===================
+
+pwd=($PWD)
++ pwd=($PWD)
+for i in $ID; do
+  fromT1
+  get.info1 "template/MNI152_1mm_uni+tlrc"
+  prefix[$i]=r${prefix[$i]}
+  inputs "${out[$i]}"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/reorient_template/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dresample \
+    -orient "$orient" \
+    -prefix ${out[$i]} \
+    -inset ${in[$i]} &> ${prefix[$i]}$i.log 
+  fi; close.node
+  log "REORIENT T1 TO TEMP "
+  toT1
+done 
++ for i in '$ID'
++ fromT1
++ out[$i]=d_T1_C000917.nii
++ outpath[$i]=DATA/C000917/deoblique/
++ prefix[$i]=d_T1_
++ get.info1 template/MNI152_1mm_uni+tlrc
++ local image=template/MNI152_1mm_uni+tlrc
+3dinfo -space $image
+++ 3dinfo -space template/MNI152_1mm_uni+tlrc
++ space=MNI
+3dinfo -is_oblique $image
+++ 3dinfo -is_oblique template/MNI152_1mm_uni+tlrc
++ is_oblique=0
+3dinfo -prefix $image
+++ 3dinfo -prefix template/MNI152_1mm_uni+tlrc
++ afniprefix='     MNI152_1mm_uni'
+3dinfo -tr $image
+++ 3dinfo -tr template/MNI152_1mm_uni+tlrc
++ tr=0.000000
+3dinfo -smode $image
+++ 3dinfo -smode template/MNI152_1mm_uni+tlrc
++ smode=BRIK
+3dinfo -orient $image
+++ 3dinfo -orient template/MNI152_1mm_uni+tlrc
++ orient=RPI
++ prefix[$i]=rd_T1_
++ inputs d_T1_C000917.nii
++ in[$i]=d_T1_C000917.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/C000917/deoblique/
++ outputs rd_T1_C000917.nii
++ out[$i]=rd_T1_C000917.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/C000917/reorient_template/
++ echo -n 'C000917> '
+C000917> + open.node
++ '[' -d DATA/C000917/reorient_template/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/C000917/deoblique/d_T1_C000917.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/C000917/reorient_template/rd_T1_C000917.nii ']'
++ d=1
++ '[' DATA/C000917/reorient_template/rd_T1_C000917.nii -ot DATA/C000917/deoblique/d_T1_C000917.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/C000917/deoblique/ -name 'rd_T1_*'
++ files=
++ log 'REORIENT T1 TO TEMP '
++ '[' 0 -eq 1 ']'
++ toT1
++ outt1[$i]=rd_T1_C000917.nii
++ outpatht1[$i]=DATA/C000917/reorient_template/
++ prefixt1[$i]=rd_T1_
++ for i in '$ID'
++ fromT1
++ out[$i]=d_T1_P001543.nii
++ outpath[$i]=DATA/P001543/deoblique/
++ prefix[$i]=d_T1_
++ get.info1 template/MNI152_1mm_uni+tlrc
++ local image=template/MNI152_1mm_uni+tlrc
+3dinfo -space $image
+++ 3dinfo -space template/MNI152_1mm_uni+tlrc
++ space=MNI
+3dinfo -is_oblique $image
+++ 3dinfo -is_oblique template/MNI152_1mm_uni+tlrc
++ is_oblique=0
+3dinfo -prefix $image
+++ 3dinfo -prefix template/MNI152_1mm_uni+tlrc
++ afniprefix='     MNI152_1mm_uni'
+3dinfo -tr $image
+++ 3dinfo -tr template/MNI152_1mm_uni+tlrc
++ tr=0.000000
+3dinfo -smode $image
+++ 3dinfo -smode template/MNI152_1mm_uni+tlrc
++ smode=BRIK
+3dinfo -orient $image
+++ 3dinfo -orient template/MNI152_1mm_uni+tlrc
++ orient=RPI
++ prefix[$i]=rd_T1_
++ inputs d_T1_P001543.nii
++ in[$i]=d_T1_P001543.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001543/deoblique/
++ outputs rd_T1_P001543.nii
++ out[$i]=rd_T1_P001543.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/P001543/reorient_template/
++ echo -n 'P001543> '
+P001543> + open.node
++ '[' -d DATA/P001543/reorient_template/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001543/deoblique/d_T1_P001543.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001543/reorient_template/rd_T1_P001543.nii ']'
++ d=1
++ '[' DATA/P001543/reorient_template/rd_T1_P001543.nii -ot DATA/P001543/deoblique/d_T1_P001543.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001543/deoblique/ -name 'rd_T1_*'
++ files=
++ log 'REORIENT T1 TO TEMP '
++ '[' 0 -eq 1 ']'
++ toT1
++ outt1[$i]=rd_T1_P001543.nii
++ outpatht1[$i]=DATA/P001543/reorient_template/
++ prefixt1[$i]=rd_T1_
++ for i in '$ID'
++ fromT1
++ out[$i]=d_T1_P001562.nii
++ outpath[$i]=DATA/P001562/deoblique/
++ prefix[$i]=d_T1_
++ get.info1 template/MNI152_1mm_uni+tlrc
++ local image=template/MNI152_1mm_uni+tlrc
+3dinfo -space $image
+++ 3dinfo -space template/MNI152_1mm_uni+tlrc
++ space=MNI
+3dinfo -is_oblique $image
+++ 3dinfo -is_oblique template/MNI152_1mm_uni+tlrc
++ is_oblique=0
+3dinfo -prefix $image
+++ 3dinfo -prefix template/MNI152_1mm_uni+tlrc
++ afniprefix='     MNI152_1mm_uni'
+3dinfo -tr $image
+++ 3dinfo -tr template/MNI152_1mm_uni+tlrc
++ tr=0.000000
+3dinfo -smode $image
+++ 3dinfo -smode template/MNI152_1mm_uni+tlrc
++ smode=BRIK
+3dinfo -orient $image
+++ 3dinfo -orient template/MNI152_1mm_uni+tlrc
++ orient=RPI
++ prefix[$i]=rd_T1_
++ inputs d_T1_P001562.nii
++ in[$i]=d_T1_P001562.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001562/deoblique/
++ outputs rd_T1_P001562.nii
++ out[$i]=rd_T1_P001562.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/P001562/reorient_template/
++ echo -n 'P001562> '
+P001562> + open.node
++ '[' -d DATA/P001562/reorient_template/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001562/deoblique/d_T1_P001562.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001562/reorient_template/rd_T1_P001562.nii ']'
++ d=1
++ '[' DATA/P001562/reorient_template/rd_T1_P001562.nii -ot DATA/P001562/deoblique/d_T1_P001562.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001562/deoblique/ -name 'rd_T1_*'
++ files=
++ log 'REORIENT T1 TO TEMP '
++ '[' 0 -eq 1 ']'
++ toT1
++ outt1[$i]=rd_T1_P001562.nii
++ outpatht1[$i]=DATA/P001562/reorient_template/
++ prefixt1[$i]=rd_T1_
++ for i in '$ID'
++ fromT1
++ out[$i]=d_T1_T000001.nii
++ outpath[$i]=DATA/T000001/deoblique/
++ prefix[$i]=d_T1_
++ get.info1 template/MNI152_1mm_uni+tlrc
++ local image=template/MNI152_1mm_uni+tlrc
+3dinfo -space $image
+++ 3dinfo -space template/MNI152_1mm_uni+tlrc
++ space=MNI
+3dinfo -is_oblique $image
+++ 3dinfo -is_oblique template/MNI152_1mm_uni+tlrc
++ is_oblique=0
+3dinfo -prefix $image
+++ 3dinfo -prefix template/MNI152_1mm_uni+tlrc
++ afniprefix='     MNI152_1mm_uni'
+3dinfo -tr $image
+++ 3dinfo -tr template/MNI152_1mm_uni+tlrc
++ tr=0.000000
+3dinfo -smode $image
+++ 3dinfo -smode template/MNI152_1mm_uni+tlrc
++ smode=BRIK
+3dinfo -orient $image
+++ 3dinfo -orient template/MNI152_1mm_uni+tlrc
++ orient=RPI
++ prefix[$i]=rd_T1_
++ inputs d_T1_T000001.nii
++ in[$i]=d_T1_T000001.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/T000001/deoblique/
++ outputs rd_T1_T000001.nii
++ out[$i]=rd_T1_T000001.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/T000001/reorient_template/
++ echo -n 'T000001> '
+T000001> + open.node
++ '[' -d DATA/T000001/reorient_template/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/T000001/deoblique/d_T1_T000001.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/T000001/reorient_template/rd_T1_T000001.nii ']'
++ d=1
++ '[' DATA/T000001/reorient_template/rd_T1_T000001.nii -ot DATA/T000001/deoblique/d_T1_T000001.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/T000001/deoblique/ -name 'rd_T1_*'
++ files=
++ log 'REORIENT T1 TO TEMP '
++ '[' 0 -eq 1 ']'
++ toT1
++ outt1[$i]=rd_T1_T000001.nii
++ outpatht1[$i]=DATA/T000001/reorient_template/
++ prefixt1[$i]=rd_T1_
+input.error
++ input.error
++ '[' 0 -eq 1 ']'
+echo
++ echo
+
+
+# REORIENT RS TO TEMPLATE================================================
+printf "\n====================REORIENT RS TO TEMPLATE===================\n\n"
++ printf '\n====================REORIENT RS TO TEMPLATE===================\n\n'
+
+====================REORIENT RS TO TEMPLATE===================
+
+pwd=($PWD)
++ pwd=($PWD)
+for i in $ID; do
+  fromRS
+  get.info1 "template/MNI152_1mm_uni+tlrc"
+  prefix[$i]=r${prefix[$i]}
+  inputs "${out[$i]}"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/reorient_template/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dresample \
+    -orient "$orient" \
+    -prefix ${out[$i]} \
+    -inset ${in[$i]} #&> ${prefix[$i]}$i.log 
+  fi; close.node
+  log "REORIENT RS TO TEMP "
+  toRS
+done 
++ for i in '$ID'
++ fromRS
++ out[$i]=pdrt_RS_C000917.nii
++ outpath[$i]=DATA/C000917/homogenize/
++ prefix[$i]=pdrt_RS_
++ get.info1 template/MNI152_1mm_uni+tlrc
++ local image=template/MNI152_1mm_uni+tlrc
+3dinfo -space $image
+++ 3dinfo -space template/MNI152_1mm_uni+tlrc
++ space=MNI
+3dinfo -is_oblique $image
+++ 3dinfo -is_oblique template/MNI152_1mm_uni+tlrc
++ is_oblique=0
+3dinfo -prefix $image
+++ 3dinfo -prefix template/MNI152_1mm_uni+tlrc
++ afniprefix='     MNI152_1mm_uni'
+3dinfo -tr $image
+++ 3dinfo -tr template/MNI152_1mm_uni+tlrc
++ tr=0.000000
+3dinfo -smode $image
+++ 3dinfo -smode template/MNI152_1mm_uni+tlrc
++ smode=BRIK
+3dinfo -orient $image
+++ 3dinfo -orient template/MNI152_1mm_uni+tlrc
++ orient=RPI
++ prefix[$i]=rpdrt_RS_
++ inputs pdrt_RS_C000917.nii
++ in[$i]=pdrt_RS_C000917.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/C000917/homogenize/
++ outputs rpdrt_RS_C000917.nii
++ out[$i]=rpdrt_RS_C000917.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/C000917/reorient_template/
++ echo -n 'C000917> '
+C000917> + open.node
++ '[' -d DATA/C000917/reorient_template/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/C000917/homogenize/pdrt_RS_C000917.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/C000917/reorient_template/rpdrt_RS_C000917.nii ']'
++ d=1
++ '[' DATA/C000917/reorient_template/rpdrt_RS_C000917.nii -ot DATA/C000917/homogenize/pdrt_RS_C000917.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/C000917/homogenize/ -name 'rpdrt_RS_*'
++ files=
++ log 'REORIENT RS TO TEMP '
++ '[' 0 -eq 1 ']'
++ toRS
++ outrs[$i]=rpdrt_RS_C000917.nii
++ outpathrs[$i]=DATA/C000917/reorient_template/
++ prefixrs[$i]=rpdrt_RS_
++ for i in '$ID'
++ fromRS
++ out[$i]=pdrt_RS_P001543.nii
++ outpath[$i]=DATA/P001543/homogenize/
++ prefix[$i]=pdrt_RS_
++ get.info1 template/MNI152_1mm_uni+tlrc
++ local image=template/MNI152_1mm_uni+tlrc
+3dinfo -space $image
+++ 3dinfo -space template/MNI152_1mm_uni+tlrc
++ space=MNI
+3dinfo -is_oblique $image
+++ 3dinfo -is_oblique template/MNI152_1mm_uni+tlrc
++ is_oblique=0
+3dinfo -prefix $image
+++ 3dinfo -prefix template/MNI152_1mm_uni+tlrc
++ afniprefix='     MNI152_1mm_uni'
+3dinfo -tr $image
+++ 3dinfo -tr template/MNI152_1mm_uni+tlrc
++ tr=0.000000
+3dinfo -smode $image
+++ 3dinfo -smode template/MNI152_1mm_uni+tlrc
++ smode=BRIK
+3dinfo -orient $image
+++ 3dinfo -orient template/MNI152_1mm_uni+tlrc
++ orient=RPI
++ prefix[$i]=rpdrt_RS_
++ inputs pdrt_RS_P001543.nii
++ in[$i]=pdrt_RS_P001543.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001543/homogenize/
++ outputs rpdrt_RS_P001543.nii
++ out[$i]=rpdrt_RS_P001543.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/P001543/reorient_template/
++ echo -n 'P001543> '
+P001543> + open.node
++ '[' -d DATA/P001543/reorient_template/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001543/homogenize/pdrt_RS_P001543.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001543/reorient_template/rpdrt_RS_P001543.nii ']'
++ d=1
++ '[' DATA/P001543/reorient_template/rpdrt_RS_P001543.nii -ot DATA/P001543/homogenize/pdrt_RS_P001543.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001543/homogenize/ -name 'rpdrt_RS_*'
++ files=
++ log 'REORIENT RS TO TEMP '
++ '[' 0 -eq 1 ']'
++ toRS
++ outrs[$i]=rpdrt_RS_P001543.nii
++ outpathrs[$i]=DATA/P001543/reorient_template/
++ prefixrs[$i]=rpdrt_RS_
++ for i in '$ID'
++ fromRS
++ out[$i]=pdrt_RS_P001562.nii
++ outpath[$i]=DATA/P001562/homogenize/
++ prefix[$i]=pdrt_RS_
++ get.info1 template/MNI152_1mm_uni+tlrc
++ local image=template/MNI152_1mm_uni+tlrc
+3dinfo -space $image
+++ 3dinfo -space template/MNI152_1mm_uni+tlrc
++ space=MNI
+3dinfo -is_oblique $image
+++ 3dinfo -is_oblique template/MNI152_1mm_uni+tlrc
++ is_oblique=0
+3dinfo -prefix $image
+++ 3dinfo -prefix template/MNI152_1mm_uni+tlrc
++ afniprefix='     MNI152_1mm_uni'
+3dinfo -tr $image
+++ 3dinfo -tr template/MNI152_1mm_uni+tlrc
++ tr=0.000000
+3dinfo -smode $image
+++ 3dinfo -smode template/MNI152_1mm_uni+tlrc
++ smode=BRIK
+3dinfo -orient $image
+++ 3dinfo -orient template/MNI152_1mm_uni+tlrc
++ orient=RPI
++ prefix[$i]=rpdrt_RS_
++ inputs pdrt_RS_P001562.nii
++ in[$i]=pdrt_RS_P001562.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001562/homogenize/
++ outputs rpdrt_RS_P001562.nii
++ out[$i]=rpdrt_RS_P001562.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/P001562/reorient_template/
++ echo -n 'P001562> '
+P001562> + open.node
++ '[' -d DATA/P001562/reorient_template/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001562/homogenize/pdrt_RS_P001562.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001562/reorient_template/rpdrt_RS_P001562.nii ']'
++ d=1
++ '[' DATA/P001562/reorient_template/rpdrt_RS_P001562.nii -ot DATA/P001562/homogenize/pdrt_RS_P001562.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001562/homogenize/ -name 'rpdrt_RS_*'
++ files=
++ log 'REORIENT RS TO TEMP '
++ '[' 0 -eq 1 ']'
++ toRS
++ outrs[$i]=rpdrt_RS_P001562.nii
++ outpathrs[$i]=DATA/P001562/reorient_template/
++ prefixrs[$i]=rpdrt_RS_
++ for i in '$ID'
++ fromRS
++ out[$i]=pdrt_RS_T000001.nii
++ outpath[$i]=DATA/T000001/homogenize/
++ prefix[$i]=pdrt_RS_
++ get.info1 template/MNI152_1mm_uni+tlrc
++ local image=template/MNI152_1mm_uni+tlrc
+3dinfo -space $image
+++ 3dinfo -space template/MNI152_1mm_uni+tlrc
++ space=MNI
+3dinfo -is_oblique $image
+++ 3dinfo -is_oblique template/MNI152_1mm_uni+tlrc
++ is_oblique=0
+3dinfo -prefix $image
+++ 3dinfo -prefix template/MNI152_1mm_uni+tlrc
++ afniprefix='     MNI152_1mm_uni'
+3dinfo -tr $image
+++ 3dinfo -tr template/MNI152_1mm_uni+tlrc
++ tr=0.000000
+3dinfo -smode $image
+++ 3dinfo -smode template/MNI152_1mm_uni+tlrc
++ smode=BRIK
+3dinfo -orient $image
+++ 3dinfo -orient template/MNI152_1mm_uni+tlrc
++ orient=RPI
++ prefix[$i]=rpdrt_RS_
++ inputs pdrt_RS_T000001.nii
++ in[$i]=pdrt_RS_T000001.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/T000001/homogenize/
++ outputs rpdrt_RS_T000001.nii
++ out[$i]=rpdrt_RS_T000001.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/T000001/reorient_template/
++ echo -n 'T000001> '
+T000001> + open.node
++ '[' -d DATA/T000001/reorient_template/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/T000001/homogenize/pdrt_RS_T000001.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/T000001/reorient_template/rpdrt_RS_T000001.nii ']'
++ d=1
++ '[' DATA/T000001/reorient_template/rpdrt_RS_T000001.nii -ot DATA/T000001/homogenize/pdrt_RS_T000001.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/T000001/homogenize/ -name 'rpdrt_RS_*'
++ files=
++ log 'REORIENT RS TO TEMP '
++ '[' 0 -eq 1 ']'
++ toRS
++ outrs[$i]=rpdrt_RS_T000001.nii
++ outpathrs[$i]=DATA/T000001/reorient_template/
++ prefixrs[$i]=rpdrt_RS_
+input.error
++ input.error
++ '[' 0 -eq 1 ']'
+echo
++ echo
+
+
+exit
 + exit

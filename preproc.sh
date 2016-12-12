@@ -670,41 +670,7 @@ exit
 ## ====================== SKULLSTRIP MANUAL=====================================
 ## =============================================================================
 
-## UNIFORMIZE T1
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Aplicando etapa Uniformize T1 às imagens =============="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dUnifize \
-  -prefix urd_T1_"$i" \
-  -input rd_T1_"$i"_shft+orig
-done
 
-## SKULL STRIPPING: Nesse pipeline deve ser realizado manualmente
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Preparando para realiar o SKULL STRIPPING =============="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dAFNItoNIFTI urd_T1_"$i"+orig
-  done
-echo "Para a próxima etapa recomenda-se realizar o SKULL STRIPPING das imagens manualmente no MRIcron. Lembre-se de salvar como Analyze a mascara com o nome: "
-echo "lurd_T1_<cod_sub>"
-echo "Em seguida use o MRIron para converter a mascara para o formato NIFTI. Salve com o seguinte nome:"
-echo "lurd_T1_<cod_sub>.nii.gz"
-
-## =============================================================================
-## ====================== ATÉ AQUI JÁ TESTADO ==================================
-## =============================================================================
 
 ## APPLY SKULL STRIPPING MASK
 cd "$pathpi"

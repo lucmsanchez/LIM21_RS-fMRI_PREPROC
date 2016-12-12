@@ -23,8 +23,8 @@ Abaixo exemplo de como rodar o script. Ele usa a pasta onde é rodado como base 
 ./preproc.sh --config preproc.cfg --subs preproc.sbj 
 
 opções:
-    -a ou --aztec: realiza correções utilizando dados cardiorespiratórios
-    -b ou --bet: realiza skull strip automatizado utlizando BET/OpitBET
+    -a ou --aztec:  realiza correções utilizando dados cardiorespiratórios
+    -b ou --bet:    realiza skull strip automatizado utlizando BET/OpitBET (Padrão: Manual)
     
 ```
 Caso tenha algum problema e queira fazer o Debug, execute como especificado abaixo e crie um novo item na aba Issues anexe o log:

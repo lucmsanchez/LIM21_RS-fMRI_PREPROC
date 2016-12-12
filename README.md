@@ -36,7 +36,7 @@ bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
     - 3o) Na tentativa de usar a função sem GUI é necessário especificar a variável highpass, que não é usado no GUI - como é possivel? que valores usar?
 - Script não checa os pré-requisitos dentro do matlab - SPM e aztec. (Bug #8)
 - Script não checa atualizações nas variáveis definidas nas configurações. Caso mude uma das configurações deve-se apagar o output da etapa a que a configuração se refere. (Bug #6)
-- Skull strip automatizado tem resultados ruins após o co-registro com fMRI (Bug )
+- Skull strip automatizado tem resultados ruins após o co-registro com fMRI (Bug #9)
   
 ## Atalhos  
   

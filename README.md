@@ -21,6 +21,11 @@ Abaixo exemplo de como rodar o script. Ele usa a pasta onde é rodado como base 
 
 ```bash
 ./preproc.sh --config preproc.cfg --subs preproc.sbj 
+
+opções:
+    -a ou --aztec: realiza correções utilizando dados cardiorespiratórios
+    -b ou --bet: realiza skull strip automatizado utlizando BET/OpitBET
+    
 ```
 Caso tenha algum problema e queira fazer o Debug, execute como especificado abaixo e envie o log para nós:
 
@@ -28,7 +33,7 @@ Caso tenha algum problema e queira fazer o Debug, execute como especificado abai
 bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
 ```
 
-## Limitações (Ordem de prioridade)  
+## Limitações e bugs (Ordem de prioridade)  
   
 - Opção -a e etapa aztec não funciona. (Bug #7)
     - 1o) qual dos arquivos de log deve-se usar? 

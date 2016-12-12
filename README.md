@@ -27,7 +27,7 @@ opções:
     -b ou --bet: realiza skull strip automatizado utlizando BET/OpitBET
     
 ```
-Caso tenha algum problema e queira fazer o Debug, execute como especificado abaixo e envie o log para nós:
+Caso tenha algum problema e queira fazer o Debug, execute como especificado abaixo e crie um novo item na aba Issues anexe o log:
 
 ```bash
 bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log

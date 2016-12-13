@@ -3,18 +3,22 @@
 # PROCESSANDO OS ARGUMENTOS ====================================================
 usage() {
     echo "Argumentos:"
-    echo " $0 [ --var <txt com variáveis para análise> | --subs <ID das imagens> ]"
-    echo " $0 [ -h | --help ]"
+    echo " $0 [ Opções ] --config <txt com variáveis para análise>  --subs <ID das imagens>" 
+    echo 
+    echo "Opções:"
+    echo
+    echo "-a | --aztec  realiza a etapa aztec"
+    echo "-b | --bet    realiza o skull strip automatizado (Padrão: Manual)"
     echo
 }
 
 aztec=0
-
+bet=0
 
 i=$(($# + 1)) # index of the first non-existing argument
 declare -A longoptspec
 longoptspec=( [config]=1 [subs]=1 )
-optspec=":l:h:a-:"
+optspec=":l:h:a:b:c:s-:"
 while getopts "$optspec" opt; do
 while true; do
     case "${opt}" in
@@ -50,8 +54,11 @@ while true; do
             continue #now that opt/OPTARG are set we can process them as
             # if getopts would've given us long options
             ;;
-       a|aztec)
+        a|aztec)
             aztec=1
+            ;;
+        b|bet)
+            bet=1
             ;;
         c|config)
           config=$OPTARG
@@ -116,7 +123,7 @@ outputs () {
 }
 
 open.node () {
-  [ -d ${outpath[$i]} ] || mkdir ${outpath[$i]}
+  [ -d ${outpath[$i]} ] || mkdir ${outpath[$i]} 2> /dev/null
   #
   local a=0; local b=0; local c=0; local d=0; local v=0
   ex=0; go=1
@@ -177,7 +184,7 @@ close.node () {
       printf "Processamento da imagem %s realizado com sucesso! \n" "$i"
     fi
   fi
-
+ cd $pwd
  files=$( find "${inpath[$i]}" -name "${prefix[$i]}*" )
   for f in $files; do
     mv $f ${outpath[$i]} 2> /dev/null
@@ -219,7 +226,7 @@ if [ $go -eq 1 ]; then
   echo "OUTPUT PATH: ${outpath[$i]}" >> DATA/preproc_$i.log
   echo "OUTPUTS: ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}" >> DATA/preproc_$i.log
   echo >> DATA/preproc_$i.log
-  cat ${outpath[$i]}${prefix[$i]}$i.log >> DATA/preproc_$i.log
+  cat ${outpath[$i]}${prefix[$i]}$i.log >> DATA/preproc_$i.log 2> /dev/null
 fi
 }
 
@@ -278,7 +285,7 @@ if [ ! -z $config ]; then
   if [ -f $config ]; then
     source $config
     a=0
-    for var in ptn mcbase gRL gAP gIS TR template blur; do
+    for var in ptn mcbase gRL gAP gIS TR template blur fsl5; do
       if [[ -z "${!var:-}" ]]; then
       echo "Variável $var não encontrada"
       a=$(($a + 1))
@@ -300,6 +307,7 @@ else
     cat > preproc.cfg << EOL
 # Variáveis RS-fMRI Preprocessing:
 
+fsl5=fsl5.0-
 TR=2
 hp=0
 ptn=seq+z
@@ -307,8 +315,8 @@ mcbase=100
 gRL=90
 gAP=90
 gIS=60
-#orient="rpi"
 template="MNI152_1mm_uni+tlrc"
+betf=0.15
 blur=6
 EOL
 exit
@@ -371,11 +379,12 @@ if [ ! $a -eq 0 ]; then
 fi
 
 # BUSCANDO O TEMPLATE
+cp /usr/share/afni/atlases/"$template"* . 2> /dev/null
 temp=$(find . -name "$template*")
 if [ ! -z "$temp" ];then
   [ ! -d template ] && mkdir template 
   for tp in $temp; do
-    mv $tp template 2> /dev/null
+    mv -f $tp template 2> /dev/null
   done
 else
   echo "Template $template não encontrado." && exit
@@ -647,7 +656,6 @@ echo
 
 # Unifaze T1 ===========================================================
 printf "\n=========================Unifaze T1========================\n\n"
-pwd=($PWD)
 for i in $ID; do
   prefix[$i]=u${prefix[$i]}
   inputs "${out[$i]}"
@@ -658,19 +666,56 @@ for i in $ID; do
   open.node; if [ $go -eq 1 ]; then
     3dUnifize \
     -prefix ${out[$i]} \
-    -input ${in[$i]} &> ${prefix[$i]}$i.log 
+    -input ${in[$i]} &> ${prefix[$i]}$i.log
   fi; close.node
   log "Unifaze T1 "
 done 
 input.error
 echo
-exit
 
 ## =============================================================================
 ## ====================== SKULLSTRIP MANUAL=====================================
 ## =============================================================================
 
+if [ $bet -eq 0 ]; then
+  echo "O SKULL STRIP DEVE SER FEITO MANUALMENTE. USE COMO BASE O ARQUIVO QUE ESTÁ NA PASTA DATA/manual_skullstrip. NOMEIE O ARQUIVO mask_T1_<SUBID>.nii.gz e salve no diretório base." | fold -s
+  for i in $ID; do
+    [ ! -d "$pwd/OUTPUT/$i/manual_skullstrip" ] && mkdir -p $pwd/OUTPUT/$i/manual_skullstrip 
+    [ ! -d "$pwd/DATA/$i/skullstrip" ] && mkdir -p $pwd/DATA/$i/skullstrip
+    cp ${outpath[$i]}${out[$i]} OUTPUT/$i/manual_skullstrip 2> /dev/null
+    ss=$(find . -name "mask_T1_$i*")
+    mv $ss /DATA/$i/skullstrip 2> /dev/null
+  done
+  else
+  FSLDIR=/usr/share/fsl
+  # BET ============================================================
+  printf "\n============================BET============================\n\n"
+  pwd=($PWD)
+  for i in $ID; do
+    prefix[$i]=mask_T1_
+    inputs "${out[$i]}"
+    inpath[$i]=${outpath[$i]}
+    outputs "${prefix[$i]}$i.nii.gz"
+    outpath[$i]=DATA/$i/skullstrip/
+    echo -n "$i> "
+    open.node; if [ $go -eq 1 ]; then
+      "$fsl5"bet ${in[$i]} ${i}_step1 -B -f $betf
+      "$fsl5"flirt -ref ${FSLDIR}/data/standard/MNI152_T1_2mm_brain -in ${i}_step1.nii.gz -omat ${i}_step2.mat -out ${i}_step2 -searchrx -30 30 -searchry -30 30 -searchrz -30 30
+      "$fsl5"fnirt --in=${in[$i]} --aff=${i}_step2.mat --cout=${i}_step3 --config=T1_2_MNI152_2mm
+      "$fsl5"applywarp --ref=${FSLDIR}/data/standard/MNI152_T1_2mm --in=${in[$i]} --warp=${i}_step3 --out=${i}_step4
+      "$fsl5"invwarp -w ${i}_step3.nii.gz -o ${i}_step5.nii.gz -r ${i}_step1.nii.gz
+      "$fsl5"applywarp --ref=${in[$i]} --in=${FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz --warp=${i}_step5.nii.gz --out=${i}_step6 --interp=nn
+      "$fsl5"fslmaths ${i}_step6.nii.gz -bin ${out[$i]}
+      rm ${i}_step1.nii.gz ${i}_step1_mask.nii.gz ${i}_step2.nii.gz ${i}_step2.mat ${i}_step3.nii.gz ${i}_step4.nii.gz ${i}_step5.nii.gz ${i}_step6.nii.gz ${i}_to_MNI152_T1_2mm.log
+      #2> /dev/null
+    fi; close.node
+    log "BET "
+  done 
+  input.error
+  echo
+fi 
 
+exit
 
 ## APPLY SKULL STRIPPING MASK
 cd "$pathpi"

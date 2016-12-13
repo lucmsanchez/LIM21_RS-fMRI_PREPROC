@@ -1,1 +1,2 @@
-bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
+#bashdb ./preproc.sh -b --config preproc.cfg --subs preproc.sbj
+bash -vx ./preproc.sh -b --config preproc.cfg --subs preproc.sbj

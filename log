@@ -3,23 +3,28 @@
 # PROCESSANDO OS ARGUMENTOS ====================================================
 usage() {
     echo "Argumentos:"
-    echo " $0 [ --var <txt com variáveis para análise> | --subs <ID das imagens> ]"
-    echo " $0 [ -h | --help ]"
+    echo " $0 [ Opções ] --config <txt com variáveis para análise>  --subs <ID das imagens>" 
+    echo 
+    echo "Opções:"
+    echo
+    echo "-a | --aztec  realiza a etapa aztec"
+    echo "-b | --bet    realiza o skull strip automatizado (Padrão: Manual)"
     echo
 }
 
 aztec=0
 + aztec=0
-
+bet=0
++ bet=0
 
 i=$(($# + 1)) # index of the first non-existing argument
-+ i=5
++ i=6
 declare -A longoptspec
 + declare -A longoptspec
 longoptspec=( [config]=1 [subs]=1 )
 + longoptspec=([config]=1 [subs]=1)
-optspec=":l:h:a-:"
-+ optspec=:l:h:a-:
+optspec=":l:h:a:b:c:s-:"
++ optspec=:l:h:a:b:c:s-:
 while getopts "$optspec" opt; do
 while true; do
     case "${opt}" in
@@ -55,8 +60,11 @@ while true; do
             continue #now that opt/OPTARG are set we can process them as
             # if getopts would've given us long options
             ;;
-       a|aztec)
+        a|aztec)
             aztec=1
+            ;;
+        b|bet)
+            bet=1
             ;;
         c|config)
           config=$OPTARG
@@ -81,35 +89,12 @@ while true; do
     esac
 break; done
 done
-+ getopts :l:h:a-: opt
++ getopts :l:h:a:b:c:s-: opt
 + true
 + case "${opt}" in
-+ [[ config =~ .*=.* ]]
-+ opt=config
-+ (( 6 <= 1 ))
-+ OPTARG=(${@:OPTIND:$((longoptspec[$opt]))})
-+ (( OPTIND+=longoptspec[config] ))
-+ (( OPTIND > i ))
-+ continue
-+ true
-+ case "${opt}" in
-+ config=preproc.cfg
++ bet=1
 + break
-+ getopts :l:h:a-: opt
-+ true
-+ case "${opt}" in
-+ [[ subs =~ .*=.* ]]
-+ opt=subs
-+ (( 4 <= 1 ))
-+ OPTARG=(${@:OPTIND:$((longoptspec[$opt]))})
-+ (( OPTIND+=longoptspec[subs] ))
-+ (( OPTIND > i ))
-+ continue
-+ true
-+ case "${opt}" in
-+ subs=preproc.sbj
-+ break
-+ getopts :l:h:a-: opt
++ getopts :l:h:a:b:c:s-: opt
 
 # ==============================================================================
 
@@ -156,7 +141,7 @@ outputs () {
 }
 
 open.node () {
-  [ -d ${outpath[$i]} ] || mkdir ${outpath[$i]}
+  [ -d ${outpath[$i]} ] || mkdir ${outpath[$i]} 2> /dev/null
   #
   local a=0; local b=0; local c=0; local d=0; local v=0
   ex=0; go=1
@@ -217,7 +202,7 @@ close.node () {
       printf "Processamento da imagem %s realizado com sucesso! \n" "$i"
     fi
   fi
-
+ cd $pwd
  files=$( find "${inpath[$i]}" -name "${prefix[$i]}*" )
   for f in $files; do
     mv $f ${outpath[$i]} 2> /dev/null
@@ -259,7 +244,7 @@ if [ $go -eq 1 ]; then
   echo "OUTPUT PATH: ${outpath[$i]}" >> DATA/preproc_$i.log
   echo "OUTPUTS: ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}" >> DATA/preproc_$i.log
   echo >> DATA/preproc_$i.log
-  cat ${outpath[$i]}${prefix[$i]}$i.log >> DATA/preproc_$i.log
+  cat ${outpath[$i]}${prefix[$i]}$i.log >> DATA/preproc_$i.log 2> /dev/null
 fi
 }
 
@@ -330,7 +315,7 @@ check matlab
 Protocolo de pré-processamento de RS-fMRI
 --------------------------------------
 
-RUNTIME: Fri Dec  9 17:20:10 BRST 2016
+RUNTIME: Tue Dec 13 14:39:40 BRST 2016
 
 Programas necessários:
 GNU bash           ...OK
@@ -355,7 +340,7 @@ if [ ! -z $config ]; then
   if [ -f $config ]; then
     source $config
     a=0
-    for var in ptn mcbase gRL gAP gIS TR template blur; do
+    for var in ptn mcbase gRL gAP gIS TR template blur fslpath; do
       if [[ -z "${!var:-}" ]]; then
       echo "Variável $var não encontrada"
       a=$(($a + 1))
@@ -377,6 +362,7 @@ else
     cat > preproc.cfg << EOL
 # Variáveis RS-fMRI Preprocessing:
 
+fslpath=/usr/share/fsl/5.0/bin/
 TR=2
 hp=0
 ptn=seq+z
@@ -384,7 +370,6 @@ mcbase=100
 gRL=90
 gAP=90
 gIS=60
-#orient="rpi"
 template="MNI152_1mm_uni+tlrc"
 blur=6
 EOL
@@ -394,11 +379,17 @@ exit
     source preproc.cfg
   fi
 fi  
-+ '[' '!' -z preproc.cfg ']'
-+ '[' -f preproc.cfg ']'
++ '[' '!' -z ']'
++ echo 'O arquivo de configuração não foi especificado'
+O arquivo de configuração não foi especificado
++ '[' '!' -f preproc.cfg ']'
++ echo 'Será usado o arquivo local preproc.cfg'
+Será usado o arquivo local preproc.cfg
 + source preproc.cfg
 # Variáveis RS-fMRI Preprocessing:
 
+fslpath=/usr/share/fsl/5.0/bin/
+++ fslpath=/usr/share/fsl/5.0/bin/
 TR=2
 ++ TR=2
 ptn=seq+z
@@ -411,30 +402,10 @@ gAP=90
 ++ gAP=90
 gIS=60
 ++ gIS=60
-#orient="rpi"
 template="MNI152_1mm_uni+tlrc"
 ++ template=MNI152_1mm_uni+tlrc
 blur=6
 ++ blur=6
-+ a=0
-+ for var in ptn mcbase gRL gAP gIS TR template blur
-+ [[ -z seq+z ]]
-+ for var in ptn mcbase gRL gAP gIS TR template blur
-+ [[ -z 100 ]]
-+ for var in ptn mcbase gRL gAP gIS TR template blur
-+ [[ -z 90 ]]
-+ for var in ptn mcbase gRL gAP gIS TR template blur
-+ [[ -z 90 ]]
-+ for var in ptn mcbase gRL gAP gIS TR template blur
-+ [[ -z 60 ]]
-+ for var in ptn mcbase gRL gAP gIS TR template blur
-+ [[ -z 2 ]]
-+ for var in ptn mcbase gRL gAP gIS TR template blur
-+ [[ -z MNI152_1mm_uni+tlrc ]]
-+ for var in ptn mcbase gRL gAP gIS TR template blur
-+ [[ -z 6 ]]
-+ '[' '!' 0 -eq 0 ']'
-+ unset a
 
 
 # informando os usuários das variáveis definidas ou defaults
@@ -472,8 +443,9 @@ else
     exit
   fi
 fi  
-+ '[' '!' -z preproc.sbj ']'
-+ '[' '!' -f preproc.sbj ']'
++ '[' '!' -z ']'
++ '[' -f preproc.sbj ']'
++ subs=preproc.sbj
 
 ID=$(cat $subs)
 cat $subs
@@ -628,26 +600,36 @@ fi
 + '[' '!' 0 -eq 0 ']'
 
 # BUSCANDO O TEMPLATE
+cp /usr/share/afni/atlases/"$template"* . 2>devnull
++ cp /usr/share/afni/atlases/MNI152_1mm_uni+tlrc.BRIK.gz /usr/share/afni/atlases/MNI152_1mm_uni+tlrc.HEAD .
 temp=$(find . -name "$template*")
 find . -name "$template*"
 ++ find . -name 'MNI152_1mm_uni+tlrc*'
-+ temp='./template/MNI152_1mm_uni+tlrc.HEAD
-./template/MNI152_1mm_uni+tlrc.BRIK.gz'
++ temp='./MNI152_1mm_uni+tlrc.HEAD
+./template/MNI152_1mm_uni+tlrc.HEAD
+./template/MNI152_1mm_uni+tlrc.BRIK.gz
+./MNI152_1mm_uni+tlrc.BRIK.gz'
 if [ ! -z "$temp" ];then
   [ ! -d template ] && mkdir template 
   for tp in $temp; do
-    mv $tp template 2> /dev/null
+    mv -f $tp template 2> /dev/null
   done
 else
   echo "Template $template não encontrado." && exit
 fi
-+ '[' '!' -z './template/MNI152_1mm_uni+tlrc.HEAD
-./template/MNI152_1mm_uni+tlrc.BRIK.gz' ']'
++ '[' '!' -z './MNI152_1mm_uni+tlrc.HEAD
+./template/MNI152_1mm_uni+tlrc.HEAD
+./template/MNI152_1mm_uni+tlrc.BRIK.gz
+./MNI152_1mm_uni+tlrc.BRIK.gz' ']'
 + '[' '!' -d template ']'
 + for tp in '$temp'
-+ mv ./template/MNI152_1mm_uni+tlrc.HEAD template
++ mv -f ./MNI152_1mm_uni+tlrc.HEAD template
 + for tp in '$temp'
-+ mv ./template/MNI152_1mm_uni+tlrc.BRIK.gz template
++ mv -f ./template/MNI152_1mm_uni+tlrc.HEAD template
++ for tp in '$temp'
++ mv -f ./template/MNI152_1mm_uni+tlrc.BRIK.gz template
++ for tp in '$temp'
++ mv -f ./MNI152_1mm_uni+tlrc.BRIK.gz template
 
 [ -d DATA ] || mkdir DATA
 + '[' -d DATA ']'
@@ -874,6 +856,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/C000917/ -name 't_RS_*'
 + files='DATA/C000917/slice_correction/t_RS_C000917.nii
@@ -927,6 +910,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001543/ -name 't_RS_*'
 + files='DATA/P001543/slice_correction/t_RS_P001543.log
@@ -980,6 +964,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001562/ -name 't_RS_*'
 + files='DATA/P001562/slice_correction/t_RS_P001562.nii
@@ -1033,6 +1018,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/T000001/ -name 't_RS_*'
 + files='DATA/T000001/slice_correction/t_RS_T000001.log
@@ -1135,6 +1121,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/C000917/slice_correction/ -name 'rt_RS_*'
 + files=
@@ -1191,6 +1178,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001543/slice_correction/ -name 'rt_RS_*'
 + files=
@@ -1247,6 +1235,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001562/slice_correction/ -name 'rt_RS_*'
 + files=
@@ -1303,6 +1292,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/T000001/slice_correction/ -name 'rt_RS_*'
 + files=
@@ -1406,6 +1396,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/C000917/motion_correction/ -name 'drt_RS_*'
 + files=
@@ -1477,6 +1468,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001543/motion_correction/ -name 'drt_RS_*'
 + files=
@@ -1548,6 +1540,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001562/motion_correction/ -name 'drt_RS_*'
 + files=
@@ -1619,6 +1612,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/T000001/motion_correction/ -name 'drt_RS_*'
 + files=
@@ -1724,6 +1718,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/C000917/ -name 'd_T1_*'
 + files='DATA/C000917/deoblique/d_T1_C000917.nii
@@ -1800,6 +1795,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001543/ -name 'd_T1_*'
 + files='DATA/P001543/deoblique/d_T1_P001543.nii
@@ -1876,6 +1872,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001562/ -name 'd_T1_*'
 + files='DATA/P001562/deoblique/d_T1_P001562.nii
@@ -1952,6 +1949,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/T000001/ -name 'd_T1_*'
 + files='DATA/T000001/deoblique/d_T1_T000001.log
@@ -2046,6 +2044,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/C000917/deoblique/ -name 'pdrt_RS_*'
 + files=
@@ -2102,6 +2101,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001543/deoblique/ -name 'pdrt_RS_*'
 + files=
@@ -2158,6 +2158,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001562/deoblique/ -name 'pdrt_RS_*'
 + files=
@@ -2214,6 +2215,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/T000001/deoblique/ -name 'pdrt_RS_*'
 + files=
@@ -2324,6 +2326,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/C000917/deoblique/ -name 'rd_T1_*'
 + files=
@@ -2400,6 +2403,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001543/deoblique/ -name 'rd_T1_*'
 + files=
@@ -2476,6 +2480,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001562/deoblique/ -name 'rd_T1_*'
 + files=
@@ -2552,6 +2557,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/T000001/deoblique/ -name 'rd_T1_*'
 + files=
@@ -2589,7 +2595,7 @@ for i in $ID; do
     3dresample \
     -orient "$orient" \
     -prefix ${out[$i]} \
-    -inset ${in[$i]} #&> ${prefix[$i]}$i.log 
+    -inset ${in[$i]} &> ${prefix[$i]}$i.log 
   fi; close.node
   log "REORIENT RS TO TEMP "
   toRS
@@ -2661,6 +2667,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/C000917/homogenize/ -name 'rpdrt_RS_*'
 + files=
@@ -2737,6 +2744,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001543/homogenize/ -name 'rpdrt_RS_*'
 + files=
@@ -2813,6 +2821,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/P001562/homogenize/ -name 'rpdrt_RS_*'
 + files=
@@ -2889,6 +2898,7 @@ OUTPUT JÁ EXISTE. PROSSEGUINDO.
 + close.node
 + local e=0
 + '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
  find "${inpath[$i]}" -name "${prefix[$i]}*" 
 ++ find DATA/T000001/homogenize/ -name 'rpdrt_RS_*'
 + files=
@@ -2905,5 +2915,1099 @@ echo
 + echo
 
 
-exit
+
+# Align center T1 TO TEMPLATE================================================
+printf "\n====================Align center T1 TO TEMPLATE===================\n\n"
++ printf '\n====================Align center T1 TO TEMPLATE===================\n\n'
+
+====================Align center T1 TO TEMPLATE===================
+
+pwd=($PWD)
++ pwd=($PWD)
+for i in $ID; do
+  fromT1
+  prefix[$i]=a${prefix[$i]}
+  inputs "${out[$i]}"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/align_center/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    @Align_Centers \
+    -base "$template" \
+    -dset ${in[$i]} &> ${prefix[$i]}$i.log 
+    mv rd_T1_"$i"_shft.nii ${prefix[$i]}$i.nii &>> ${prefix[$i]}$i.log 
+    mv rd_T1_"$i"_shft.1D ${prefix[$i]}$i.1D &>> ${prefix[$i]}$i.log 
+  fi; close.node
+  log "Align center T1 TO TEMP "
+done 
++ for i in '$ID'
++ fromT1
++ out[$i]=rd_T1_C000917.nii
++ outpath[$i]=DATA/C000917/reorient_template/
++ prefix[$i]=rd_T1_
++ prefix[$i]=ard_T1_
++ inputs rd_T1_C000917.nii
++ in[$i]=rd_T1_C000917.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/C000917/reorient_template/
++ outputs ard_T1_C000917.nii
++ out[$i]=ard_T1_C000917.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/C000917/align_center/
++ echo -n 'C000917> '
+C000917> + open.node
++ '[' -d DATA/C000917/align_center/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/C000917/reorient_template/rd_T1_C000917.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/C000917/align_center/ard_T1_C000917.nii ']'
++ d=1
++ '[' DATA/C000917/align_center/ard_T1_C000917.nii -ot DATA/C000917/reorient_template/rd_T1_C000917.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/C000917/reorient_template/ -name 'ard_T1_*'
++ files=
++ log 'Align center T1 TO TEMP '
++ '[' 0 -eq 1 ']'
++ for i in '$ID'
++ fromT1
++ out[$i]=rd_T1_P001543.nii
++ outpath[$i]=DATA/P001543/reorient_template/
++ prefix[$i]=rd_T1_
++ prefix[$i]=ard_T1_
++ inputs rd_T1_P001543.nii
++ in[$i]=rd_T1_P001543.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001543/reorient_template/
++ outputs ard_T1_P001543.nii
++ out[$i]=ard_T1_P001543.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/P001543/align_center/
++ echo -n 'P001543> '
+P001543> + open.node
++ '[' -d DATA/P001543/align_center/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001543/reorient_template/rd_T1_P001543.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001543/align_center/ard_T1_P001543.nii ']'
++ d=1
++ '[' DATA/P001543/align_center/ard_T1_P001543.nii -ot DATA/P001543/reorient_template/rd_T1_P001543.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001543/reorient_template/ -name 'ard_T1_*'
++ files=
++ log 'Align center T1 TO TEMP '
++ '[' 0 -eq 1 ']'
++ for i in '$ID'
++ fromT1
++ out[$i]=rd_T1_P001562.nii
++ outpath[$i]=DATA/P001562/reorient_template/
++ prefix[$i]=rd_T1_
++ prefix[$i]=ard_T1_
++ inputs rd_T1_P001562.nii
++ in[$i]=rd_T1_P001562.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001562/reorient_template/
++ outputs ard_T1_P001562.nii
++ out[$i]=ard_T1_P001562.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/P001562/align_center/
++ echo -n 'P001562> '
+P001562> + open.node
++ '[' -d DATA/P001562/align_center/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001562/reorient_template/rd_T1_P001562.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001562/align_center/ard_T1_P001562.nii ']'
++ d=1
++ '[' DATA/P001562/align_center/ard_T1_P001562.nii -ot DATA/P001562/reorient_template/rd_T1_P001562.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001562/reorient_template/ -name 'ard_T1_*'
++ files=
++ log 'Align center T1 TO TEMP '
++ '[' 0 -eq 1 ']'
++ for i in '$ID'
++ fromT1
++ out[$i]=rd_T1_T000001.nii
++ outpath[$i]=DATA/T000001/reorient_template/
++ prefix[$i]=rd_T1_
++ prefix[$i]=ard_T1_
++ inputs rd_T1_T000001.nii
++ in[$i]=rd_T1_T000001.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/T000001/reorient_template/
++ outputs ard_T1_T000001.nii
++ out[$i]=ard_T1_T000001.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/T000001/align_center/
++ echo -n 'T000001> '
+T000001> + open.node
++ '[' -d DATA/T000001/align_center/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/T000001/reorient_template/rd_T1_T000001.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/T000001/align_center/ard_T1_T000001.nii ']'
++ d=1
++ '[' DATA/T000001/align_center/ard_T1_T000001.nii -ot DATA/T000001/reorient_template/rd_T1_T000001.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/T000001/reorient_template/ -name 'ard_T1_*'
++ files=
++ log 'Align center T1 TO TEMP '
++ '[' 0 -eq 1 ']'
+input.error
++ input.error
++ '[' 0 -eq 1 ']'
+echo
++ echo
+
+
+# Unifaze T1 ===========================================================
+printf "\n=========================Unifaze T1========================\n\n"
++ printf '\n=========================Unifaze T1========================\n\n'
+
+=========================Unifaze T1========================
+
+for i in $ID; do
+  prefix[$i]=u${prefix[$i]}
+  inputs "${out[$i]}"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/unifaze/
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dUnifize \
+    -prefix ${out[$i]} \
+    -input ${in[$i]} &> ${prefix[$i]}$i.log
+  fi; close.node
+  log "Unifaze T1 "
+done 
++ for i in '$ID'
++ prefix[$i]=uard_T1_
++ inputs ard_T1_C000917.nii
++ in[$i]=ard_T1_C000917.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/C000917/align_center/
++ outputs uard_T1_C000917.nii
++ out[$i]=uard_T1_C000917.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/C000917/unifaze/
++ echo -n 'C000917> '
+C000917> + open.node
++ '[' -d DATA/C000917/unifaze/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/C000917/align_center/ard_T1_C000917.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/C000917/unifaze/uard_T1_C000917.nii ']'
++ d=1
++ '[' DATA/C000917/unifaze/uard_T1_C000917.nii -ot DATA/C000917/align_center/ard_T1_C000917.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/C000917/align_center/ -name 'uard_T1_*'
++ files=
++ log 'Unifaze T1 '
++ '[' 0 -eq 1 ']'
++ for i in '$ID'
++ prefix[$i]=uard_T1_
++ inputs ard_T1_P001543.nii
++ in[$i]=ard_T1_P001543.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001543/align_center/
++ outputs uard_T1_P001543.nii
++ out[$i]=uard_T1_P001543.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/P001543/unifaze/
++ echo -n 'P001543> '
+P001543> + open.node
++ '[' -d DATA/P001543/unifaze/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001543/align_center/ard_T1_P001543.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001543/unifaze/uard_T1_P001543.nii ']'
++ d=1
++ '[' DATA/P001543/unifaze/uard_T1_P001543.nii -ot DATA/P001543/align_center/ard_T1_P001543.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001543/align_center/ -name 'uard_T1_*'
++ files=
++ log 'Unifaze T1 '
++ '[' 0 -eq 1 ']'
++ for i in '$ID'
++ prefix[$i]=uard_T1_
++ inputs ard_T1_P001562.nii
++ in[$i]=ard_T1_P001562.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001562/align_center/
++ outputs uard_T1_P001562.nii
++ out[$i]=uard_T1_P001562.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/P001562/unifaze/
++ echo -n 'P001562> '
+P001562> + open.node
++ '[' -d DATA/P001562/unifaze/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001562/align_center/ard_T1_P001562.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/P001562/unifaze/uard_T1_P001562.nii ']'
++ d=1
++ '[' DATA/P001562/unifaze/uard_T1_P001562.nii -ot DATA/P001562/align_center/ard_T1_P001562.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001562/align_center/ -name 'uard_T1_*'
++ files=
++ log 'Unifaze T1 '
++ '[' 0 -eq 1 ']'
++ for i in '$ID'
++ prefix[$i]=uard_T1_
++ inputs ard_T1_T000001.nii
++ in[$i]=ard_T1_T000001.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/T000001/align_center/
++ outputs uard_T1_T000001.nii
++ out[$i]=uard_T1_T000001.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=DATA/T000001/unifaze/
++ echo -n 'T000001> '
+T000001> + open.node
++ '[' -d DATA/T000001/unifaze/ ']'
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/T000001/align_center/ard_T1_T000001.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f DATA/T000001/unifaze/uard_T1_T000001.nii ']'
++ d=1
++ '[' DATA/T000001/unifaze/uard_T1_T000001.nii -ot DATA/T000001/align_center/ard_T1_T000001.nii ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ echo 'OUTPUT JÁ EXISTE. PROSSEGUINDO.'
+OUTPUT JÁ EXISTE. PROSSEGUINDO.
++ go=0
++ ex=0
++ '[' 0 -eq 1 ']'
++ '[' 0 -eq 1 ']'
++ close.node
++ local e=0
++ '[' 0 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/T000001/align_center/ -name 'uard_T1_*'
++ files=
++ log 'Unifaze T1 '
++ '[' 0 -eq 1 ']'
+input.error
++ input.error
++ '[' 0 -eq 1 ']'
+echo
++ echo
+
+
+## =============================================================================
+## ====================== SKULLSTRIP MANUAL=====================================
+## =============================================================================
+
+if [ $bet -eq 0 ]; then
+  echo "O SKULL STRIP DEVE SER FEITO MANUALMENTE. USE COMO BASE O ARQUIVO QUE ESTÁ NA PASTA DATA/manual_skullstrip. NOMEIE O ARQUIVO mask_T1_<SUBID>.nii.gz e salve no diretório base." | fold -s
+  for i in $ID; do
+    [ ! -d "$pwd/OUTPUT/$i/manual_skullstrip" ] && mkdir -p $pwd/OUTPUT/$i/manual_skullstrip 
+    [ ! -d "$pwd/DATA/$i/skullstrip" ] && mkdir -p $pwd/DATA/$i/skullstrip
+    cp ${outpath[$i]}${out[$i]} OUTPUT/$i/manual_skullstrip 2> /dev/null
+    ss=$(find . -name "mask_T1_$i*")
+    mv $ss /DATA/$i/skullstrip 2> /dev/null
+  done
+  else
+
+echo "#!/usr/bin/env bash" >> optiBET.sh
+echo "fslpath=$fslpath" >> optiBET.sh
+cat > optiBET.sh << 'EOF'
+
+################## 2/6/14 #########################
+# Script by Evan Lutkenhoff, lutkenhoff@ucla.edu  #
+# Monti Lab (http://montilab.psych.ucla.edu)      #
+# Tools used within script are copyrighted by:    #   
+# FSL (http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FSL) #
+# & AFNI (http://afni.nimh.nih.gov/afni/)         #
+###################################################
+
+FSLDIR=${fslpath##/*/}
+####usage notes/comments####
+howtouse() {
+echo ""
+echo "How To Use:   sh optiBET.sh -i <input_image> -options"
+echo ""
+echo "* if option is -f script uses FSL for initial extraction (default)"
+echo "* if option is -a script uses AFNI for initial extraction"
+echo "* if option is -o script uses MNI152_T1_1mm_brain_mask.nii.gz for mask (default)"
+echo "* if option is -t script uses MNI152_T1_2mm_brain_mask.nii.gz for mask"
+echo "* if option is -g script uses avg152T1_brain.nii.gz for mask"
+echo "* if option is -d use debug mode (will NOT delete intermediate files)"
+echo "* script requires proper installation of FSL and AFNI"
+echo "* input image should be in standard orientation"
+echo "* use .nii.gz image for input"
+echo "* outputs binarized brain-extraction mask, saved as:  <input_image>_optiBET_brain_mask.nii.gz"
+echo "* and full-intensity brain-extraction, saved as: <input_image>_optiBET_brain.nii.gz"
+echo ""
+exit 1
+}
+[ "$1" = "" ] && howtouse
+
+####setup environment variables####
+#setup environment variable for AFNI
+afnidirtemp=/usr/lib/afni/bin/3dSkullStrip
+afnidir=
+#setup environment variables for FSL
+#FSLDIR already stored if installed
+
+
+####PARSE options########################
+#sets up initial values for brain extraction and MNI mask and debug
+s1=bet; #default step1
+mask=MNI152_T1_1mm_brain_mask.nii.gz; #default MNI mask
+debugger=no; #default delete intermediate files
+
+while getopts i:faotgd name
+do
+case $name in
+i)iopt=$OPTARG;;
+f)fopt=1;;
+a)aopt=1;;
+o)oopt=1;;
+t)topt=1;;
+g)gopt=1;;
+d)dopt=1;;
+*)echo "Invalid option as argument"; exit 1;; #exits if bad option used
+esac
+done
+
+if [[ ! -z $iopt ]]
+then
+i=; #removes file extensions from input image
+echo $i "is input image"
+fi
+if [[ ! -z $fopt ]]
+then
+s1=bet; #use FSL
+fi
+if [[ ! -z $aopt ]]
+then
+s1=3dSS; #use AFNI
+fi
+if [[ ! -z $oopt ]]
+then
+mask=MNI152_T1_1mm_brain_mask.nii.gz; #use 1mm mask
+fi
+if [[ ! -z $topt ]]
+then
+mask=MNI152_T1_2mm_brain_mask.nii.gz; #use 2mm mask
+fi
+if [[ ! -z $gopt ]]
+then
+mask=avg152T1_brain.nii.gz; #use avg mask
+fi
+if [[ ! -z $dopt ]]
+then
+debugger=yes; #keeps intermediate files
+echo "debug: do NOT delete intermediate files"
+fi
+#following takes care of inputting conflicting options
+if [[ ! -z $fopt ]] && [[ ! -z $aopt ]]; then
+echo "only specify one option for inital extraction (-f OR -a)"
+exit 1
+fi
+if [[ ! -z $oopt ]] && [[ ! -z $topt ]] && [[ ! -z $gopt ]]; then
+echo "only specify one option for mask (-o, -t, or -g)"
+exit 1
+fi
+if [[ ! -z $oopt ]] && [[ ! -z $topt ]]; then
+echo "only specify one option for mask (-o, -t, or -g)"
+exit 1
+fi
+if [[ ! -z $oopt ]] && [[ ! -z $gopt ]]; then
+echo "only specify one option for mask (-o, -t, or -g)"
+exit 1
+fi
+if [[ ! -z $topt ]] && [[ ! -z $gopt ]]; then
+echo "only specify one option for mask (-o, -t, or -g)"
+exit 1
+fi
+
+shift $(($OPTIND -1))
+echo "for subject $iopt use $s1 for step 1 and $mask for MNI mask"
+####END PARSE #################################
+
+
+#### 1. initial brain extraction (“step 1”) #########################
+## Perform initial “approximate” brain extraction (use FSL unless input options specify the AFNI option)
+# this is referred to as “step 1” in the manuscript.
+
+if [[ "$s1" == "bet" ]]; then
+    echo step1 BET -B -f 0.1 subject ${i} for initial extraction
+    "$fslpath"bet ${iopt} ${i}_step1 -B -f 0.25
+else
+    echo step1 AFNI 3dSkullStrip subject ${i} for initial extraction
+$afnidir/3dSkullStrip -input ${iopt} -prefix ${i}_step1.nii.gz &>/dev/null #suppress screen output b/c a lot
+fi
+
+#### 2. linear transform to MNI space (“step 2”) ####################
+## Perform linear transformation of initial “approximate” extraction to MNI space
+# This is referred to as “step 2” in the manuscript.
+
+echo step2 flirt subject ${i} to MNI space
+"$fslpath"flirt -ref ${FSLDIR}/data/standard/MNI152_T1_2mm_brain -in ${i}_step1.nii.gz -omat ${i}_step2.mat -out ${i}_step2 -searchrx -30 30 -searchry -30 30 -searchrz -30 30
+
+#### 3. nonlinear transform to MNI space (“step 3”) ##################
+## Follow the linear transformation with a non-linear transformation.  Use the MNI152 2mm as default
+# This is referred to as “step 3” in the manuscript
+
+echo step3 fnirt subject ${i} to MNI space
+"$fslpath"fnirt --in=${i} --aff=${i}_step2.mat --cout=${i}_step3 --config=T1_2_MNI152_2mm
+
+#### 4. QC: Generate image for QC of fnirt ####################################
+## This is a quality control step that generates an image of the original subject structural after transformation to MNI space
+# which can (and should) be checked by the user.
+
+echo step4 quality control of fnirt using applywarp to put subject ${i} in MNI space
+"$fslpath"applywarp --ref=${FSLDIR}/data/standard/MNI152_T1_2mm --in=${i} --warp=${i}_step3 --out=${i}_step4
+
+#### 5. Invert nonlinear warp (“step 4a”) ############################
+## Invert the nonlinear warp in order to be able to back-project the MNI brain into subject space
+# this is the first part of “step 4” in the manuscript
+
+echo step5 invert nonlinear warp for subject ${i}
+"$fslpath"invwarp -w ${i}_step3.nii.gz -o ${i}_step5.nii.gz -r ${i}_step1.nii.gz
+
+#### 6. Apply inverted nonlinear warp to labels (“step 4b”) ##########
+## Apply inverted nonlinear warp to the MNI standard brain in order to back-project it back into subject space
+# this is the second part of “step 4” in the manuscript
+
+echo step6 apply inverted nonlinear warp to MNI label: MNI152_T1_1mm_brain_mask for subject ${i}
+"$fslpath"applywarp --ref=${i} --in=${FSLDIR}/data/standard/${mask} --warp=${i}_step5.nii.gz --out=${i}_step6 --interp=nn
+
+#### 7. binarize brain extractions ###################################
+## Binarize the back-projected MNI brain in order to use it to “punch-out” brain extraction (in the next step)
+
+echo step 7 creating binary brain mask for subject ${i}
+"$fslpath"fslmaths ${i}_step6.nii.gz -bin ${i}_optiBET_brain_mask
+
+#### 8. Punch-out mask from brain to do skull-stripping (“step 4c”) ##
+## Take the binarized back-projected MNI brain and use it to “punch-out" non-brain tissue from the subject’s original T1 image
+# this is the last part of “step 4” as described in the manuscript).
+
+echo step 8 creating brain extraction for subject ${i}
+"$fslpath"fslmaths ${i} -mas ${i}_optiBET_brain_mask ${i}_optiBET_brain
+
+###debug or not #####
+if [ "$debugger" == "yes" ];then
+echo "keep intermediate files"
+else
+echo "removing intermediate files"
+rm ${i}_step1.nii.gz ${i}_step1_mask.nii.gz ${i}_step2.nii.gz ${i}_step2.mat ${i}_step3.nii.gz ${i}_step4.nii.gz ${i}_step5.nii.gz ${i}_step6.nii.gz ${i}_to_MNI152_T1_2mm.log
+fi
+EOF
+chmod +x optiBET.sh
+
+  # BET ============================================================
+  printf "\n============================BET============================\n\n"
+  pwd=($PWD)
+  for i in $ID; do
+    prefix[$i]=SS_T1_
+    inputs "${out[$i]}"
+    inpath[$i]=${outpath[$i]}
+    outputs "${prefix[$i]}$i.nii"
+    outpath[$i]=/DATA/$i/skullstrip/
+    echo -n "$i> "
+    open.node; if [ $go -eq 1 ]; then
+      $pwd/optiBET.sh ${in[$i]} #&> ${prefix[$i]}$i.log
+      mv optiBET* ${outpath[$i]} 2> /dev/null
+    fi; close.node
+    log "BET "
+  done 
+  input.error
+  echo
+fi
++ '[' 1 -eq 0 ']'
++ echo '#!/usr/bin/env bash'
++ echo fslpath=/usr/share/fsl/5.0/bin/
++ cat
++ chmod +x optiBET.sh
++ printf '\n============================BET============================\n\n'
+
+============================BET============================
+
++ pwd=($PWD)
++ for i in '$ID'
++ prefix[$i]=SS_T1_
++ inputs uard_T1_C000917.nii
++ in[$i]=uard_T1_C000917.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/C000917/unifaze/
++ outputs SS_T1_C000917.nii
++ out[$i]=SS_T1_C000917.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=/DATA/C000917/skullstrip/
++ echo -n 'C000917> '
+C000917> + open.node
++ '[' -d /DATA/C000917/skullstrip/ ']'
++ mkdir /DATA/C000917/skullstrip/
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/C000917/unifaze/uard_T1_C000917.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f /DATA/C000917/skullstrip/SS_T1_C000917.nii ']'
++ b=1
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 1 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 1 -eq 1 ']'
++ cd DATA/C000917/unifaze/
++ '[' 1 -eq 1 ']'
++ /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh uard_T1_C000917.nii
+for subject  use bet for step 1 and MNI152_T1_1mm_brain_mask.nii.gz for MNI mask
+step1 BET -B -f 0.1 subject for initial extraction
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 123: bet: command not found
+step2 flirt subject to MNI space
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 134: flirt: command not found
+step3 fnirt subject to MNI space
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 141: fnirt: command not found
+step4 quality control of fnirt using applywarp to put subject in MNI space
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 148: applywarp: command not found
+step5 invert nonlinear warp for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 155: invwarp: command not found
+step6 apply inverted nonlinear warp to MNI label: MNI152_T1_1mm_brain_mask for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 162: applywarp: command not found
+step 7 creating binary brain mask for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 168: fslmaths: command not found
+step 8 creating brain extraction for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 175: fslmaths: command not found
+removing intermediate files
+rm: cannot remove ‘_step1.nii.gz’: No such file or directory
+rm: cannot remove ‘_step1_mask.nii.gz’: No such file or directory
+rm: cannot remove ‘_step2.nii.gz’: No such file or directory
+rm: cannot remove ‘_step2.mat’: No such file or directory
+rm: cannot remove ‘_step3.nii.gz’: No such file or directory
+rm: cannot remove ‘_step4.nii.gz’: No such file or directory
+rm: cannot remove ‘_step5.nii.gz’: No such file or directory
+rm: cannot remove ‘_step6.nii.gz’: No such file or directory
+rm: cannot remove ‘_to_MNI152_T1_2mm.log’: No such file or directory
++ mv 'optiBET*' /DATA/C000917/skullstrip/
++ close.node
++ local e=0
++ '[' 1 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv DATA/C000917/unifaze/SS_T1_C000917.log /DATA/C000917/skullstrip/
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f /DATA/C000917/skullstrip/SS_T1_C000917.nii ']'
++ e=1
++ '[' '!' 1 -eq 0 ']'
++ printf 'Houve um erro no processamento da imagem %s, consulte o log. \n' C000917
+Houve um erro no processamento da imagem C000917, consulte o log. 
++ ex=1
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/C000917/unifaze/ -name 'SS_T1_*'
++ files=DATA/C000917/unifaze/SS_T1_C000917.log
++ for f in '$files'
++ mv DATA/C000917/unifaze/SS_T1_C000917.log /DATA/C000917/skullstrip/
++ log 'BET '
++ '[' 1 -eq 1 ']'
++ echo
+date
+++ date
++ echo 'ETAPA: BET   - RUNTIME: Tue Dec 13 14:39:44 BRST 2016'
++ echo
++ echo 'PREFIX: SS_T1_'
++ echo 'INPUT PATH: DATA/C000917/unifaze/ '
++ echo 'INPUTS: uard_T1_C000917.nii   '
++ echo 'OUTPUT PATH: /DATA/C000917/skullstrip/'
++ echo 'OUTPUTS: SS_T1_C000917.nii   '
++ echo
++ cat /DATA/C000917/skullstrip/SS_T1_C000917.log
++ for i in '$ID'
++ prefix[$i]=SS_T1_
++ inputs uard_T1_P001543.nii
++ in[$i]=uard_T1_P001543.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001543/unifaze/
++ outputs SS_T1_P001543.nii
++ out[$i]=SS_T1_P001543.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=/DATA/P001543/skullstrip/
++ echo -n 'P001543> '
+P001543> + open.node
++ '[' -d /DATA/P001543/skullstrip/ ']'
++ mkdir /DATA/P001543/skullstrip/
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001543/unifaze/uard_T1_P001543.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f /DATA/P001543/skullstrip/SS_T1_P001543.nii ']'
++ b=1
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 1 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 1 -eq 1 ']'
++ cd DATA/P001543/unifaze/
++ '[' 1 -eq 1 ']'
++ /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh uard_T1_P001543.nii
+for subject  use bet for step 1 and MNI152_T1_1mm_brain_mask.nii.gz for MNI mask
+step1 BET -B -f 0.1 subject for initial extraction
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 123: bet: command not found
+step2 flirt subject to MNI space
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 134: flirt: command not found
+step3 fnirt subject to MNI space
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 141: fnirt: command not found
+step4 quality control of fnirt using applywarp to put subject in MNI space
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 148: applywarp: command not found
+step5 invert nonlinear warp for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 155: invwarp: command not found
+step6 apply inverted nonlinear warp to MNI label: MNI152_T1_1mm_brain_mask for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 162: applywarp: command not found
+step 7 creating binary brain mask for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 168: fslmaths: command not found
+step 8 creating brain extraction for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 175: fslmaths: command not found
+removing intermediate files
+rm: cannot remove ‘_step1.nii.gz’: No such file or directory
+rm: cannot remove ‘_step1_mask.nii.gz’: No such file or directory
+rm: cannot remove ‘_step2.nii.gz’: No such file or directory
+rm: cannot remove ‘_step2.mat’: No such file or directory
+rm: cannot remove ‘_step3.nii.gz’: No such file or directory
+rm: cannot remove ‘_step4.nii.gz’: No such file or directory
+rm: cannot remove ‘_step5.nii.gz’: No such file or directory
+rm: cannot remove ‘_step6.nii.gz’: No such file or directory
+rm: cannot remove ‘_to_MNI152_T1_2mm.log’: No such file or directory
++ mv 'optiBET*' /DATA/P001543/skullstrip/
++ close.node
++ local e=0
++ '[' 1 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv DATA/P001543/unifaze/SS_T1_P001543.log /DATA/P001543/skullstrip/
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f /DATA/P001543/skullstrip/SS_T1_P001543.nii ']'
++ e=1
++ '[' '!' 1 -eq 0 ']'
++ printf 'Houve um erro no processamento da imagem %s, consulte o log. \n' P001543
+Houve um erro no processamento da imagem P001543, consulte o log. 
++ ex=1
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001543/unifaze/ -name 'SS_T1_*'
++ files=DATA/P001543/unifaze/SS_T1_P001543.log
++ for f in '$files'
++ mv DATA/P001543/unifaze/SS_T1_P001543.log /DATA/P001543/skullstrip/
++ log 'BET '
++ '[' 1 -eq 1 ']'
++ echo
+date
+++ date
++ echo 'ETAPA: BET   - RUNTIME: Tue Dec 13 14:39:44 BRST 2016'
++ echo
++ echo 'PREFIX: SS_T1_'
++ echo 'INPUT PATH: DATA/P001543/unifaze/ '
++ echo 'INPUTS: uard_T1_P001543.nii   '
++ echo 'OUTPUT PATH: /DATA/P001543/skullstrip/'
++ echo 'OUTPUTS: SS_T1_P001543.nii   '
++ echo
++ cat /DATA/P001543/skullstrip/SS_T1_P001543.log
++ for i in '$ID'
++ prefix[$i]=SS_T1_
++ inputs uard_T1_P001562.nii
++ in[$i]=uard_T1_P001562.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/P001562/unifaze/
++ outputs SS_T1_P001562.nii
++ out[$i]=SS_T1_P001562.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=/DATA/P001562/skullstrip/
++ echo -n 'P001562> '
+P001562> + open.node
++ '[' -d /DATA/P001562/skullstrip/ ']'
++ mkdir /DATA/P001562/skullstrip/
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/P001562/unifaze/uard_T1_P001562.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f /DATA/P001562/skullstrip/SS_T1_P001562.nii ']'
++ b=1
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 1 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 1 -eq 1 ']'
++ cd DATA/P001562/unifaze/
++ '[' 1 -eq 1 ']'
++ /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh uard_T1_P001562.nii
+for subject  use bet for step 1 and MNI152_T1_1mm_brain_mask.nii.gz for MNI mask
+step1 BET -B -f 0.1 subject for initial extraction
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 123: bet: command not found
+step2 flirt subject to MNI space
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 134: flirt: command not found
+step3 fnirt subject to MNI space
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 141: fnirt: command not found
+step4 quality control of fnirt using applywarp to put subject in MNI space
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 148: applywarp: command not found
+step5 invert nonlinear warp for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 155: invwarp: command not found
+step6 apply inverted nonlinear warp to MNI label: MNI152_T1_1mm_brain_mask for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 162: applywarp: command not found
+step 7 creating binary brain mask for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 168: fslmaths: command not found
+step 8 creating brain extraction for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 175: fslmaths: command not found
+removing intermediate files
+rm: cannot remove ‘_step1.nii.gz’: No such file or directory
+rm: cannot remove ‘_step1_mask.nii.gz’: No such file or directory
+rm: cannot remove ‘_step2.nii.gz’: No such file or directory
+rm: cannot remove ‘_step2.mat’: No such file or directory
+rm: cannot remove ‘_step3.nii.gz’: No such file or directory
+rm: cannot remove ‘_step4.nii.gz’: No such file or directory
+rm: cannot remove ‘_step5.nii.gz’: No such file or directory
+rm: cannot remove ‘_step6.nii.gz’: No such file or directory
+rm: cannot remove ‘_to_MNI152_T1_2mm.log’: No such file or directory
++ mv 'optiBET*' /DATA/P001562/skullstrip/
++ close.node
++ local e=0
++ '[' 1 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv DATA/P001562/unifaze/SS_T1_P001562.log /DATA/P001562/skullstrip/
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f /DATA/P001562/skullstrip/SS_T1_P001562.nii ']'
++ e=1
++ '[' '!' 1 -eq 0 ']'
++ printf 'Houve um erro no processamento da imagem %s, consulte o log. \n' P001562
+Houve um erro no processamento da imagem P001562, consulte o log. 
++ ex=1
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/P001562/unifaze/ -name 'SS_T1_*'
++ files=DATA/P001562/unifaze/SS_T1_P001562.log
++ for f in '$files'
++ mv DATA/P001562/unifaze/SS_T1_P001562.log /DATA/P001562/skullstrip/
++ log 'BET '
++ '[' 1 -eq 1 ']'
++ echo
+date
+++ date
++ echo 'ETAPA: BET   - RUNTIME: Tue Dec 13 14:39:44 BRST 2016'
++ echo
++ echo 'PREFIX: SS_T1_'
++ echo 'INPUT PATH: DATA/P001562/unifaze/ '
++ echo 'INPUTS: uard_T1_P001562.nii   '
++ echo 'OUTPUT PATH: /DATA/P001562/skullstrip/'
++ echo 'OUTPUTS: SS_T1_P001562.nii   '
++ echo
++ cat /DATA/P001562/skullstrip/SS_T1_P001562.log
++ for i in '$ID'
++ prefix[$i]=SS_T1_
++ inputs uard_T1_T000001.nii
++ in[$i]=uard_T1_T000001.nii
++ in_2[$i]=
++ in_3[$i]=
++ in_4[$i]=
++ inpath[$i]=DATA/T000001/unifaze/
++ outputs SS_T1_T000001.nii
++ out[$i]=SS_T1_T000001.nii
++ out_2[$i]=
++ out_3[$i]=
++ out_4[$i]=
++ outpath[$i]=/DATA/T000001/skullstrip/
++ echo -n 'T000001> '
+T000001> + open.node
++ '[' -d /DATA/T000001/skullstrip/ ']'
++ mkdir /DATA/T000001/skullstrip/
++ local a=0
++ local b=0
++ local c=0
++ local d=0
++ local v=0
++ ex=0
++ go=1
++ for ii in '${in[$i]}' '${in_2[$i]}' '${in_3[$i]}' '${in_4[$i]}'
++ '[' '!' -f DATA/T000001/unifaze/uard_T1_T000001.nii ']'
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' '!' -f /DATA/T000001/skullstrip/SS_T1_T000001.nii ']'
++ b=1
++ '[' '!' 0 -eq 0 ']'
++ '[' 0 -eq 0 ']'
++ '[' 1 -eq 0 ']'
++ '[' '!' 0 -eq 0 ']'
++ '[' 1 -eq 1 ']'
++ cd DATA/T000001/unifaze/
++ '[' 1 -eq 1 ']'
++ /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh uard_T1_T000001.nii
+for subject  use bet for step 1 and MNI152_T1_1mm_brain_mask.nii.gz for MNI mask
+step1 BET -B -f 0.1 subject for initial extraction
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 123: bet: command not found
+step2 flirt subject to MNI space
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 134: flirt: command not found
+step3 fnirt subject to MNI space
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 141: fnirt: command not found
+step4 quality control of fnirt using applywarp to put subject in MNI space
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 148: applywarp: command not found
+step5 invert nonlinear warp for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 155: invwarp: command not found
+step6 apply inverted nonlinear warp to MNI label: MNI152_T1_1mm_brain_mask for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 162: applywarp: command not found
+step 7 creating binary brain mask for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 168: fslmaths: command not found
+step 8 creating brain extraction for subject
+/home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/optiBET.sh: line 175: fslmaths: command not found
+removing intermediate files
+rm: cannot remove ‘_step1.nii.gz’: No such file or directory
+rm: cannot remove ‘_step1_mask.nii.gz’: No such file or directory
+rm: cannot remove ‘_step2.nii.gz’: No such file or directory
+rm: cannot remove ‘_step2.mat’: No such file or directory
+rm: cannot remove ‘_step3.nii.gz’: No such file or directory
+rm: cannot remove ‘_step4.nii.gz’: No such file or directory
+rm: cannot remove ‘_step5.nii.gz’: No such file or directory
+rm: cannot remove ‘_step6.nii.gz’: No such file or directory
+rm: cannot remove ‘_to_MNI152_T1_2mm.log’: No such file or directory
++ mv 'optiBET*' /DATA/T000001/skullstrip/
++ close.node
++ local e=0
++ '[' 1 -eq 1 ']'
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
++ mv DATA/T000001/unifaze/SS_T1_T000001.log /DATA/T000001/skullstrip/
++ for iii in '${out[$i]}' '${out_2[$i]}' '${out_3[$i]}' '${out_4[$i]}'
++ '[' -f /DATA/T000001/skullstrip/SS_T1_T000001.nii ']'
++ e=1
++ '[' '!' 1 -eq 0 ']'
++ printf 'Houve um erro no processamento da imagem %s, consulte o log. \n' T000001
+Houve um erro no processamento da imagem T000001, consulte o log. 
++ ex=1
++ cd /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING
+ find "${inpath[$i]}" -name "${prefix[$i]}*" 
+++ find DATA/T000001/unifaze/ -name 'SS_T1_*'
++ files=DATA/T000001/unifaze/SS_T1_T000001.log
++ for f in '$files'
++ mv DATA/T000001/unifaze/SS_T1_T000001.log /DATA/T000001/skullstrip/
++ log 'BET '
++ '[' 1 -eq 1 ']'
++ echo
+date
+++ date
++ echo 'ETAPA: BET   - RUNTIME: Tue Dec 13 14:39:44 BRST 2016'
++ echo
++ echo 'PREFIX: SS_T1_'
++ echo 'INPUT PATH: DATA/T000001/unifaze/ '
++ echo 'INPUTS: uard_T1_T000001.nii   '
++ echo 'OUTPUT PATH: /DATA/T000001/skullstrip/'
++ echo 'OUTPUTS: SS_T1_T000001.nii   '
++ echo
++ cat /DATA/T000001/skullstrip/SS_T1_T000001.log
++ input.error
++ '[' 1 -eq 1 ']'
 + exit

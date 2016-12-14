@@ -795,17 +795,16 @@ for i in $ID; do
   cp.inputs
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
-    #align_epi_anat.py \
-    #-anat ${in[$i]} \
-    #-epi  ${in_2[$i]} \
-    #-epi_base 100 \
-    #-anat_has_skull no \
-    #-volreg off \
-    #-tshift off \
-    #-deoblique off &> ${prefix[$i]}$i.log
+    align_epi_anat.py \
+    -anat ${in[$i]} \
+    -epi  ${in_2[$i]} \
+    -epi_base 100 \
+    -anat_has_skull no \
+    -volreg off \
+    -tshift off \
+    -deoblique off &> ${prefix[$i]}$i.log
     3dAFNItoNIFTI -prefix ${out[$i]} SS_T1_${i}_al+orig
-   # mv *_shft.nii ${prefix[$i]}$i.nii &>> ${prefix[$i]}$i.log 
-   # mv *_shft.1D ${prefix[$i]}$i.1D &>> ${prefix[$i]}$i.log 
+    rm SS_T1_${i}_*
   fi; close.node
   log "COREGISTER fMRI-T1 "
 done 

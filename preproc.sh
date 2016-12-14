@@ -316,7 +316,7 @@ gRL=90
 gAP=90
 gIS=60
 template="MNI152_1mm_uni+tlrc"
-betf=0.15
+betf=0.1
 blur=6
 EOL
 exit

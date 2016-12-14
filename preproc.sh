@@ -805,6 +805,7 @@ for i in $ID; do
     -deoblique off &> ${prefix[$i]}$i.log
     3dAFNItoNIFTI -prefix ${out[$i]} SS_T1_${i}_al+orig
     rm SS_T1_${i}_*
+    mv SS_T1_$i*.1D ${outpath[$i]}
   fi; close.node
   log "COREGISTER fMRI-T1 "
 done 

@@ -253,8 +253,18 @@ fromT1 () {
   outpath[$i]=${outpatht1[$i]}
   prefix[$i]=${prefixt1[$i]}
 }
-# ==============================================================================
 
+cp.inputs () {
+  files=$(find . -name "${in_2[$i]}")
+  cp -n ${files[0]} ${inpath[$i]} 2> /dev/null
+  files=$(find . -name "${in_3[$i]}")
+  cp -n ${files[0]} ${inpath[$i]} 2> /dev/null
+  files=$(find . -name "${in_4[$i]}")
+  cp -n ${files[0]} ${inpath[$i]} 2> /dev/null
+}
+
+# ==============================================================================
+ 
 
 # INÍCIO =======================================================================
 
@@ -646,8 +656,8 @@ for i in $ID; do
     @Align_Centers \
     -base "$template" \
     -dset ${in[$i]} &> ${prefix[$i]}$i.log 
-    mv rd_T1_"$i"_shft.nii ${prefix[$i]}$i.nii &>> ${prefix[$i]}$i.log 
-    mv rd_T1_"$i"_shft.1D ${prefix[$i]}$i.1D &>> ${prefix[$i]}$i.log 
+    mv *_shft.nii ${prefix[$i]}$i.nii &>> ${prefix[$i]}$i.log 
+    mv *_shft.1D ${prefix[$i]}$i.1D &>> ${prefix[$i]}$i.log 
   fi; close.node
   log "Align center T1 TO TEMP "
 done 
@@ -680,9 +690,14 @@ echo
 if [ $bet -eq 0 ]; then
   echo "O SKULL STRIP DEVE SER FEITO MANUALMENTE. USE COMO BASE O ARQUIVO QUE ESTÁ NA PASTA DATA/manual_skullstrip. NOMEIE O ARQUIVO mask_T1_<SUBID>.nii.gz e salve no diretório base." | fold -s
   for i in $ID; do
+    prefix[$i]=mask_T1_
+    inputs "${out[$i]}"
+    inpath[$i]=${outpath[$i]}
+    outputs "${prefix[$i]}$i.nii.gz"
+    outpath[$i]=DATA/$i/skullstrip/
     [ ! -d "$pwd/OUTPUT/$i/manual_skullstrip" ] && mkdir -p $pwd/OUTPUT/$i/manual_skullstrip 
     [ ! -d "$pwd/DATA/$i/skullstrip" ] && mkdir -p $pwd/DATA/$i/skullstrip
-    cp ${outpath[$i]}${out[$i]} OUTPUT/$i/manual_skullstrip 2> /dev/null
+    cp ${inpath[$i]}${in[$i]} OUTPUT/$i/manual_skullstrip 2> /dev/null
     ss=$(find . -name "mask_T1_$i*")
     mv $ss /DATA/$i/skullstrip 2> /dev/null
   done
@@ -699,15 +714,15 @@ if [ $bet -eq 0 ]; then
     outpath[$i]=DATA/$i/skullstrip/
     echo -n "$i> "
     open.node; if [ $go -eq 1 ]; then
-      "$fsl5"bet ${in[$i]} ${i}_step1 -B -f $betf
-      "$fsl5"flirt -ref ${FSLDIR}/data/standard/MNI152_T1_2mm_brain -in ${i}_step1.nii.gz -omat ${i}_step2.mat -out ${i}_step2 -searchrx -30 30 -searchry -30 30 -searchrz -30 30
-      "$fsl5"fnirt --in=${in[$i]} --aff=${i}_step2.mat --cout=${i}_step3 --config=T1_2_MNI152_2mm
-      "$fsl5"applywarp --ref=${FSLDIR}/data/standard/MNI152_T1_2mm --in=${in[$i]} --warp=${i}_step3 --out=${i}_step4
-      "$fsl5"invwarp -w ${i}_step3.nii.gz -o ${i}_step5.nii.gz -r ${i}_step1.nii.gz
-      "$fsl5"applywarp --ref=${in[$i]} --in=${FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz --warp=${i}_step5.nii.gz --out=${i}_step6 --interp=nn
-      "$fsl5"fslmaths ${i}_step6.nii.gz -bin ${out[$i]}
-      rm ${i}_step1.nii.gz ${i}_step1_mask.nii.gz ${i}_step2.nii.gz ${i}_step2.mat ${i}_step3.nii.gz ${i}_step4.nii.gz ${i}_step5.nii.gz ${i}_step6.nii.gz ${i}_to_MNI152_T1_2mm.log
-      #2> /dev/null
+      "$fsl5"bet ${in[$i]} ${i}_step1 -B -f $betf && \
+      "$fsl5"flirt -ref ${FSLDIR}/data/standard/MNI152_T1_2mm_brain -in ${i}_step1.nii.gz -omat ${i}_step2.mat -out ${i}_step2 -search rx -30 30 -searchry -30 30 -searchrz -30 30 && \
+      "$fsl5"fnirt --in=${in[$i]} --aff=${i}_step2.mat --cout=${i}_step3 --config=T1_2_MNI152_2mm && \
+      "$fsl5"applywarp --ref=${FSLDIR}/data/standard/MNI152_T1_2mm --in=${in[$i]} --warp=${i}_step3 --out=${i}_step4 && \
+      "$fsl5"invwarp -w ${i}_step3.nii.gz -o ${i}_step5.nii.gz -r ${i}_step1.nii.gz && \
+      "$fsl5"applywarp --ref=${in[$i]} --in=${FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz --warp=${i}_step5.nii.gz --out=${i}_step6 --interp=nn && \
+      "$fsl5"fslmaths ${i}_step6.nii.gz -bin invmask_$i.nii.gz && \
+      "$fsl5"fslmaths invmask_$i.nii.gz -mul -1 -add 1 ${out[$i]} &> ${prefix[$i]}$i.log
+       rm invmask_$i.nii.gz ${i}_step1.nii.gz ${i}_step1_mask.nii.gz ${i}_step2.nii.gz ${i}_step2.mat ${i}_step3.nii.gz ${i}_step4.nii.gz ${i}_step5.nii.gz ${i}_step6.nii.gz ${i}_to_MNI152_T1_2mm.log 2> /dev/null
     fi; close.node
     log "BET "
   done 
@@ -715,46 +730,61 @@ if [ $bet -eq 0 ]; then
   echo
 fi 
 
+
+
+# APPLY MASK TO T1 ===========================================================
+printf "\n=========================APPLY MASK T1========================\n\n"
+for i in $ID; do
+  prefix[$i]=SS_T1_
+  inputs "${out[$i]}" "uard_T1_$i.nii"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/apply_mask/
+  cp.inputs
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dcalc \
+    -a        ${in_2[$i]} \
+    -b        ${in[$i]} \
+    -expr     'a*abs(b-1)' \
+    -prefix   ${out[$i]} &> ${prefix[$i]}$i.log
+  fi; close.node
+  log "Apply mask T1 "
+  toT1
+done 
+input.error
+echo
+
+rm -r OUTPUT/$i/manual_skullstrip 2> /dev/null
+
+# ALIGN CENTER fMRI-T1 ======================================================
+printf "\n=======================ALIGN CENTER fMRI-T1=====================\n\n"
+for i in $ID; do
+  fromRS
+  prefix[$i]=a${prefix[$i]}
+  inputs "${out[$i]}" "SS_T1_$i.nii"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii" "${prefix[$i]}$i.1D"
+  outpath[$i]=DATA/$i/align_center2/
+  cp.inputs
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    @Align_Centers \
+    -cm \
+    -base ${in_2[$i]} \
+    -dset ${in[$i]} &> ${prefix[$i]}$i.log
+    mv *_shft.nii ${prefix[$i]}$i.nii &>> ${prefix[$i]}$i.log 
+    mv *_shft.1D ${prefix[$i]}$i.1D &>> ${prefix[$i]}$i.log 
+  fi; close.node
+  log "Apply mask T1 "
+done 
+input.error
+echo
+
 exit
 
-## APPLY SKULL STRIPPING MASK
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "=========== Aplicando a mascara do SKULL STRIPPING ================="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dcalc \
-  -a        urd_T1_"$i".nii \
-  -b        lurd_T1_"$i".nii.gz \
-  -expr     'a*abs(b-1)' \
-  -prefix   SS_T1_"$i"
-  done
-### The command 3dcalc performs the following calculation: 'a*abs(b-1)'. This means that:
-### a = T1 image before skull stripping
-### b = mask (1 = regions to be deleted; 0 = regions to be preserved)
-### b-1 => the regions to be removed are now ‘0’ and the regions to be preserved are now ‘-1’
-### abs(b-1) => calculate the absolute value so that the regions to be removed are still ‘0’ and the regions to be preserved are now ‘1’
-### a*abs(b-1) => multiply the T1 image to the ‘abs(b-1)’ so that the regions to be deleted are set to zero and the regions to be preserved are unchanged.
 
-## ALIGN CENTER fmri TO T1
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "====== Aplicando etapa Align center of fmri to T1 às imagens ======="
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  @Align_Centers \
-  -cm \
-  -base SS_T1_"$i"+orig \
-  -dset rpdrt_RS_"$i"+orig
-done
+
 
 ## COREGISTER fmri and T1
 cd "$pathpi"

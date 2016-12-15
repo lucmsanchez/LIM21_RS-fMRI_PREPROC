@@ -279,13 +279,14 @@ Programas necessários:
 GNU bash           ...$(check bash)
 AFNI               ...$(check afni)
 FSL                ...$(check fsl5.0-fast)
+Pyhton             ---$(check python)
 MATLAB             ...$(check matlab)
   SPM5
   aztec
 
 EOF
 
-if ( ! command -v bash || ! command -v afni || ! command -v fsl5.0-fast  ) > /dev/null ; then
+if ( ! command -v bash || ! command -v afni || ! command -v fsl5.0-fast || ! command -v python  ) > /dev/null ; then
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit
 fi
@@ -812,24 +813,345 @@ done
 input.error
 echo
 
+# NORMALIZE T1 TO TEMPLATE ======================================================
+printf "\n=======================NORMALIZE T1 TO TEMPLATE=====================\n\n"
+for i in $ID; do 
+  prefix[$i]=MNI_T1_
+  inputs "${out[$i]}" "$template.HEAD" "$template.BRIK.gz"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/normalize/
+  cp.inputs
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dQwarp \
+      -prefix ${out[$i]} \
+      -blur 0 3 \
+      -base $template \
+      -allineate \
+      -source ${in[$i]} &> ${prefix[$i]}$i.log
+   fi; close.node
+  log "NORMALIZE T1 TO TEMPLATE "
+  toT1
+done 
+input.error
+echo
 
 exit
 
-
-
-
-## COREGISTER fmri and T1
-cd "$pathpi"
+# fMRI SPATIAL NORMALIZATION ======================================================
+printf "\n=======================fMRI SPATIAL NORMALIZATION=====================\n\n"
+for i in $ID; do
+  fromRS
+  prefix[$i]=MNI_RS_
+  inputs "${out[$i]}" "$template.HEAD" "$template.BRIK.gz"
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/normalize/
+  cp.inputs
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+   3drename MNI_T1_"$i"_WARP+tlrc MNI_T1_WARP
+    3dNwarpApply \
+    -source rpdrt_RS_"$i"_shft+orig \
+    -nwarp 'MNI_T1_WARP+tlrc' \
+    -master "$template" \
+    -newgrid 3 \
+    -prefix rpdrt_RS_MNI_"$i"
+    3drename MNI_T1_WARP+tlrc MNI_T1_"$i"_WARP
+   fi; close.node
+  log "fMRI SPATIAL NORMALIZATION "
+  toRS
+done 
+input.error
 echo
-echo "===================================================================="
-echo "========= Aplicando etapa Coregister fmri e T1 às imagens =========="
-echo "===================================================================="
+
+exit
+
+# T1 SEGMENTATION ======================================================
+printf "\n=======================T1 SEGMENTATION=====================\n\n"
+for i in $ID; do
+  fromT1
+  #prefix[$i]=MNI_RS_
+  inputs "${out[$i]}" 
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/segmentation/
+  cp.inputs
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    ${fsl5}fast \
+    -o seg_"$i" \
+    -S 1 \
+    -t 1 \
+    -n 3 \
+    SS_T1_"$i"_al.nii
+    3dcalc \
+    -a seg_"$i"_pve_0.nii.gz \
+    -expr 'equals(a,1)' \
+    -prefix "$i"_CSF
+    ### now, the WM
+    3dcalc \
+    -a seg_"$i"_pve_2.nii.gz \
+    -expr 'equals(a,1)' \
+    -prefix "$i"_WM
+  fi; close.node
+  log "T1 SEGMENTATION "
+done 
+input.error
 echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  
-done
+
+exit
+
+# RS SEGMENTATION ======================================================
+printf "\n=======================RS SEGMENTATION=====================\n\n"
+for i in $ID; do
+  #prefix[$i]=MNI_RS_
+  inputs "${out[$i]}" 
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/segmentation/
+  cp.inputs
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    ### resample CSF mask
+    3dresample \
+    -master rpdrt_RS_"$i"_shft+orig \
+    -inset "$i"_CSF+orig \
+    -prefix "$i"_CSF_resampled+orig
+    ### resample WM mask
+    3dresample \
+    -master rpdrt_RS_"$i"_shft+orig \
+    -inset "$i"_WM+orig \
+    -prefix "$i"_WM_resampled+orig
+    ### first, mean CSF signal
+    3dmaskave \
+    -mask "$i"_CSF_resampled+orig \
+    -quiet \
+    rpdrt_RS_"$i"_shft+orig \
+    "$i"_CSF_signal.1d
+    ### now, mean WM signal
+    3dmaskave \
+    -mask "$i"_WM_resampled+orig \
+    -quiet \
+    rpdrt_RS_"$l"_shft+orig \
+    "$i"_WM_signal.1d
+  fi; close.node
+  log "RS SEGMENTATION "
+done 
+input.error
+echo
+
+exit
+
+# RS FILTERING ======================================================
+printf "\n=======================RS FILTERING=====================\n\n"
+for i in $ID; do
+  fromRS
+  prefix[$i]=MNI_RS_
+  inputs "${out[$i]}" 
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/filtering/
+  cp.inputs
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+   3dBandpass \
+  -band 0.01 0.08 \
+  -despike \
+  -ort motioncorrection_"$i".1d \
+  -ort "$i"_CSF_signal.1d \
+  -ort "$i"_WM_signal.1d \
+  -prefix frpdrt_RS_MNI_"$i" \
+  -input rpdrt_RS_MNI_"$i"+tlrc
+  fi; close.node
+  log "RS SEGMENTATION "
+done 
+input.error
+echo
+
+exit
+
+# RS SMOOTHING ======================================================
+printf "\n=======================RS SMOOTHING=====================\n\n"
+for i in $ID; do
+  prefix[$i]=MNI_RS_
+  inputs "${out[$i]}" 
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/smoothing/
+  cp.inputs
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    3dmerge \
+    -1blur_fwhm "$blur" \
+    -doall \
+    -prefix bfrpdrt_RS_MNI_"$i" \
+    frpdrt_RS_MNI_"$i"+tlrc
+  fi; close.node
+  log "RS SMOOTHING "
+done 
+input.error
+echo
+
+exit
+
+# RS MOTIONCENSOR ======================================================
+printf "\n=======================RS MOTIONCENSOR=====================\n\n"
+for i in $ID; do
+  prefix[$i]=MNI_RS_
+  inputs "${out[$i]}" 
+  inpath[$i]=${outpath[$i]}
+  outputs "${prefix[$i]}$i.nii"
+  outpath[$i]=DATA/$i/smoothing/
+  cp.inputs
+  echo -n "$i> "
+  open.node; if [ $go -eq 1 ]; then
+    ### take the temporal derivative of each vector (done as first backward difference)
+    1d_tool.py \
+    -infile motioncorrection_"$i".1d \
+    -derivative \
+    -write "$i"_RS.deltamotion.1D
+
+    ### calculate total framewise displacement (sum of six parameters)
+    1deval \
+    -a "$i"_RS.deltamotion.1D'[0]' \
+    -b "$i"_RS.deltamotion.1D'[1]' \
+    -c "$i"_RS.deltamotion.1D'[2]' \
+    -d "$i"_RS.deltamotion.1D'[3]' \
+    -e "$i"_RS.deltamotion.1D'[4]' \
+    -f "$i"_RS.deltamotion.1D'[5]' \
+    -expr '100*sind(abs(a)/2) + 100*sind(abs(b)/2) + 100*sind(abs(c)/2) + abs(d) + abs(e) + abs(f)' \
+    "$i"_RS.deltamotion.FD.1D
+
+    ### create temporal mask (1 = extreme motion)
+    1d_tool.py \
+    -infile "$i"_RS.deltamotion.FD.1D \
+    -extreme_mask -1 0.5 \
+    -write "$i"_RS.deltamotion.FD.extreme0.5.1D
+
+    ### create temporal mask (0 = extreme motion)
+    1deval -a "$i"_RS.deltamotion.FD.extreme0.5.1D \
+    -expr 'not(a)' \
+    "$i"_RS.deltamotion.FD.moderate0.5.1D
+
+    ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
+    1deval \
+    -a "$i"_RS.deltamotion.FD.moderate0.5.1D \
+    -b "$i"_RS.deltamotion.FD.moderate0.5.1D'{1..$,0}' \
+    -expr 'ispositive(a + b - 1)' \
+    "$i"_RS.deltamotion.FD.moderate0.5.n.1D
+
+    ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
+    1deval \
+    -a "$i"_RS.deltamotion.FD.moderate0.5.n.1D \
+    -b "$i"_RS.deltamotion.FD.moderate0.5.n.1D'{0,0..$}' \
+    -expr 'ispositive(a + b - 1)' \
+    "$i"_RS.deltamotion.FD.moderate0.5.n.n.1D
+
+    ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
+    1deval \
+    -a "$i"_RS.deltamotion.FD.moderate0.5.n.n.1D \
+    -b "$i"_RS.deltamotion.FD.moderate0.5.n.n.1D'{0,0..$}' \
+    -expr 'ispositive(a + b - 1)' \
+    "$i"_RS.deltamotion.FD.moderate0.5.n.n.n.1D
+
+    echo "Create DVARS censor"
+    echo
+    ### normalize and scale the BOLD to percent signal change
+    ### find the mean
+    3dTstat \
+    -mean \
+    -prefix meanBOLD_"$i" \
+    RS_"$i".nii
+    ### scale BOLD signal to percent change
+    3dcalc \
+    -a RS_"$i".nii \
+    -b meanBOLD_"$i"+orig \
+    -expr "(a/b) * 100" \
+    -prefix "$i"_RS_scaled
+    ### temporal derivative of the frames
+    3dcalc \
+    -a "$i"_RS_scaled+orig \
+    -b 'a[0,0,0,-1]' \
+    -expr '(a - b)^2' \
+    -prefix "$i"_RS.backdif2
+    ### Extract brain mask
+    3dAutomask \
+    -prefix "$i".auto_mask.brain \
+    RS_"$i".nii
+    ### average data from each frame (inside brain mask)
+    3dmaskave \
+    -mask "$i".auto_mask.brain+orig \
+    -quiet "$i"_RS.backdif2+orig \
+    "$i"_RS.backdif2.avg.1D
+    ### square root to finally get DVARS
+    1deval \
+    -a "$i"_RS.backdif2.avg.1D \
+    -expr 'sqrt(a)' \
+    "$i"_RS.backdif2.avg.dvars.1D
+    ### mask extreme (1 = extreme motion)
+    1d_tool.py \
+    -infile "$i"_RS.backdif2.avg.dvars.1D \
+    -extreme_mask -1 5 \
+    -write "$i"_RS.backdif2.avg.dvars.extreme5.1D
+    ### mask extreme (0 = extreme motion)
+    1deval \
+    -a "$i"_RS.backdif2.avg.dvars.extreme5.1D \
+    -expr 'not(a)' \
+    "$i"_RS.backdif2.avg.dvars.moderate5.1D
+    ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
+    1deval \
+    -a "$i"_RS.backdif2.avg.dvars.moderate5.1D \
+    -b "$i"_RS.backdif2.avg.dvars.moderate5.1D'{1..$,0}' \
+    -expr 'ispositive(a + b - 1)' \
+    "$i"_RS.backdif2.avg.dvars.moderate5.n.1D
+    ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 2)
+    1deval \
+    -a "$i"_RS.backdif2.avg.dvars.moderate5.n.1D \
+    -b "$i"_RS.backdif2.avg.dvars.moderate5.n.1D'{0,0..$}' \
+    -expr 'ispositive(a + b - 1)' \
+    "$i"_RS.backdif2.avg.dvars.moderate5.n.n.1D
+    ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 3)
+    1deval \
+    -a "$i"_RS.backdif2.avg.dvars.moderate5.n.n.1D \
+    -b "$i"_RS.backdif2.avg.dvars.moderate5.n.n.1D'{0,0..$}' \
+    -expr 'ispositive(a + b - 1)' \
+    "$i"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D
+
+
+    ### Integrate FD and DVARS censoring
+    ### (only frames censored on both will be excluded, as in Power et al., 2012)
+
+    ### FD censor OR DVARS censor
+    1deval \
+    -a "$i"_RS.deltamotion.FD.moderate0.5.n.n.n.1D \
+    -b "$i"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D \
+    -expr 'or(a, b)' \
+    "$i"_powerCensorIntersection.1D
+
+    ### Apply censor file in the final preprocessed image (after temporal filtering and spatial blurring)
+    afni_restproc.py -apply_censor bfrpdrt_RS_MNI_"$i"+tlrc "$i"_powerCensorIntersection.1D cbfrpdrt_RS_MNI_"$i"
+  fi; close.node
+  log "RS MOTIONCENSOR "
+done 
+input.error
+echo
+
+exit #=================================================================================
+#======================================================================================
+#======================================================================================
+#======================================================================================
+#======================================================================================
+#======================================================================================
+#======================================================================================
+
+
+
+
+
+
+
 
 ## NORMALIZE T1 TO TEMPLATE
 cd "$pathpi"
@@ -859,14 +1181,7 @@ echo
 for i in "${lista[@]}"
   do
   echo "Aplicando em $i..."
-  3drename MNI_T1_"$i"_WARP+tlrc MNI_T1_WARP
-  3dNwarpApply \
-  -source rpdrt_RS_"$i"_shft+orig \
-  -nwarp 'MNI_T1_WARP+tlrc' \
-  -master "$template" \
-  -newgrid 3 \
-  -prefix rpdrt_RS_MNI_"$i"
-  3drename MNI_T1_WARP+tlrc MNI_T1_"$i"_WARP
+  
 done
 
 ## CREATE CSF AND WM MASKS
@@ -889,6 +1204,7 @@ for i in "${lista[@]}"
   -t 1 \
   -n 3 \
   SS_T1_"$i"_al.nii
+  
 done
 ### Explained: -o = output name; -S = number of channels (1, because only T1 image); -t = type of image (1 for T1); -n = number of tissue-type classes
 ### This gives three output files: seg_"$lista"_pve_0.nii.gz (CSF), seg_"$lista"_pve_1.nii.gz (GM) and seg_"$lista"_pve_3.nii.gz (WM).

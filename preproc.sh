@@ -123,72 +123,53 @@ outputs () {
 }
 
 open.node () {
-  [ -d ${outpath[$i]} ] || mkdir ${outpath[$i]} 2> /dev/null
-  #
-  local a=0; local b=0; local c=0; local d=0; local v=0
+  local a=0; local b=0; local c=0; local d=0
   ex=0; go=1
   #
-  for ii in ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}; do
-      if [ ! -f ${inpath[$i]}$ii ]; then
-          echo "INPUT $ii não encontrado"
-          a=$((a + 1))            
-      else
-          for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do
-              if [ ! -f ${outpath[$i]}$iii ]; then
-                  b=$((b + 1))
-                else
-                  d=$((d + 1))
-                  [ ${outpath[$i]}$iii -ot ${inpath[$i]}$ii ] && c=$((c + 1))
-              fi
-          done
-          [ ! $c -eq 0 ] && echo -n "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. "
-      fi
+  cd ${steppath[$i]}
+  for ii in ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]} ${in_5[$i]}; do
+    [ ! -f $ii ] && echo "INPUT $ii não encontrado" && a=$((a + 1))
+    for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]} ${out_5[$i]}; do
+      [ ! -f $iii ] && b=$((b + 1)) || c=$((c + 1))
+      [ $iii -ot $ii ] && printf "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. " && d=$((d + 1))
+    done
   done
   #
   if [ $a -eq 0 ]; then
-  #
     if [ $b -eq 0 ]; then 
-      if [ ! $c -eq 0 ]; then
-        for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do rm ${outpath[$i]}$iii 2> /dev/null; done
+      if [ ! $d -eq 0 ]; then
+        for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]} ${out_5[$i]}; do rm $iii 2> /dev/null; done
+        go=1
       else
-          echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0; ex=0
+        echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0; ex=0
       fi
     else
-        if [ ! $d -eq 0 ]; then
-            echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
-            for ii in ${out[@]}; do rm ${outpath[$i]}$ii 2> /dev/null; done
-        fi
-    fi
-    #
-    if [ $go -eq 1 ]; then
-      cd ${inpath[$i]}
+      if [ ! $c -eq 0 ]; then
+        echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
+        for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]} ${out_5[$i]}; do rm $iii 2> /dev/null; done
+        go=1
+      else
+        go=0
+      fi
     fi
   else
-  go=0
-  fi
-  
+    go=0
+  fi  
 }
 
 close.node () {
-  local e=0
+  local a=0
   if [ $go -eq 1 ]; then  
-    cd $pwd
-    mv ${inpath[$i]}${prefix[$i]}* ${outpath[$i]} 2> /dev/null
-     for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do 
-      [ -f ${outpath[$i]}$iii ] ||  e=$((e + 1)) 
+    for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do 
+      [ -f $iii ] ||  a=$((a + 1)) 
     done
-    # 
-    if [ ! $e -eq 0 ]; then
-     printf "Houve um erro no processamento da imagem %s, consulte o log. \n" "$i" && ex=$((ex + 1))
+    if [ ! $a -eq 0 ]; then
+      printf "Houve um erro no processamento da imagem %s, consulte o log. \n" "$i" && ex=$((ex + 1))
     else
       printf "Processamento da imagem %s realizado com sucesso! \n" "$i"
     fi
   fi
- cd $pwd
- files=$( find "${inpath[$i]}" -name "${prefix[$i]}*" )
-  for f in $files; do
-    mv $f ${outpath[$i]} 2> /dev/null
-  done
+  cd $pwd
 }
 
 get.info1() {
@@ -232,35 +213,31 @@ fi
 
 toRS () {
   outrs[$i]=${out[$i]}
-  outpathrs[$i]=${outpath[$i]}
   prefixrs[$i]=${prefix[$i]}
   }
 
 toT1 () {
   outt1[$i]=${out[$i]}
-  outpatht1[$i]=${outpath[$i]}
   prefixt1[$i]=${prefix[$i]}
 }
 
 fromRS () {
   out[$i]=${outrs[$i]}
-  outpath[$i]=${outpathrs[$i]}
   prefix[$i]=${prefixrs[$i]}
 }
 
 fromT1 () {
   out[$i]=${outt1[$i]}
-  outpath[$i]=${outpatht1[$i]}
   prefix[$i]=${prefixt1[$i]}
 }
 
 cp.inputs () {
-  files=$(find . -name "${in_2[$i]}")
-  cp -n ${files[0]} ${inpath[$i]} 2> /dev/null
-  files=$(find . -name "${in_3[$i]}")
-  cp -n ${files[0]} ${inpath[$i]} 2> /dev/null
-  files=$(find . -name "${in_4[$i]}")
-  cp -n ${files[0]} ${inpath[$i]} 2> /dev/null
+  files=$(find . -name "$1")
+  cp -n ${files[0]} ${steppath[$i]} 2> /dev/null
+  files=$(find . -name "$2")
+  cp -n ${files[0]} ${steppath[$i]} 2> /dev/null
+  files=$(find . -name "$3")
+  cp -n ${files[0]} ${steppath[$i]} 2> /dev/null
 }
 
 # ==============================================================================
@@ -278,7 +255,7 @@ RUNTIME: $(date)
 Programas necessários:
 GNU bash           ...$(check bash)
 AFNI               ...$(check afni)
-FSL                ...$(check fsl5.0-fast)
+FSL                ...$(check ${fsl5}fast)
 Pyhton             ---$(check python)
 MATLAB             ...$(check matlab)
   SPM5
@@ -320,7 +297,6 @@ else
 
 fsl5=fsl5.0-
 TR=2
-hp=0
 ptn=seq+z
 mcbase=100
 gRL=90
@@ -345,6 +321,8 @@ Aztec                   - Tempo de repetição(s)   => $TR
 Slice timing correction - sequência de aquisição  => $ptn
 Motion correction       - valor base              => $mcbase
 Homogenize Grid         - tamanho da grade        => $gRL $gAP $gIS
+BET                     - bet f                   => $betf
+3dBandpass              - filtro gaussiano        => $blur
 
 TEMPLATE: $template
 
@@ -370,14 +348,8 @@ echo "Lista de indivíduos para análise:"
 a=0
 for i in $ID; do 
   echo -n "$i  ... " 
-  if [ $(find . -name "T1_$i.nii") ] && [ $(find . -name "T1_$i.PAR") ]; then
-    echo -n "T1" 
-  else echo -n "(T1 não encontrado)"; a=$((a + 1))
-  fi
-  if [ $(find . -name "RS_$i.nii") ] && [ $(find . -name "RS_$i.PAR") ]; then
-    printf " RS" 
-  else echo " (RS não encontrado)"; a=$((a + 1)) 
-  fi
+  [ $(find . -name "T1_$i.nii") ] && printf "T1" || printf "(T1 não encontrado)"; a=$((a + 1))
+  [ $(find . -name "RS_$i.nii") ] && printf " RS" || printf " (RS não encontrado)"; a=$((a + 1)) 
   [ $(find . -name "z_RS_$i.nii") ] && printf " aztec"
   [ $(find . -name "t*_RS_$i.nii") ] && printf " stc"
   [ $(find . -name "rt*_RS_$i.nii") ] && printf " mc"
@@ -420,23 +392,26 @@ fi
 
 
 for i in $ID; do
-prefix[$i]=_RS_
-prefixt1[$i]=_T1_
-out[$i]=RS_$i.nii
-outpath[$i]=DATA/$i/
+  prefix[$i]=_RS_
+  prefixt1[$i]=_T1_
+  out[$i]=RS_$i.nii
+  steppath[$i]=DATA/$i/STEPS
+  [ ! -d $steppath ] && mkdir -p $steppath
+  [ ! -f $steppath/RS_$i.nii ] && cp DATA/$i/RS_$i.nii $steppath 2> /dev/null
+  [ ! -f $steppath/T1_$i.nii ] && cp DATA/$i/T1_$i.nii $steppath 2> /dev/null
 done
 
+
+
+pwd=($PWD)
 
 # AZTEC========================================================================
 if [ $aztec -eq 1 ]; then
   printf "=============================AZTEC==================================\n\n"
-  pwd=($PWD)
   for i in $ID; do
     prefix[$i]=z${prefix[$i]}
     inputs "${out[$i]}" "RS_$i.log"
-    inpath[$i]=${outpath[$i]}
     outputs "${prefix[$i]}$i.nii"
-    outpath[$i]=DATA/$i/aztec/
     echo -n "$i> "
     open.node; if [ $go -eq 1 ]; then
       #

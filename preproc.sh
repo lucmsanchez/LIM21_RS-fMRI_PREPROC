@@ -903,7 +903,7 @@ for i in $ID; do
     -1blur_fwhm "$blur" \
     -doall \
     -prefix ${out[$i]} \
-    ${in[$i]}
+    ${in[$i]} &> ${prefix[$i]}$i.log
   fi; close.node
   log "RS SMOOTHING "
 done 
@@ -926,7 +926,7 @@ for i in $ID; do
     1d_tool.py \
     -infile ${in_2[$i]} \
     -derivative \
-    -write "$i"_RS.deltamotion.1D
+    -write "$i"_RS.deltamotion.1D &>> ${prefix[$i]}$i.log
 
     ### calculate total framewise displacement (sum of six parameters)
     1deval \
@@ -943,7 +943,7 @@ for i in $ID; do
     1d_tool.py \
     -infile "$i"_RS.deltamotion.FD.1D \
     -extreme_mask -1 0.5 \
-    -write "$i"_RS.deltamotion.FD.extreme0.5.1D
+    -write "$i"_RS.deltamotion.FD.extreme0.5.1D &>> ${prefix[$i]}$i.log
 
     ### create temporal mask (0 = extreme motion)
     1deval -a "$i"_RS.deltamotion.FD.extreme0.5.1D \
@@ -976,23 +976,23 @@ for i in $ID; do
     3dTstat \
     -mean \
     -prefix meanBOLD_"$i" \
-    ${in_3[$i]}
+    ${in_3[$i]} &>> ${prefix[$i]}$i.log
     ### scale BOLD signal to percent change
     3dcalc \
     -a ${in_3[$i]} \
     -b meanBOLD_"$i"+orig \
     -expr "(a/b) * 100" \
-    -prefix "$i"_RS_scaled
+    -prefix "$i"_RS_scaled &>> ${prefix[$i]}$i.log
     ### temporal derivative of the frames
     3dcalc \
     -a "$i"_RS_scaled+orig \
     -b 'a[0,0,0,-1]' \
     -expr '(a - b)^2' \
-    -prefix "$i"_RS.backdif2
+    -prefix "$i"_RS.backdif2 &>> ${prefix[$i]}$i.log
     ### Extract brain mask
     3dAutomask \
     -prefix "$i".auto_mask.brain \
-    ${in_3[$i]}
+    ${in_3[$i]} &>> ${prefix[$i]}$i.log
     ### average data from each frame (inside brain mask)
     3dmaskave \
     -mask "$i".auto_mask.brain+orig \
@@ -1007,7 +1007,7 @@ for i in $ID; do
     1d_tool.py \
     -infile "$i"_RS.backdif2.avg.dvars.1D \
     -extreme_mask -1 5 \
-    -write "$i"_RS.backdif2.avg.dvars.extreme5.1D
+    -write "$i"_RS.backdif2.avg.dvars.extreme5.1D &>> ${prefix[$i]}$i.log
     ### mask extreme (0 = extreme motion)
     1deval \
     -a "$i"_RS.backdif2.avg.dvars.extreme5.1D \
@@ -1044,12 +1044,30 @@ for i in $ID; do
     > "$i"_powerCensorIntersection.1D
 
     ### Apply censor file in the final preprocessed image (after temporal filtering and spatial blurring)
-    afni_restproc.py -apply_censor ${in[$i]} "$i"_powerCensorIntersection.1D ${out[$i]}
+    afni_restproc.py -apply_censor ${in[$i]} "$i"_powerCensorIntersection.1D ${out[$i]} &>> ${prefix[$i]}$i.log
   fi; close.node
   log "RS MOTIONCENSOR "
 done 
 input.error
 echo
+
+for i in $ID; do
+file=$(find . -name "*bf*_RS_$i.nii")
+cp -n $file OUTPUT/$i/
+file=$(find . -name "preproc_$i.log")
+cp -n $file OUTPUT/$i/
+file=$(find . -name "SS_T1_$i.nii")
+cp -n $file OUTPUT/$i/
+file=$(find . -name "MNI_T1_$i.nii")
+cp -n $file OUTPUT/$i/
+# incluir quality report aqui tbm
+#file=$(find . -name "report_$i.html")
+#cp -n $file OUTPUT/$i/
+done
+
+
+
+
 
 exit #=================================================================================
 #======================================================================================
@@ -1060,293 +1078,3 @@ exit #==========================================================================
 #======================================================================================
 
 
-
-
-
-
-
-
-## NORMALIZE T1 TO TEMPLATE
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "========= Aplicando etapa Normalize T1 to template às imagens ======"
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dQwarp \
-  -prefix MNI_T1_"$i" \
-  -blur 0 3 \
-  -base "$template" \
-  -allineate \
-  -source SS_T1_"$i"_al+orig
-done
-
-## SPATIAL NORMALIZATION
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "========= Aplicando etapa Spatial Normalization fmri às imagens ======"
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  
-done
-
-## CREATE CSF AND WM MASKS
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "========= Aplicando etapa Create CSF and WM Masks às imagens ======"
-echo "===================================================================="
-echo
-### Segmentando as imagens com FSL-FAST
-for i in "${lista[@]}"
-  do
-  echo "Aplicando em $i..."
-  3dAFNItoNIFTI SS_T1_"$i"_al+orig
-  echo "Segmentando as imagens usando FSL-FAST"
-  echo
-  fsl5.0-fast \
-  -o seg_"$i" \
-  -S 1 \
-  -t 1 \
-  -n 3 \
-  SS_T1_"$i"_al.nii
-  
-done
-### Explained: -o = output name; -S = number of channels (1, because only T1 image); -t = type of image (1 for T1); -n = number of tissue-type classes
-### This gives three output files: seg_"$lista"_pve_0.nii.gz (CSF), seg_"$lista"_pve_1.nii.gz (GM) and seg_"$lista"_pve_3.nii.gz (WM).
-
-### Binarize the segmented images
-echo
-echo "Binarizando as imagens segmentadas"
-echo
-for i in "${lista[@]}"
-  do
-  ### first, the CSF
-  3dcalc \
-  -a seg_"$i"_pve_0.nii.gz \
-  -expr 'equals(a,1)' \
-  -prefix "$i"_CSF
-  ### now, the WM
-  3dcalc \
-  -a seg_"$i"_pve_2.nii.gz \
-  -expr 'equals(a,1)' \
-  -prefix "$i"_WM
-done
-
-### Aplicando Resample as imagens
-echo
-echo "Aplicando Resample às imagens"
-echo
-for i in "${lista[@]}"
-  do
-  ### resample CSF mask
-  3dresample \
-  -master rpdrt_RS_"$i"_shft+orig \
-  -inset "$i"_CSF+orig \
-  -prefix "$i"_CSF_resampled+orig
-  ### resample WM mask
-  3dresample \
-  -master rpdrt_RS_"$i"_shft+orig \
-  -inset "$i"_WM+orig \
-  -prefix "$i"_WM_resampled+orig
-done
-
-### Calculando CSF and WM mean signal
-echo
-echo "Calculando CSF e WM mean signal"
-echo
-for i in "${lista[@]}"
-  do
-  ### first, mean CSF signal
-  3dmaskave \
-  -mask "$i"_CSF_resampled+orig \
-  -quiet \
-  rpdrt_RS_"$i"_shft+orig \
-  "$i"_CSF_signal.1d
-  ### now, mean WM signal
-  3dmaskave \
-  -mask "$i"_WM_resampled+orig \
-  -quiet \
-  rpdrt_RS_"$l"_shft+orig \
-  "$i"_WM_signal.1d
-done
-
-### 3dBandPass
-echo
-echo "Aplicando 3dBandpass para correção de movimentos"
-echo
-for i in "${lista[@]}"
-  do
-  3dBandpass \
-  -band 0.01 0.08 \
-  -despike \
-  -ort motioncorrection_"$i".1d \
-  -ort "$i"_CSF_signal.1d \
-  -ort "$i"_WM_signal.1d \
-  -prefix frpdrt_RS_MNI_"$i" \
-  -input rpdrt_RS_MNI_"$i"+tlrc
-done
-
-## SPATIAL Smoothing
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "========= Aplicando etapa Spatial Smoothing às imagens ======"
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-	echo "Aplicando em $i..."
-	3dmerge \
-	-1blur_fwhm "$blur" \
-	-doall \
-	-prefix bfrpdrt_RS_MNI_"$i" \
-	frpdrt_RS_MNI_"$i"+tlrc
-done
-
-## MOTION CENSORING
-cd "$pathpi"
-echo
-echo "===================================================================="
-echo "========= Aplicando etapa Motion censoring às imagens ============"
-echo "===================================================================="
-echo
-for i in "${lista[@]}"
-  do
-	echo "Aplicando em $i..."
-	echo
-	echo "Create Framewise Displacement (FD) censor"
-	echo
-	### take the temporal derivative of each vector (done as first backward difference)
-	1d_tool.py \
-	-infile motioncorrection_"$i".1d \
-	-derivative \
-	-write "$i"_RS.deltamotion.1D
-
-	### calculate total framewise displacement (sum of six parameters)
-	1deval \
-	-a "$i"_RS.deltamotion.1D'[0]' \
-	-b "$i"_RS.deltamotion.1D'[1]' \
-	-c "$i"_RS.deltamotion.1D'[2]' \
-	-d "$i"_RS.deltamotion.1D'[3]' \
-	-e "$i"_RS.deltamotion.1D'[4]' \
-	-f "$i"_RS.deltamotion.1D'[5]' \
-	-expr '100*sind(abs(a)/2) + 100*sind(abs(b)/2) + 100*sind(abs(c)/2) + abs(d) + abs(e) + abs(f)' \
-	"$i"_RS.deltamotion.FD.1D
-
-	### create temporal mask (1 = extreme motion)
-	1d_tool.py \
-	-infile "$i"_RS.deltamotion.FD.1D \
-	-extreme_mask -1 0.5 \
-	-write "$i"_RS.deltamotion.FD.extreme0.5.1D
-
-	### create temporal mask (0 = extreme motion)
-	1deval -a "$i"_RS.deltamotion.FD.extreme0.5.1D \
-	-expr 'not(a)' \
-	"$i"_RS.deltamotion.FD.moderate0.5.1D
-
-	### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
-	1deval \
-	-a "$i"_RS.deltamotion.FD.moderate0.5.1D \
-	-b "$i"_RS.deltamotion.FD.moderate0.5.1D'{1..$,0}' \
-	-expr 'ispositive(a + b - 1)' \
-	"$i"_RS.deltamotion.FD.moderate0.5.n.1D
-
-	### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
-	1deval \
-	-a "$i"_RS.deltamotion.FD.moderate0.5.n.1D \
-	-b "$i"_RS.deltamotion.FD.moderate0.5.n.1D'{0,0..$}' \
-	-expr 'ispositive(a + b - 1)' \
-	"$i"_RS.deltamotion.FD.moderate0.5.n.n.1D
-
-	### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
-	1deval \
-	-a "$i"_RS.deltamotion.FD.moderate0.5.n.n.1D \
-	-b "$i"_RS.deltamotion.FD.moderate0.5.n.n.1D'{0,0..$}' \
-	-expr 'ispositive(a + b - 1)' \
-	"$i"_RS.deltamotion.FD.moderate0.5.n.n.n.1D
-
-	echo "Create DVARS censor"
-	echo
-	### normalize and scale the BOLD to percent signal change
-	### find the mean
-	3dTstat \
-	-mean \
-	-prefix meanBOLD_"$i" \
-	RS_"$i".nii
-	### scale BOLD signal to percent change
-	3dcalc \
-	-a RS_"$i".nii \
-	-b meanBOLD_"$i"+orig \
-	-expr "(a/b) * 100" \
-	-prefix "$i"_RS_scaled
-	### temporal derivative of the frames
-	3dcalc \
-	-a "$i"_RS_scaled+orig \
-	-b 'a[0,0,0,-1]' \
-	-expr '(a - b)^2' \
-	-prefix "$i"_RS.backdif2
-	### Extract brain mask
-	3dAutomask \
-	-prefix "$i".auto_mask.brain \
-	RS_"$i".nii
-	### average data from each frame (inside brain mask)
-	3dmaskave \
-	-mask "$i".auto_mask.brain+orig \
-	-quiet "$i"_RS.backdif2+orig \
-	"$i"_RS.backdif2.avg.1D
-	### square root to finally get DVARS
-	1deval \
-	-a "$i"_RS.backdif2.avg.1D \
-	-expr 'sqrt(a)' \
-	"$i"_RS.backdif2.avg.dvars.1D
-	### mask extreme (1 = extreme motion)
-	1d_tool.py \
-	-infile "$i"_RS.backdif2.avg.dvars.1D \
-	-extreme_mask -1 5 \
-	-write "$i"_RS.backdif2.avg.dvars.extreme5.1D
-	### mask extreme (0 = extreme motion)
-	1deval \
-	-a "$i"_RS.backdif2.avg.dvars.extreme5.1D \
-	-expr 'not(a)' \
-	"$i"_RS.backdif2.avg.dvars.moderate5.1D
-	### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
-	1deval \
-	-a "$i"_RS.backdif2.avg.dvars.moderate5.1D \
-	-b "$i"_RS.backdif2.avg.dvars.moderate5.1D'{1..$,0}' \
-	-expr 'ispositive(a + b - 1)' \
-	"$i"_RS.backdif2.avg.dvars.moderate5.n.1D
-	### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 2)
-	1deval \
-	-a "$i"_RS.backdif2.avg.dvars.moderate5.n.1D \
-	-b "$i"_RS.backdif2.avg.dvars.moderate5.n.1D'{0,0..$}' \
-	-expr 'ispositive(a + b - 1)' \
-	"$i"_RS.backdif2.avg.dvars.moderate5.n.n.1D
-	### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 3)
-	1deval \
-	-a "$i"_RS.backdif2.avg.dvars.moderate5.n.n.1D \
-	-b "$i"_RS.backdif2.avg.dvars.moderate5.n.n.1D'{0,0..$}' \
-	-expr 'ispositive(a + b - 1)' \
-	"$i"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D
-
-
-	### Integrate FD and DVARS censoring
-	### (only frames censored on both will be excluded, as in Power et al., 2012)
-
-	### FD censor OR DVARS censor
-	1deval \
-	-a "$i"_RS.deltamotion.FD.moderate0.5.n.n.n.1D \
-	-b "$i"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D \
-	-expr 'or(a, b)' \
-	"$i"_powerCensorIntersection.1D
-
-	### Apply censor file in the final preprocessed image (after temporal filtering and spatial blurring)
-	afni_restproc.py -apply_censor bfrpdrt_RS_MNI_"$i"+tlrc "$i"_powerCensorIntersection.1D cbfrpdrt_RS_MNI_"$i"
-done

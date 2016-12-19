@@ -11,6 +11,7 @@ Esse protocolo ainda está em desenvolvimento.
 - GNU Bash v4.4 (http://www.gnu.org/software/bash/)
 - AFNI v16.3.12 (https://afni.nimh.nih.gov/afni/)
 - FSL v5.0 (https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/)
+- Python v2.7 (https://www.python.org/)
 - Matlab (https://www.mathworks.com/)  
     - SPM5 (http://wwww.fil.ion.ucl.ac.uk/spm/software/spm5/)  
     - aztec v2.0 (http://www.ni-utrecht.nl/downloads/aztec)  
@@ -25,6 +26,7 @@ Abaixo exemplo de como rodar o script. Ele usa a pasta onde é rodado como base 
 opções:
     -a ou --aztec:  realiza correções utilizando dados cardiorespiratórios
     -b ou --bet:    realiza skull strip automatizado utlizando BET/OpitBET (Padrão: Manual)
+    -m ou --motioncensor  aplica a técnica motion censor
     
 ```
 Caso tenha algum problema e queira fazer o Debug, execute como especificado abaixo e crie um novo item na aba Issues anexe o log:

@@ -9,7 +9,9 @@ usage() {
     echo
     echo "-a | --aztec  realiza a etapa aztec"
     echo "-b | --bet    realiza o skull strip automatizado (Padrão: Manual)"
-    echo "-m | --motioncensor  aplica a técnica motion censor"
+    echo "-m | --motioncensor  aplica a técnica motion censor"    
+    echo "-p | --break  interrompe o script no breakpoint de numero indicado"
+    echo
 }
 
 aztec=0
@@ -18,8 +20,8 @@ censor=0
 
 i=$(($# + 1)) # index of the first non-existing argument
 declare -A longoptspec
-longoptspec=( [config]=1 [subs]=1 )
-optspec=":l:h:a:b:c:s:m-:"
+longoptspec=( [config]=1 [subs]=1 [break]=1 )
+optspec=":l:h:a:b:c:s:m:p-:"
 while getopts "$optspec" opt; do
 while true; do
     case "${opt}" in
@@ -69,6 +71,9 @@ while true; do
             ;;
         s|subs)
             subs=$OPTARG
+            ;;
+        p|break)
+            break=$OPTARG
             ;;
         h|help)
             usage
@@ -357,6 +362,8 @@ for i in $ID; do
   [ $(find . -name "z_RS_$i.nii") ] && printf " aztec"
   [ $(find . -name "t*_RS_$i.nii") ] && printf " stc"
   [ $(find . -name "rt*_RS_$i.nii") ] && printf " mc"
+  [ $(find . -name "SS_T1_$i.nii") ] && printf " ss"
+  [ $(find . -name "SS_T1_$i.nii") ] && printf " ss"
   printf "\n"
 done
 echo
@@ -364,6 +371,15 @@ if [ ! $a -eq 0 ]; then
     echo "Imagens não foram encontradas ou não estão nomeadas conforme o padrão: RS_<ID>.nii/RS_<ID>.PAR e T1_<ID>.nii/T1_<ID>" | fold -s ; echo
     exit
 fi
+
+# CHECANDO SE OUTPUT EXISTE
+for i in $ID; do
+[ -f "OUTPUT/$i/bf*_RS_$i.nii" ] && [ -f "OUTPUT/$i/preproc_$i.log" ] && [ -f "OUTPUT/$i/SS_T1_$i.nii" ] && [ -f "OUTPUT/$i/MNI_T1_$i.nii" ] && printf "OUTPUTS já existem. Protocolo completo." && exit
+[ -f "OUTPUT/$i/cbf*_RS_$i.nii" ] && [ -f "OUTPUT/$i/preproc_$i.log" ] && [ -f "OUTPUT/$i/SS_T1_$i.nii" ] && [ -f "OUTPUT/$i/MNI_T1_$i.nii" ] && printf "OUTPUTS já existem. Protocolo completo." && exit
+# incluir quality report aqui tbm
+done
+
+
 
 # BUSCANDO O TEMPLATE
 cp /usr/share/afni/atlases/"$template"* . 2> /dev/null
@@ -699,8 +715,6 @@ done
 input.error
 echo
 
-#rm -r OUTPUT/$i/manual_skullstrip 2> /dev/null
-
 # ALIGN CENTER fMRI-T1 ======================================================
 printf "\n=======================ALIGN CENTER fMRI-T1=====================\n\n"
 for i in $ID; do
@@ -803,7 +817,7 @@ for i in $ID; do
   fromT1
   prefix[$i]=seg_
   inputs "${out[$i]}"
-  outputs "${prefix[$i]}$i.nii" "${i}_CSF" "${i}_WM"
+  outputs "${prefix[$i]}$i.nii" "${i}_CSF.nii" "${i}_WM.nii"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
     ${fsl5}fast \
@@ -1052,7 +1066,10 @@ input.error
 echo
 
 for i in $ID; do
-file=$(find . -name "*bf*_RS_$i.nii")
+#rm -r OUTPUT/$i/manual_skullstrip 2> /dev/null
+file=$(find . -name "bf*_RS_$i.nii")
+cp -n $file OUTPUT/$i/
+file=$(find . -name "cbf*_RS_$i.nii")
 cp -n $file OUTPUT/$i/
 file=$(find . -name "preproc_$i.log")
 cp -n $file OUTPUT/$i/

@@ -29,7 +29,7 @@ sudo chmod a+x preproc.sh
 Faça alterações ou crie os aquivos preproc.cfg e preproc.sbj (pode usar outros nomes, apenas mantenha a extensão) conforme sua necessidade. Exemplos de default abaixo:  
   
 preproc.cfg
->>>
+```
 # Variáveis RS-fMRI Preprocessing:
 fsl5=fsl5.0-
 TR=2
@@ -41,18 +41,18 @@ gIS=60
 template="MNI152_1mm_uni+tlrc"
 betf=0.1
 blur=6
->>>
-
+```
+  
 preproc.sbj (o arquivo deve conter APENAS os códigos das imagens, um por linha)
->>>
+```
 C000001
 C000002
 C000003
 P000001
 P000002
 P000003
->>>
-
+```
+  
 Abaixo instruções de como rodar o script. Ele usa a pasta onde é rodado como base para a análise. É necessário especificar o arquivo de configurações e o arquivo com o ID dos indivíduos. Caso o arquivo de configuração não seja especificado na primeira vez que rodar o script irá criar um com valores default.
 
 ```bash

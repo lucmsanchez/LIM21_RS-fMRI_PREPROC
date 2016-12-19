@@ -17,6 +17,7 @@ usage() {
 aztec=0
 bet=0
 censor=0
+break=0
 
 i=$(($# + 1)) # index of the first non-existing argument
 declare -A longoptspec

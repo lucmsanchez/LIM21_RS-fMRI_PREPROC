@@ -52,7 +52,38 @@ P000001
 P000002
 P000003
 ```
+Salve as imagens que serão pré-processadas na pasta base (PREPROC) confome o padrão:
+```
+RS_C000001.nii  # imagem Funcional
+T1_C000001.nii  # imagem estrutural
+RS_C000001.log  # physlog para análise aztec
+```
+Salve também o template na pasta principal. Caso não seja encontrado o script irá buscar o template especificado na pasta do AFNI e copiar para a pasta base
+
+Os arquivos serão organizados no seguinte padrão:  
   
+```
+.
+├── DATA
+│   └── C000001
+│   	├── STEPS
+│   	├── RS_C000001.nii
+│   	├── T1_C000001.nii
+│   	└── RS_C000001.log
+├── OUTPUT
+│   └── C000001
+│		├── report_C000001.html
+│   	├── xxxxxx_RS_C000001.nii
+│   	├── SS_T1_C000001.nii
+│   	└── preproc_C000001.log
+├── template
+│   ├── MNI152_1mm_uni+tlrc.BRIK
+│   └── MNI152_1mm_uni+tlrc.HEAD
+├── preproc.cfg
+├── preproc.sbj
+└── preproc.sh
+```
+
 Abaixo instruções de como rodar o script. Ele usa a pasta onde é rodado como base para a análise. É necessário especificar o arquivo de configurações e o arquivo com o ID dos indivíduos. Caso o arquivo de configuração não seja especificado na primeira vez que rodar o script irá criar um com valores default.
 
 ```bash

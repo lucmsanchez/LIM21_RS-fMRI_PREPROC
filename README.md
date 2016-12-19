@@ -60,7 +60,7 @@ RS_C000001.log  # physlog para análise aztec
 ```
 Salve também o template na pasta principal. Caso não seja encontrado o script irá buscar o template especificado na pasta do AFNI e copiar para a pasta base
 
-Os arquivos serão organizados no seguinte padrão:  
+Os arquivos serão automaticamente organizados no seguinte padrão:  
   
 ```
 .

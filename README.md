@@ -72,10 +72,10 @@ Os arquivos serão organizados no seguinte padrão:
 │   	└── RS_C000001.log
 ├── OUTPUT
 │   └── C000001
-│		├── report_C000001.html
-│   	├── xxxxxx_RS_C000001.nii
-│   	├── SS_T1_C000001.nii
-│   	└── preproc_C000001.log
+│       ├── report_C000001.html
+│       ├── xxxxxx_RS_C000001.nii
+│       ├── SS_T1_C000001.nii
+│       └── preproc_C000001.log
 ├── template
 │   ├── MNI152_1mm_uni+tlrc.BRIK
 │   └── MNI152_1mm_uni+tlrc.HEAD

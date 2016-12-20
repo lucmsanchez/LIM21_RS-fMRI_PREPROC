@@ -342,8 +342,16 @@ echo "Lista de indivíduos para análise:"
 a=0
 for i in $ID; do 
   echo -n "$i  ... " 
-  [ $(find . -name "T1_$i.nii") ] && printf "T1" || printf "(T1 não encontrado)"; a=$((a + 1))
-  [ $(find . -name "RS_$i.nii") ] && printf " RS" || printf " (RS não encontrado)"; a=$((a + 1)) 
+  if [ $(find . -name "T1_$i.nii") ]; then
+    printf "T1" 
+    else
+    printf "(T1 não encontrado)"; a=$((a + 1))
+  fi
+  if [ $(find . -name "RS_$i.nii") ]; then 
+    printf " RS" 
+  else
+  printf " (RS não encontrado)"; a=$((a + 1))
+  fi
   [ $(find . -name "z_RS_$i.nii") ] && printf " aztec"
   [ $(find . -name "t*_RS_$i.nii") ] && printf " stc"
   [ $(find . -name "rt*_RS_$i.nii") ] && printf " mc"
@@ -353,7 +361,7 @@ for i in $ID; do
 done
 echo
 if [ ! $a -eq 0 ]; then
-    echo "Imagens não foram encontradas ou não estão nomeadas conforme o padrão: RS_<ID>.nii/RS_<ID>.PAR e T1_<ID>.nii/T1_<ID>" | fold -s ; echo
+    echo "Imagens não foram encontradas ou não estão nomeadas conforme o padrão: RS_<ID>.nii e T1_<ID>.nii" | fold -s ; echo
     exit
 fi
 
@@ -392,7 +400,7 @@ unset a; a=0
 for i in $ID; do
   [ -d DATA/$i ] || mkdir DATA/$i 
   [ -d OUTPUT/$i ] || mkdir OUTPUT/$i 
-  for ii in T1_$i.nii RS_$i.nii physlog_$i; do
+  for ii in T1_$i.nii RS_$i.nii RS_$i.log; do
     [ ! -f DATA/$i/$ii ] && wp=$(find . -name $ii) && rp=DATA/$i/$ii && mv $wp $rp 2> /dev/null && a=$((a + 1))
   done
 done

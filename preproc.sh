@@ -201,14 +201,14 @@ get.info2 () {
 
 log () {
 if [ $go -eq 1 ]; then
-{ echo 
+{echo 
   echo "ETAPA: $1  - RUNTIME: $(date)" 
   echo 
   echo "PREFIX: ${prefix[$i]}"  
   echo "INPUTS: ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}" 
   echo "OUTPUTS: ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}"
   echo 
-  cat DATA/$i/STEPS/${prefix[$i]}$i.log } >> OUTPUT/$i/preproc_$i.log
+  cat DATA/$i/STEPS/${prefix[$i]}$i.log} >> OUTPUT/$i/preproc_$i.log
 fi
 }
 
@@ -253,7 +253,7 @@ RUNTIME: $(date)
 Programas necessários:
 GNU bash           ...$(check bash)
 AFNI               ...$(check afni)
-FSL                ...$(check ${fsl5}fast)
+FSL                ...$(check "$fsl5"fast)
 Pyhton             ---$(check python)
 MATLAB             ...$(check matlab)
   SPM5

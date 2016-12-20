@@ -95,7 +95,7 @@ break; done
 done
 
 #: DECLARANDO VARIÁVEIS ===========================================================
-declare -A prefix
+declare -A prefix steppath
 declare -A in in_2 in_3 in_4 in_5
 declare -A out out_2 out_3 ou_4 out_5
 declare -A outrs outt1 prefixrs prefixt1
@@ -136,13 +136,15 @@ open.node () {
     [ ! -f $ii ] && echo "INPUT $ii não encontrado" && a=$((a + 1))
     for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]} ${out_5[$i]}; do
       [ ! -f $iii ] && b=$((b + 1)) || c=$((c + 1))
-      [ $iii -ot $ii ] && printf "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. " && d=$((d + 1))
+      [ $iii -ot $ii ] && d=$((d + 1))
     done
   done
   #
+  echo $a $b $c $d
   if [ $a -eq 0 ]; then
     if [ $b -eq 0 ]; then 
       if [ ! $d -eq 0 ]; then
+        printf "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. " 
         for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]} ${out_5[$i]}; do rm $iii 2> /dev/null; done
         go=1
       else
@@ -154,11 +156,11 @@ open.node () {
         for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]} ${out_5[$i]}; do rm $iii 2> /dev/null; done
         go=1
       else
-        go=0
+        go=1
       fi
     fi
   else
-    go=0
+    go=0; ex=$((ex + 1))
   fi  
 }
 
@@ -201,14 +203,14 @@ get.info2 () {
 
 log () {
 if [ $go -eq 1 ]; then
-{echo 
+( echo 
   echo "ETAPA: $1  - RUNTIME: $(date)" 
   echo 
   echo "PREFIX: ${prefix[$i]}"  
   echo "INPUTS: ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}" 
   echo "OUTPUTS: ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}"
   echo 
-  cat DATA/$i/STEPS/${prefix[$i]}$i.log} >> OUTPUT/$i/preproc_$i.log
+  cat DATA/$i/STEPS/${prefix[$i]}$i.log ) >> OUTPUT/$i/preproc_$i.log
 fi
 }
 
@@ -342,12 +344,14 @@ echo "Lista de indivíduos para análise:"
 a=0
 for i in $ID; do 
   echo -n "$i  ... " 
-  if [ $(find . -name "T1_$i.nii") ]; then
+  file=$(find . -name "T1_$i.nii")
+  if [ ! -z "$file"  ]; then
     printf "T1" 
     else
     printf "(T1 não encontrado)"; a=$((a + 1))
   fi
-  if [ $(find . -name "RS_$i.nii") ]; then 
+  file=$(find . -name "RS_$i.nii")
+  if [ ! -z "$file" ]; then 
     printf " RS" 
   else
   printf " (RS não encontrado)"; a=$((a + 1))
@@ -366,7 +370,6 @@ if [ ! $a -eq 0 ]; then
 fi
 
 # BUSCANDO O TEMPLATE
-cp /usr/share/afni/atlases/"$template"* . 2> /dev/null
 temp=$(find . -name "$template*")
 if [ ! -z "$temp" ];then
   [ ! -d template ] && mkdir template 
@@ -374,7 +377,18 @@ if [ ! -z "$temp" ];then
     mv -f $tp template 2> /dev/null
   done
 else
-  echo "Template $template não encontrado." && exit
+  echo "Template $template não encontrado. Buscando no afni.."
+  cp /usr/share/afni/atlases/"$template"* . 2> /dev/null
+  temp=$(find . -name "$template*")
+  if [ ! -z "$temp" ];then
+    [ ! -d template ] && mkdir template 
+    for tp in $temp; do
+      mv -f $tp template 2> /dev/null
+    done
+  else
+    echo "Não encontrado"
+    exit
+  fi
 fi
 
 # CHECANDO SE OUTPUT JÁ EXISTE
@@ -419,8 +433,8 @@ for i in $ID; do
   out[$i]=RS_$i.nii
   steppath[$i]=DATA/$i/STEPS
   [ ! -d $steppath ] && mkdir -p $steppath
-  [ ! -f $steppath/RS_$i.nii ] && cp DATA/$i/RS_$i.nii $steppath 2> /dev/null
-  [ ! -f $steppath/T1_$i.nii ] && cp DATA/$i/T1_$i.nii $steppath 2> /dev/null
+  [ ! -f $steppath/RS_$i.nii ] && cp DATA/$i/RS_$i.nii ${steppath[$i]} 2> /dev/null
+  [ ! -f $steppath/T1_$i.nii ] && cp DATA/$i/T1_$i.nii ${steppath[$i]} 2> /dev/null
 done
 
 #: QC1 ========================================================================
@@ -477,7 +491,7 @@ for i in $ID; do
 done
 input.error
 echo
-
+exit
 #: MOTION CORRECTION ============================================================
 printf "\n=========================MOTION CORRECTION=======================\n\n"
 for i in $ID; do

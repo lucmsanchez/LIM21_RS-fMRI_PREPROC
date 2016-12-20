@@ -4,29 +4,105 @@ Essa é a pagina inicial do repositório de scripts do protocolo Pré-processame
 
 Esse protocolo ainda está em desenvolvimento.
 
-## Arquivo principal: [preproc.sh](preproc.sh)
+## Arquivos principais: [preproc.sh](preproc.sh), [preproc.cfg](preproc.cfg) e [preproc.sbj](preproc.sbj)
 
 ## Pré-requisitos  
   
 - GNU Bash v4.4 (http://www.gnu.org/software/bash/)
 - AFNI v16.3.12 (https://afni.nimh.nih.gov/afni/)
 - FSL v5.0 (https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/)
+- Python v2.7 (https://www.python.org/)
 - Matlab (https://www.mathworks.com/)  
     - SPM5 (http://wwww.fil.ion.ucl.ac.uk/spm/software/spm5/)  
     - aztec v2.0 (http://www.ni-utrecht.nl/downloads/aztec)  
 
+Caso tenha dificuldade com as configurações podemos disponibilizar uma VM (Neurodebian 8.0) com os programas pré-instalados.  
+
 ## Uso  
+Em primeiro lugar, crie uma nova pasta em que ocorrerá toda a análise dos dados. Em seguida, baixe o repositório ou apenas os arquivos indicados acima como principais e salve na pasta criada. Altere as permissões do arquivo preproc.sh para executável:
   
-Abaixo exemplo de como rodar o script. Ele usa a pasta onde é rodado como base para a análise. É necessário especificar o arquivo de configurações e o arquivo com o ID dos indivíduos. Caso o arquivo de configuração não seja especificado na primeira vez que rodar o script irá criar um com valores default.
+```bash
+mkdir PREPROC 
+cd PREPROC
+# Faça o download do repositório no formato .zip para a pasta recém criada PREPROC
+gzip -d <nome do arquivo baixado>
+sudo chmod a+x preproc.sh
+```
+Faça alterações ou crie os aquivos preproc.cfg e preproc.sbj (pode usar outros nomes, apenas mantenha a extensão) conforme sua necessidade. Exemplos de default abaixo:  
+  
+preproc.cfg
+```
+# Variáveis RS-fMRI Preprocessing:
+fsl5=fsl5.0-
+TR=2
+ptn=seq+z
+mcbase=100
+gRL=90
+gAP=90
+gIS=60
+template="MNI152_1mm_uni+tlrc"
+betf=0.1
+blur=6
+```
+  
+preproc.sbj (o arquivo deve conter APENAS os códigos das imagens, um por linha)
+```
+C000001
+C000002
+C000003
+P000001
+P000002
+P000003
+```
+Salve as imagens que serão pré-processadas na pasta base (PREPROC) confome o padrão:
+```
+RS_C000001.nii  # imagem Funcional
+T1_C000001.nii  # imagem estrutural
+RS_C000001.log  # physlog para análise aztec
+```
+Salve também o template na pasta principal. Caso não seja encontrado o script irá buscar o template especificado na pasta do AFNI e copiar para a pasta base
+
+Os arquivos serão automaticamente organizados no seguinte padrão:  
+  
+```
+.
+├── DATA
+│   └── C000001
+│   	├── STEPS
+│   	├── RS_C000001.nii
+│   	├── T1_C000001.nii
+│   	└── RS_C000001.log
+├── OUTPUT
+│   └── C000001
+│       ├── report_C000001.html
+│       ├── xxxxxx_RS_C000001.nii
+│       ├── SS_T1_C000001.nii
+│       └── preproc_C000001.log
+├── template
+│   ├── MNI152_1mm_uni+tlrc.BRIK
+│   └── MNI152_1mm_uni+tlrc.HEAD
+├── preproc.cfg
+├── preproc.sbj
+└── preproc.sh
+```
+
+Abaixo instruções de como rodar o script. Ele usa a pasta onde é rodado como base para a análise. É necessário especificar o arquivo de configurações e o arquivo com o ID dos indivíduos. Caso o arquivo de configuração não seja especificado na primeira vez que rodar o script irá criar um com valores default.
 
 ```bash
-./preproc.sh --config preproc.cfg --subs preproc.sbj 
+./preproc.sh [ Opções ] --config <txt com variáveis para análise>  --subs <ID das imagens>
 
 opções:
     -a ou --aztec:  realiza correções utilizando dados cardiorespiratórios
     -b ou --bet:    realiza skull strip automatizado utlizando BET/OpitBET (Padrão: Manual)
-    
+    -m ou --motioncensor  aplica a técnica motion censor
+    -p ou --break  interrompe o script no breakpoint de numero indicado
 ```
+
+Por exemplo, se preciso rodar a análise COM skulstrip automatizado, COM motion censor e SEM aztec e preciso interomper o script antes de aplicar a mascara do skullstrip (breakpoint numero 2) para realização de ajustes devo usar o seguinte comando:
+```bash
+./preproc.sh -bm --break 2 --config preproc.cfg --subs preproc.sbj
+```
+
 Caso tenha algum problema e queira fazer o Debug, execute como especificado abaixo e crie um novo item na aba Issues anexe o log:
 
 ```bash

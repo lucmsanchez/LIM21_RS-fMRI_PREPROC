@@ -17,10 +17,10 @@
     <node id="n0">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="95.978515625" x="317.2930562934026" y="53.94889165259816"/>
+          <y:Geometry height="30.0" width="95.978515625" x="354.14542085053506" y="148.34440533333333"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="85.978515625" x="5.0" y="6.015625">DATA SELECT<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="76.66796875" x="9.6552734375" y="6.015625">DATA INPUT<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -34,7 +34,7 @@
     <node id="n1">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="178.220703125" x="108.14111328125" y="280.91386475555555"/>
+          <y:Geometry height="30.0" width="178.220703125" x="108.14111328125" y="296.70588043880355"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="168.220703125" x="5.000000000000028" y="6.015625">SLICE TIMING CORRECTION<y:LabelModel>
@@ -49,61 +49,10 @@
       </data>
     </node>
     <node id="n2">
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="47.0" width="111.564453125" x="141.46923828125" y="134.74440533333333"/>
-          <y:Fill hasColor="false" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="101.564453125" x="5.0" y="14.515625">RS_&lt;SUBID&gt;.nii<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:Shape type="ellipse"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n3">
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="47.0" width="110.57421875" x="452.3663982465273" y="134.74440533333333"/>
-          <y:Fill hasColor="false" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="100.57421875" x="5.0" y="14.515625">T1_&lt;SUBID&gt;.nii<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:Shape type="ellipse"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n4">
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="60.400000000000006" width="61.424218749999966" x="2.7240001381945262" y="330.8555555555556"/>
-          <y:Fill color="#3366FF" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="19.799999999999983" y="21.21562499999999">QC<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-2.220446049250313E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:Shape type="diamond"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n5">
       <data key="d4"/>
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="141.81496093750022" x="359.2168907631941" y="537.916162576479"/>
+          <y:Geometry height="30.0" width="141.81496093750022" x="359.2168907631941" y="556.0504092061198"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="134.546875" x="3.634042968750123" y="6.015625">SKULL STRIP MANUAL<y:LabelModel>
@@ -125,13 +74,13 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n6">
+    <node id="n3">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="195.63085937499994" x="99.43603515625009" y="736.512270819264"/>
+          <y:Geometry height="30.0" width="195.63085937499994" x="99.43603515625006" y="871.5831152099851"/>
           <y:Fill color="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="157.908203125" x="18.86132812499997" y="6.015625">SPATIAL NORMALIZATION<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="157.908203125" x="18.861328125" y="6.015625">SPATIAL NORMALIZATION<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -142,13 +91,13 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n7">
+    <node id="n4">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="195.63085937499994" x="278.9133684895834" y="969.145694444445"/>
+          <y:Geometry height="30.0" width="195.63085937499994" x="99.43603515625009" y="1049.565305433677"/>
           <y:Fill color="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="135.185546875" x="30.22265624999997" y="6.015625">TEMPORAL FILTERING<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="131.669921875" x="31.98046875" y="6.015625">SPATIAL SMOOTHING<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -159,38 +108,21 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n8">
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="30.0" width="195.63085937499994" x="278.9133684895834" y="1049.1456944444449"/>
-          <y:Fill color="#FF0000" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="131.669921875" x="31.98046874999997" y="6.015625">SPATIAL SMOOTHING<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="1.1102230246251565E-16" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:Shape type="rectangle"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n9">
+    <node id="n5">
       <data key="d4"/>
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="99.7109375" x="326.8733294270834" y="1209.1456944444449"/>
+          <y:Geometry height="30.0" width="99.7109375" x="312.52041565783253" y="1234.0653054336772"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="89.7109375" x="4.999999999999972" y="6.015625">DATA OUTPUT<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="89.7109375" x="5.0" y="6.015625">DATA OUTPUT<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
               <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
             </y:ModelParameter>
           </y:NodeLabel>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" textColor="#000000" visible="true" width="4.0" x="47.85546874999997" y="13.0">
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" textColor="#000000" visible="true" width="4.0" x="47.85546875" y="13.0">
             <y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
@@ -202,13 +134,13 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n10">
+    <node id="n6">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="195.63085937499994" x="99.43603515625011" y="1129.1456944444449"/>
+          <y:Geometry height="30.0" width="195.63085937499994" x="262.29692109374963" y="1111.065305433677"/>
           <y:Fill color="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="129.056640625" x="33.287109375" y="6.015625">MOTION CENSORING<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="129.056640625" x="33.28710937499994" y="6.015625">MOTION CENSORING<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -219,11 +151,11 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n11">
+    <node id="n7">
       <data key="d4"/>
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="146.65625" x="123.92333984375" y="346.0555555555556"/>
+          <y:Geometry height="30.0" width="146.65625" x="123.92333984375" y="361.8475712388036"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="136.65625" x="5.0" y="6.015625">MOTION CORRECTION<y:LabelModel>
@@ -245,10 +177,10 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n12">
+    <node id="n8">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="68.73189245833336" x="261.95037637847213" y="203.60257586666665"/>
+          <y:Geometry height="30.0" width="68.73189245833336" x="261.95037637847213" y="214.03185755866443"/>
           <y:Fill color="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="43.720703125" x="12.505594666666696" y="6.015625">AZTEC<y:LabelModel>
@@ -262,28 +194,11 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n13">
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="47.0" width="111.564453125" x="273.70356323784705" y="134.74440533333336"/>
-          <y:Fill hasColor="false" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="105.583984375" x="2.990234375" y="14.515625">RS_&lt;SUBID&gt;.log<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:Shape type="ellipse"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n14">
+    <node id="n9">
       <data key="d4"/>
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="102.79327915972257" x="519.1788463965275" y="537.916162576479"/>
+          <y:Geometry height="30.0" width="102.79327915972257" x="519.1788463965275" y="556.0504092061198"/>
           <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="79.43359375" x="11.679842704861244" y="6.015625">OpitBET/BET<y:LabelModel>
@@ -305,21 +220,20 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n15" yfiles.foldertype="group">
+    <node id="n10" yfiles.foldertype="group">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:ProxyAutoBoundsNode>
           <y:Realizers active="0">
             <y:GroupNode>
-              <y:Geometry height="278.96774212222226" width="210.4179296874999" x="94.14821888819449" y="427.54452869704187"/>
+              <y:Geometry height="329.20283796731627" width="210.4179296874999" x="94.14821888819449" y="472.9967410761896"/>
               <y:Fill color="#F5F5F5" transparent="false"/>
               <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
               <y:NodeLabel alignment="right" autoSizePolicy="node_width" backgroundColor="#EBEBEB" borderDistance="0.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasLineColor="false" height="21.4609375" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="210.4179296874999" x="0.0" y="0.0">PREPARE TO NORMALIZE</y:NodeLabel>
               <y:Shape type="roundrectangle"/>
               <y:State closed="false" closedHeight="50.0" closedWidth="50.0" innerGraphDisplayEnabled="false"/>
               <y:Insets bottom="15" bottomF="15.0" left="15" leftF="15.0" right="15" rightF="15.0" top="15" topF="15.0"/>
-              <y:BorderInsets bottom="16" bottomF="15.942678755555562" left="7" leftF="7.487816268055553" right="12" rightF="11.699254044444388" top="2" topF="1.564125866666643"/>
+              <y:BorderInsets bottom="12" bottomF="12.355549201298572" left="7" leftF="7.487816268055553" right="12" rightF="11.699254044444388" top="2" topF="1.564125866666643"/>
             </y:GroupNode>
             <y:GroupNode>
               <y:Geometry height="50.0" width="50.0" x="-25.0" y="-25.0"/>
@@ -335,12 +249,12 @@
           </y:Realizers>
         </y:ProxyAutoBoundsNode>
       </data>
-      <graph edgedefault="directed" id="n15:">
-        <node id="n15::n0">
+      <graph edgedefault="directed" id="n10:">
+        <node id="n10::n0">
           <data key="d4"/>
           <data key="d6">
             <y:ShapeNode>
-              <y:Geometry height="30.0" width="152.17792968749998" x="121.16250000000002" y="465.5695920637085"/>
+              <y:Geometry height="30.0" width="152.17792968749998" x="121.16250000000002" y="511.02180444285625"/>
               <y:Fill hasColor="false" transparent="false"/>
               <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="74.53515625" x="38.82138671874998" y="6.015625">DEOBLIQUE<y:LabelModel>
@@ -362,10 +276,10 @@
             </y:ShapeNode>
           </data>
         </node>
-        <node id="n15::n1">
+        <node id="n10::n1">
           <data key="d6">
             <y:ShapeNode>
-              <y:Geometry height="30.0" width="153.94355468749995" x="120.27968750000005" y="525.5695920637086"/>
+              <y:Geometry height="30.0" width="153.94355468749995" x="120.27968750000005" y="624.8440298422073"/>
               <y:Fill hasColor="false" transparent="false"/>
               <y:BorderStyle color="#000000" type="line" width="1.0"/>
               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="121.697265625" x="16.123144531249977" y="6.015625">HOMOGENIZE GRID<y:LabelModel>
@@ -379,10 +293,10 @@
             </y:ShapeNode>
           </data>
         </node>
-        <node id="n15::n2">
+        <node id="n10::n2">
           <data key="d6">
             <y:ShapeNode>
-              <y:Geometry height="30.0" width="161.23085937499997" x="116.63603515625005" y="585.5695920637086"/>
+              <y:Geometry height="30.0" width="161.23085937499997" x="116.63603515625005" y="684.8440298422073"/>
               <y:Fill hasColor="false" transparent="false"/>
               <y:BorderStyle color="#000000" type="line" width="1.0"/>
               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="151.84375" x="4.693554687499983" y="6.015625">REORIENT TO TEMPLATE<y:LabelModel>
@@ -396,11 +310,11 @@
             </y:ShapeNode>
           </data>
         </node>
-        <node id="n15::n3">
+        <node id="n10::n3">
           <data key="d6">
             <y:ShapeNode>
-              <y:Geometry height="30.0" width="161.23085937499997" x="116.63603515625005" y="645.5695920637086"/>
-              <y:Fill color="#FF0000" transparent="false"/>
+              <y:Geometry height="30.0" width="161.23085937499997" x="116.63603515625005" y="744.8440298422073"/>
+              <y:Fill hasColor="false" transparent="false"/>
               <y:BorderStyle color="#000000" type="line" width="1.0"/>
               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="132.080078125" x="14.575390624999983" y="6.015625">ALIGN CENTER TO T1<y:LabelModel>
                   <y:SmartNodeLabelModel distance="4.0"/>
@@ -415,14 +329,13 @@
         </node>
       </graph>
     </node>
-    <node id="n16" yfiles.foldertype="group">
+    <node id="n11" yfiles.foldertype="group">
       <data key="d4"/>
-      <data key="d5"/>
       <data key="d6">
         <y:ProxyAutoBoundsNode>
           <y:Realizers active="0">
             <y:GroupNode>
-              <y:Geometry height="281.49123372222255" width="240.4179296874999" x="387.44454277777726" y="220.30993869444433"/>
+              <y:Geometry height="281.49123372222255" width="240.4179296874999" x="387.44454277777726" y="249.24728184184625"/>
               <y:Fill color="#F5F5F5" transparent="false"/>
               <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
               <y:NodeLabel alignment="right" autoSizePolicy="node_width" backgroundColor="#EBEBEB" borderDistance="0.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasLineColor="false" height="21.4609375" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="240.4179296874999" x="0.0" y="0.0">PREPARE TO SKULLSTRIP</y:NodeLabel>
@@ -445,15 +358,15 @@
           </y:Realizers>
         </y:ProxyAutoBoundsNode>
       </data>
-      <graph edgedefault="directed" id="n16:">
-        <node id="n16::n0">
+      <graph edgedefault="directed" id="n11:">
+        <node id="n11::n0">
           <data key="d4"/>
           <data key="d6">
             <y:ShapeNode>
-              <y:Geometry height="30.0" width="149.92935092361108" x="432.6888321597216" y="256.7708761944443"/>
+              <y:Geometry height="30.0" width="149.92935092361108" x="432.6888321597216" y="285.70821934184625"/>
               <y:Fill hasColor="false" transparent="false"/>
               <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
-              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="74.53515625" x="37.69709733680554" y="6.015625000000057">DEOBLIQUE<y:LabelModel>
+              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="74.53515625" x="37.69709733680554" y="6.015625">DEOBLIQUE<y:LabelModel>
                   <y:SmartNodeLabelModel distance="4.0"/>
                 </y:LabelModel>
                 <y:ModelParameter>
@@ -472,10 +385,10 @@
             </y:ShapeNode>
           </data>
         </node>
-        <node id="n16::n1">
+        <node id="n11::n1">
           <data key="d6">
             <y:ShapeNode>
-              <y:Geometry height="30.0" width="161.23085937499997" x="427.03807793402717" y="316.7708761944443"/>
+              <y:Geometry height="30.0" width="161.23085937499997" x="427.03807793402717" y="345.70821934184625"/>
               <y:Fill hasColor="false" transparent="false"/>
               <y:BorderStyle color="#000000" type="line" width="1.0"/>
               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="151.84375" x="4.693554687500011" y="6.015625">REORIENT TO TEMPLATE<y:LabelModel>
@@ -489,11 +402,11 @@
             </y:ShapeNode>
           </data>
         </node>
-        <node id="n16::n2">
+        <node id="n11::n2">
           <data key="d4"/>
           <data key="d6">
             <y:ShapeNode>
-              <y:Geometry height="30.0" width="210.41792968749994" x="402.44454277777726" y="376.7708761944443"/>
+              <y:Geometry height="30.0" width="210.41792968749994" x="402.44454277777726" y="405.70821934184625"/>
               <y:Fill hasColor="false" transparent="false"/>
               <y:BorderStyle color="#000000" type="line" width="1.0"/>
               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="179.423828125" x="15.497050781249982" y="6.015625">ALIGN CENTER TO TEMPLATE<y:LabelModel>
@@ -515,11 +428,11 @@
             </y:ShapeNode>
           </data>
         </node>
-        <node id="n16::n3">
+        <node id="n11::n3">
           <data key="d4"/>
           <data key="d6">
             <y:ShapeNode>
-              <y:Geometry height="30.0" width="122.3990625000001" x="446.4539763715273" y="443.11507108333353"/>
+              <y:Geometry height="30.0" width="122.3990625000001" x="446.4539763715273" y="472.05241423073545"/>
               <y:Fill hasColor="false" transparent="false"/>
               <y:BorderStyle color="#000000" type="line" width="1.0"/>
               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="79.6796875" x="21.359687500000064" y="6.015625">UNIFORMIZE<y:LabelModel>
@@ -543,29 +456,12 @@
         </node>
       </graph>
     </node>
-    <node id="n17">
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="60.400000000000006" width="61.424218749999966" x="657.8624724652772" y="522.7161625764791"/>
-          <y:Fill color="#3366FF" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="19.799999999999955" y="21.215625000000045">QC<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-2.220446049250313E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:Shape type="diamond"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n18">
+    <node id="n12">
       <data key="d4"/>
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="141.81496093750022" x="436.74602715277723" y="604.1567216179654"/>
-          <y:Fill color="#FF0000" transparent="false"/>
+          <y:Geometry height="30.0" width="141.81496093750022" x="436.74602715277723" y="684.8440298422073"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="97.609375" x="22.102792968750123" y="6.015625">APPLY SS MASK<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -586,11 +482,11 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n19">
+    <node id="n13">
       <data key="d4"/>
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="191.11644531249996" x="412.09528496527753" y="736.512270819264"/>
+          <y:Geometry height="30.0" width="191.11644531249996" x="412.0952849652773" y="871.5831152099851"/>
           <y:Fill color="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="162.0625" x="14.526972656249995" y="6.015625">NORMALIZE TO TEMPLATE<y:LabelModel>
@@ -612,13 +508,13 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n20">
+    <node id="n14">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="161.23085937499997" x="427.03807793402734" y="670.3344962186147"/>
-          <y:Fill color="#FF0000" transparent="false"/>
+          <y:Geometry height="30.0" width="161.23085937499997" x="427.03807793402734" y="744.8440298422073"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="120.818359375" x="20.206249999999983" y="6.015625">COREGISTER TO T1<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="120.818359375" x="20.206249999999955" y="6.015625">COREGISTER TO T1<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -629,13 +525,115 @@
         </y:ShapeNode>
       </data>
     </node>
+    <node id="n15">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="30.0" width="195.63085937499994" x="409.8380779340274" y="983.6684951156329"/>
+          <y:Fill color="#FF0000" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="100.240234375" x="47.6953125" y="6.015625">SEGMENTATION<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="1.1102230246251565E-16" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n16">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="30.0" width="236.43742191468243" x="79.03275388640884" y="983.668495115633"/>
+          <y:Fill color="#FF0000" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="218.06640625" x="9.185507832341244" y="6.015625">SPATIAL AND TEMPORAL FILTERING<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="1.1102230246251565E-16" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n17">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="38.793620636087574" width="39.45145430555556" x="177.52573769097222" y="209.63504724062065"/>
+          <y:Fill color="#3366FF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC1<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-2.220446049250313E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="diamond"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n18">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="38.793620636087574" width="39.45145430555556" x="487.9277804687496" y="200.24063136507934"/>
+          <y:Fill color="#3366FF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC2<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-2.220446049250313E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="diamond"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n19">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="38.793620636087574" width="39.45145430555556" x="177.52573769097222" y="421.8475712388036"/>
+          <y:Fill color="#3366FF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC3<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-2.220446049250313E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="diamond"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n20">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="38.793620636087574" width="39.45145430555556" x="177.52573769097222" y="571.0218044428563"/>
+          <y:Fill color="#3366FF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC4<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-2.220446049250313E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="diamond"/>
+        </y:ShapeNode>
+      </data>
+    </node>
     <node id="n21">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="60.400000000000006" width="61.424218749999966" x="657.8624724652772" y="721.3122708192641"/>
+          <y:Geometry height="38.793620636087574" width="39.45145430555556" x="461.5803973951388" y="616.0504092061198"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="19.799999999999955" y="21.215625000000045">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC5<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -649,10 +647,10 @@
     <node id="n22">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="60.400000000000006" width="61.424218749999966" x="657.8624724652772" y="655.1344962186148"/>
+          <y:Geometry height="38.793620636087574" width="39.45145430555556" x="487.9277804687495" y="813.6376504782949"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="19.799999999999955" y="21.215625000000045">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC6<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -666,10 +664,10 @@
     <node id="n23">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="60.400000000000006" width="61.424218749999966" x="2.7240001381945262" y="721.312270819264"/>
+          <y:Geometry height="38.793620636087574" width="39.45145430555556" x="177.52573769097225" y="923.2289948447652"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="19.799999999999955" y="21.215625000000045">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC8<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -683,10 +681,10 @@
     <node id="n24">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="60.400000000000006" width="61.424218749999966" x="2.7240001381945262" y="450.3695920637085"/>
+          <y:Geometry height="38.793620636087574" width="39.45145430555556" x="487.9277804687495" y="923.2289948447652"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="19.799999999999983" y="21.21562499999999">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC7<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -700,44 +698,10 @@
     <node id="n25">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="195.63085937499994" x="278.91336848958343" y="830.7242777777789"/>
-          <y:Fill color="#FF0000" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="100.240234375" x="47.69531249999994" y="6.015625000000114">SEGMENTATION<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="1.1102230246251565E-16" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:Shape type="rectangle"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n26">
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="30.0" width="195.63085937499994" x="278.9133684895834" y="899.9349861111119"/>
-          <y:Fill color="#FF0000" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="118.83203125" x="38.3994140625" y="6.015625">SPATIAL FILTERING<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="1.1102230246251565E-16" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-          <y:Shape type="rectangle"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n27">
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="60.400000000000006" width="61.424218749999966" x="2.7240001381945262" y="128.04440533333332"/>
+          <y:Geometry height="38.793620636087574" width="39.45145430555556" x="342.92839971478156" y="979.2716847975893"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="19.799999999999983" y="21.21562499999999">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC9<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -748,43 +712,593 @@
         </y:ShapeNode>
       </data>
     </node>
-    <edge id="e0" source="n0" target="n2">
+    <node id="n26">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="38.793620636087574" width="39.45145430555556" x="342.65015725505475" y="1165.2716847975896"/>
+          <y:Fill color="#3366FF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="37.09375" x="1.1788521527777789" y="10.41243531804389">QC10<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-2.220446049250313E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="diamond"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n27">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="18.801246753246822" width="19.302613333333376" x="263.1567400062492" y="501.0954841201545"/>
+          <y:Fill color="#FF0000" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.349609375" x="3.4765019791666987" y="0.4162483766234004">1<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="octagon"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n28">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="18.801246753246822" width="19.302613333333376" x="568.9663239756939" y="675.2748530445758"/>
+          <y:Fill color="#FF0000" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.349609375" x="3.476501979166642" y="0.41624837662345726">2<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="octagon"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n29">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="18.801246753246822" width="19.302613333333376" x="591.9448630777773" y="861.169599301023"/>
+          <y:Fill color="#FF0000" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.349609375" x="3.476501979166642" y="0.41624837662345726">3<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="octagon"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n30">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="18.801246753246822" width="19.302613333333376" x="594.2517302777774" y="973.7460341731031"/>
+          <y:Fill color="#FF0000" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.349609375" x="3.476501979166642" y="0.41624837662345726">4<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="octagon"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n31">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="18.801246753246822" width="19.302613333333376" x="304.6234605555548" y="973.7460341731032"/>
+          <y:Fill color="#FF0000" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.349609375" x="3.4765019791666987" y="0.41624837662345726">5<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="octagon"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n32">
+      <data key="d6">
+        <y:ImageNode>
+          <y:Geometry height="52.232605042016786" width="48.559999999999974" x="203.86848875000152" y="-28.590268800000203"/>
+          <y:Fill color="#CCCCFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="73.84375" modelName="sandwich" modelPosition="s" textColor="#000000" visible="true" width="105.583984375" x="-28.511992187500027" y="56.232605042016786">Neuroimages:
+T1_&lt;SUBID&gt;.nii
+RS_&lt;SUBID&gt;.nii
+RS_&lt;SUBID&gt;.log
+TEMPLATE</y:NodeLabel>
+          <y:Image alphaImage="true" refid="1"/>
+        </y:ImageNode>
+      </data>
+    </node>
+    <node id="n33">
+      <data key="d6">
+        <y:ImageNode>
+          <y:Geometry height="50.26000000000002" width="63.69584158415844" x="370.28675787095585" y="-27.60396627899182"/>
+          <y:Fill color="#CCCCFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="sandwich" modelPosition="s" textColor="#000000" visible="true" width="72.677734375" x="-4.490946395420792" y="54.26000000000002">preproc.cfg</y:NodeLabel>
+          <y:Image alphaImage="true" refid="2"/>
+        </y:ImageNode>
+      </data>
+    </node>
+    <node id="n34">
+      <data key="d6">
+        <y:ImageNode>
+          <y:Geometry height="51.19999999999999" width="51.19999999999999" x="531.4181830833327" y="-28.073966278991804"/>
+          <y:Fill color="#CCCCFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="sandwich" modelPosition="s" textColor="#000000" visible="true" width="71.44140625" x="-10.120703124999977" y="55.19999999999999">preproc.sbj</y:NodeLabel>
+          <y:Image alphaImage="true" refid="3"/>
+        </y:ImageNode>
+      </data>
+    </node>
+    <node id="n35">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.bpmn.Conversation">
+          <y:Geometry height="30.0" width="34.18927999999994" x="642.862472465277" y="405.70821934184625"/>
+          <y:Fill color="#00FF00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="18" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="24.953125" modelName="custom" textColor="#000000" visible="true" width="16.2783203125" x="8.955479843750027" y="4.0">T<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="-0.5" nodeRatioX="0.0" nodeRatioY="-0.5" offsetX="0.0" offsetY="4.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n36">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.bpmn.Conversation">
+          <y:Geometry height="30.0" width="34.18927999999994" x="642.8624724652772" y="345.70821934184625"/>
+          <y:Fill color="#00FF00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="18" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="24.953125" modelName="custom" textColor="#000000" visible="true" width="16.2783203125" x="8.955479843749913" y="4.0">T<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="-0.5" nodeRatioX="0.0" nodeRatioY="-0.5" offsetX="0.0" offsetY="4.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n37">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.bpmn.Conversation">
+          <y:Geometry height="30.0" width="34.18927999999994" x="642.8624724652772" y="877.969599301023"/>
+          <y:Fill color="#00FF00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="18" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="24.953125" modelName="custom" textColor="#000000" visible="true" width="16.2783203125" x="8.955479843749913" y="4.0">T<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="-0.5" nodeRatioX="0.0" nodeRatioY="-0.5" offsetX="0.0" offsetY="4.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n38">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.bpmn.Conversation">
+          <y:Geometry height="30.0" width="34.18927999999994" x="29.958938888194552" y="684.8440298422073"/>
+          <y:Fill color="#00FF00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="18" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="24.953125" modelName="custom" textColor="#000000" visible="true" width="16.2783203125" x="8.95547984374997" y="4.0">T<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="-0.5" nodeRatioX="0.0" nodeRatioY="-0.5" offsetX="0.0" offsetY="4.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n39">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.bpmn.Conversation">
+          <y:Geometry height="30.0" width="34.18927999999994" x="29.958938888194552" y="871.5831152099851"/>
+          <y:Fill color="#00FF00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="18" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="24.953125" modelName="custom" textColor="#000000" visible="true" width="16.2783203125" x="8.95547984374997" y="4.0">T<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="-0.5" nodeRatioX="0.0" nodeRatioY="-0.5" offsetX="0.0" offsetY="4.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n40">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.bpmn.Conversation">
+          <y:Geometry height="30.0" width="34.18927999999994" x="642.8624724652772" y="556.0504092061198"/>
+          <y:Fill color="#00FF00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="18" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="24.953125" modelName="custom" textColor="#000000" visible="true" width="16.2783203125" x="8.955479843749913" y="4.0">T<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="-0.5" nodeRatioX="0.0" nodeRatioY="-0.5" offsetX="0.0" offsetY="4.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n41">
+      <data key="d6">
+        <y:ImageNode>
+          <y:Geometry height="52.232605042016786" width="48.559999999999974" x="172.97146484375008" y="1330.621113809312"/>
+          <y:Fill color="#CCCCFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="87.8125" modelName="sandwich" modelPosition="s" textColor="#000000" visible="true" width="138.865234375" x="-45.15261718750001" y="56.23260504201676">Neuroimages:
+SS_T1_&lt;SUBID&gt;.nii
+&lt;SUBID&gt;_CSF.nii
+&lt;SUBID&gt;_WM.nii
+bfpdf_RS_&lt;SUBID&gt;.nii
+
+</y:NodeLabel>
+          <y:Image alphaImage="true" refid="1"/>
+        </y:ImageNode>
+      </data>
+    </node>
+    <node id="n42">
+      <data key="d6">
+        <y:ImageNode>
+          <y:Geometry height="67.20000000000005" width="67.20000000000005" x="503.220303971915" y="1323.1374163303205"/>
+          <y:Fill color="#CCCCFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="sandwich" modelPosition="s" textColor="#000000" visible="true" width="136.052734375" x="-34.42636718749998" y="71.20000000000005">preproc_&lt;SUBID&gt;.log</y:NodeLabel>
+          <y:Image alphaImage="true" refid="4"/>
+        </y:ImageNode>
+      </data>
+    </node>
+    <node id="n43">
+      <data key="d6">
+        <y:ImageNode>
+          <y:Geometry height="62.0" width="62.0" x="331.37588440783253" y="1325.7374163303205"/>
+          <y:Fill color="#CCCCFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="sandwich" modelPosition="s" textColor="#000000" visible="true" width="135.583984375" x="-36.7919921875" y="66.0">report_&lt;SUBID&gt;.html</y:NodeLabel>
+          <y:Image alphaImage="true" refid="5"/>
+        </y:ImageNode>
+      </data>
+    </node>
+    <node id="n44">
+      <data key="d6">
+        <y:ImageNode>
+          <y:Geometry height="69.12000000000006" width="69.12000000000006" x="327.8158844078324" y="1461.3374163303204"/>
+          <y:Fill color="#CCCCFF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="sandwich" modelPosition="s" textColor="#000000" visible="true" width="171.23828125" x="-51.05914062499994" y="73.12000000000012">Quality Assurance Checklist</y:NodeLabel>
+          <y:Image alphaImage="true" refid="6"/>
+        </y:ImageNode>
+      </data>
+    </node>
+    <node id="n45">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="152.0" width="531.874" x="110.48648806447977" y="1574.7374163303205"/>
+          <y:Fill hasColor="false" transparent="false"/>
+          <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" textColor="#000000" visible="true" width="4.0" x="263.937" y="74.0">
+            <y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="61.57421875" x="4.0" y="-15.984375">LEGENDA<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.38956521739130434" nodeRatioX="-0.5" nodeRatioY="-0.5" offsetX="4.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" textColor="#000000" visible="true" width="4.0" x="263.937" y="74.0">
+            <y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="roundrectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n46">
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.bpmn.Conversation">
+          <y:Geometry height="30.0" width="34.18927999999994" x="132.3918480644798" y="1588.7374163303205"/>
+          <y:Fill color="#00FF00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="18" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="24.953125" modelName="custom" textColor="#000000" visible="true" width="16.2783203125" x="8.95547984374997" y="4.0">T<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="-0.5" nodeRatioX="0.0" nodeRatioY="-0.5" offsetX="0.0" offsetY="4.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="66.30859375" x="55.423639381251235" y="6.015625">TEMPLATE<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="0.0" offsetX="21.234359381251295" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
+            <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n47">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="18.801246753246822" width="19.302613333333376" x="139.83518139781307" y="1692.336792953697"/>
+          <y:Fill color="#FF0000" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.54296875" x="3.3798222916666987" y="0.4162483766233436">n<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="80.875" x="48.377102922918" y="0.4162483766233436">Breakpoint n<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="-3.608224830031759E-15" offsetX="29.0744895895846" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="octagon"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n48">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="38.793620636087574" width="39.45145430555556" x="129.760760911702" y="1636.140294323965"/>
+          <y:Fill color="#3366FF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="8.813617777777779" y="10.41243531804389">QC<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-2.220446049250313E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="136.8671875" x="58.61542965902902" y="10.41243531804389">Controle de qualidade<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="2.6645352591003757E-15" offsetX="19.16397535347346" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="diamond"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n49">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="30.0" width="30.0" x="370.82480837698074" y="1588.7374163303205"/>
+          <y:Fill color="#FF0000" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" textColor="#000000" visible="true" width="4.0" x="13.0" y="13.0">
+            <y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="1.1102230246251565E-16" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="123.54296875" x="59.221491568750196" y="6.015625">Etapa não funcional<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="0.0" offsetX="29.221491568750196" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n50">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="30.0" width="30.0" x="370.82480837698085" y="1635.7374163303205"/>
+          <y:Fill hasColor="false" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" textColor="#000000" visible="true" width="4.0" x="13.0" y="13.0">
+            <y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="97.427734375" x="59.99110875625007" y="6.015625">Etapa funcional<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="0.0" offsetX="29.99110875625007" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n51">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="30.0" width="30.0" x="370.82480837698085" y="1683.9374362008712"/>
+          <y:Fill hasColor="false" transparent="false"/>
+          <y:BorderStyle color="#000000" type="dashed" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" textColor="#000000" visible="true" width="4.0" x="13.0" y="13.0">
+            <y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="200.494140625" x="59.991108756250014" y="6.015625">Etapa só realizada se necessário<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="-0.5" labelRatioY="0.0" nodeRatioX="0.5" nodeRatioY="0.0" offsetX="29.99110875625007" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n52">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="38.793620636087574" width="39.45145430555556" x="177.52573769097228" y="1146.7967743213994"/>
+          <y:Fill color="#3366FF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="37.09375" x="1.1788521527777789" y="10.41243531804389">QC11<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-2.220446049250313E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="diamond"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <edge id="e0" source="n0" target="n17">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-47.9892578125" sy="0.0" tx="0.0" ty="-23.5"/>
+          <y:Path sx="-47.988651854654506" sy="-5.18038980136302" tx="0.0" ty="-19.377780238944865">
+            <y:Point x="197.25146484375" y="158.1640155319703"/>
+          </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="101.564453125" x="-237.67566405270176" y="10.155990468662367">RS_&lt;SUBID&gt;.nii<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.037175283170512" distanceToCenter="true" position="right" ratio="0.5105914568238379" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e1" source="n0" target="n3">
+    <edge id="e1" source="n0" target="n18">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="47.9892578125" sy="0.0" tx="0.0" ty="-23.5"/>
+          <y:Path sx="47.9892578125" sy="0.0" tx="0.0" ty="-19.377780238944865">
+            <y:Point x="507.65350762152735" y="163.34440533333333"/>
+          </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="100.57421875" x="7.242466361761728" y="2.471549721276631">T1_&lt;SUBID&gt;.nii<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="29.916567663022217" distanceToCenter="true" position="center" ratio="0.5" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e2" source="n2" target="n1">
+    <edge id="e2" source="n17" target="n1">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="23.5" tx="0.0" ty="-15.0"/>
+          <y:Path sx="0.0" sy="19.377780238944865" tx="0.0" ty="-15.0"/>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e3" source="n1" target="n11">
+    <edge id="e3" source="n1" target="n7">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-15.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="112.26953125" x="-56.134765625" y="1.9999853610243008">t_RS_&lt;SUBID&gt;.nii<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="112.26953125" x="-56.134765625" y="2.000008856772297">t_RS_&lt;SUBID&gt;.nii<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -796,23 +1310,13 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e4" source="n3" target="n16::n0">
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="23.5" tx="0.0" ty="-15.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="n16::e0" source="n16::n0" target="n16::n1">
+    <edge id="n11::e0" source="n11::n0" target="n11::n1">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="15.0" tx="1.1368683772161603E-13" ty="-15.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="114.19140625" x="-57.09569892144168" y="2.0000021710068268">d_T1_&lt;SUBID&gt;.nii<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="114.19140625" x="-57.09569892144157" y="1.9999979062993702">d_T1_&lt;SUBID&gt;.nii<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -824,17 +1328,17 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e5" source="n11" target="n15::n0">
+    <edge id="e4" source="n7" target="n19">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-15.0"/>
+          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-13.705037300687138"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="117.203125" x="-58.60156249999997" y="30.50103651180541">rt_RS_&lt;SUBID&gt;.nii<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="117.203125" x="-58.6015625" y="5.000006541538028">rt_RS_&lt;SUBID&gt;.nii<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="10.0" distanceToCenter="false" position="center" ratio="0.4143456695917598" segment="0"/>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="10.0" distanceToCenter="false" position="center" ratio="0.0" segment="0"/>
             </y:ModelParameter>
             <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
           </y:EdgeLabel>
@@ -842,13 +1346,13 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="n16::e1" source="n16::n1" target="n16::n2">
+    <edge id="n11::e1" source="n11::n1" target="n11::n2">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="15.0" tx="-1.1368683772161603E-13" ty="-15.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="119.125" x="-59.56249579644157" y="2.00000217100677">rd_T1_&lt;SUBID&gt;.nii<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="119.125" x="-59.56249579644157" y="1.9999979062993134">rd_T1_&lt;SUBID&gt;.nii<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -860,13 +1364,13 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="n16::e2" source="n16::n2" target="n16::n3">
+    <edge id="n11::e2" source="n11::n2" target="n11::n3">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="1.1368683772161603E-13" sy="15.0" tx="0.0" ty="-15.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="126.478515625" x="-63.23925360894134" y="2.0000021710068836">ard_T1_&lt;SUBID&gt;.nii<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="126.478515625" x="-63.23925360894134" y="1.999997906299427">ard_T1_&lt;SUBID&gt;.nii<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -878,13 +1382,13 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e6" source="n16::n3" target="n5">
+    <edge id="e5" source="n11::n3" target="n2">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-15.0"/>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="134.083984375" x="-81.4712976343356" y="3.076048068368493">uard_T1_&lt;SUBID&gt;.nii<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="134.083984375" x="-84.65869437602822" y="3.2854077816506333">uard_T1_&lt;SUBID&gt;.nii<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -896,70 +1400,27 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e7" source="n7" target="n8">
+    <edge id="e6" source="n17" target="n8">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-15.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e8" source="n8" target="n10">
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-15.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e9" source="n10" target="n9">
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-15.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e10" source="n11" target="n4">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e11" source="n2" target="n12">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:Path sx="19.71071165696884" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e12" source="n12" target="n1">
-      <data key="d9"/>
+    <edge id="e7" source="n8" target="n1">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="114.91796875" x="-85.87908223971942" y="0.5089387185046803">a_RS_&lt;SUBID&gt;.nii<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="114.91796875" x="-74.21587571811119" y="4.999997207101956">a_RS_&lt;SUBID&gt;.nii<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="10.00098569841877" distanceToCenter="true" position="right" ratio="-7.299781515308842" segment="-1"/>
+              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="10.00098569841877" distanceToCenter="true" position="center" ratio="0.0" segment="0"/>
             </y:ModelParameter>
             <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
           </y:EdgeLabel>
@@ -967,148 +1428,19 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e13" source="n13" target="n12">
-      <data key="d9"/>
+    <edge id="e8" source="n0" target="n8">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e14" source="n0" target="n13">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e15" source="n16::n3" target="n14">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="n15::e0" source="n15::n0" target="n15::n1">
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="5.6843418860808015E-14" sy="15.0" tx="1.085484254558296E-13" ty="-15.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="124.8203125" x="-62.410156249999886" y="2.000011985583569">drt_RS_&lt;SUBID&gt;.nii<y:LabelModel>
-              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="10.0" distanceToCenter="false" position="center" ratio="-2.999999999999943" segment="-1"/>
-            </y:ModelParameter>
-            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
-          </y:EdgeLabel>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="n15::e1" source="n15::n1" target="n15::n2">
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-15.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="132.4375" x="-66.21874999999997" y="2.000011985583569">pdrt_RS_&lt;SUBID&gt;.nii<y:LabelModel>
-              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="10.0" distanceToCenter="false" position="center" ratio="-2.999999999999943" segment="-1"/>
-            </y:ModelParameter>
-            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
-          </y:EdgeLabel>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="n15::e2" source="n15::n2" target="n15::n3">
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-15.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="137.37109375" x="-68.68554687499997" y="2.000011985583569">rpdrt_RS_&lt;SUBID&gt;.nii<y:LabelModel>
-              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="10.0" distanceToCenter="false" position="center" ratio="-3.0" segment="-1"/>
-            </y:ModelParameter>
-            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
-          </y:EdgeLabel>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e16" source="n15::n3" target="n6">
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-15.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="144.724609375" x="-72.36230468749997" y="2.000011985583569">arpdrt_RS_&lt;SUBID&gt;.nii<y:LabelModel>
-              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="10.0" distanceToCenter="false" position="center" ratio="-3.0" segment="-1"/>
-            </y:ModelParameter>
-            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
-          </y:EdgeLabel>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e17" source="n14" target="n17">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e18" source="n5" target="n17">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="-1.1368683772161603E-13">
-            <y:Point x="530.9702714735466" y="521.6756035349925"/>
-            <y:Point x="640.6469762825747" y="521.6756035349925"/>
+          <y:Path sx="-47.96842698630013" sy="4.651030362764402" tx="0.0" ty="-15.0">
+            <y:Point x="296.3163226076388" y="167.99543569609773"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e19" source="n5" target="n18">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="147.794921875" x="-52.689155055686115" y="9.13592940190972">lurd_T1_&lt;SUBID&gt;.nii.gz<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="105.583984375" x="-52.78457182524619" y="20.46650844790227">RS_&lt;SUBID&gt;.log<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="29.450885373874847" distanceToCenter="true" position="left" ratio="0.0" segment="0"/>
             </y:ModelParameter>
             <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
           </y:EdgeLabel>
@@ -1116,40 +1448,27 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e20" source="n14" target="n18">
-      <data key="d9"/>
+    <edge id="e9" source="n11::n3" target="n9">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e21" source="n16::n3" target="n18">
-      <data key="d9"/>
+    <edge id="e10" source="n10::n0" target="n20">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:Path sx="5.6843418860808015E-14" sy="15.0" tx="0.0" ty="-19.37778023894475"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e22" source="n18" target="n20">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="121.80859375" x="-60.90429267144145" y="9.104495637040145">SS_T1_&lt;SUBID&gt;.nii<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="124.8203125" x="-62.41015624999997" y="2.0000148920751144">drt_RS_&lt;SUBID&gt;.nii<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/>
+              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="10.0" distanceToCenter="false" position="center" ratio="-2.999999999999943" segment="-1"/>
             </y:ModelParameter>
             <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
           </y:EdgeLabel>
@@ -1157,14 +1476,97 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e23" source="n18" target="n15::n3">
-      <data key="d9"/>
+    <edge id="n10::e0" source="n10::n1" target="n10::n2">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-15.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="132.4375" x="-66.21874999999997" y="1.9999746664261693">pdrt_RS_&lt;SUBID&gt;.nii<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="10.0" distanceToCenter="false" position="center" ratio="-2.999999999999943" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="n10::e1" source="n10::n2" target="n10::n3">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-15.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="137.37109375" x="-68.68554687499997" y="1.9999746664260556">rpdrt_RS_&lt;SUBID&gt;.nii<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="10.0" distanceToCenter="false" position="center" ratio="-3.0" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e11" source="n10::n3" target="n3">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-15.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="144.724609375" x="-72.36230468749997" y="1.9999746664260556">arpdrt_RS_&lt;SUBID&gt;.nii<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="10.0" distanceToCenter="false" position="center" ratio="-3.0" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e12" source="n11::n3" target="n12">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="121.80859375" x="-126.80859931206652" y="-0.19165802216411976">SS_T1_&lt;SUBID&gt;.nii<y:LabelModel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e13" source="n12" target="n10::n3">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="-70.90748046875012" sy="0.0" tx="80.61542968749998" ty="0.0">
+            <y:Point x="370.58902309688636" y="699.8440298422073"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="121.80859375" x="-133.03563413670435" y="-25.765098353776125">SS_T1_&lt;SUBID&gt;.nii<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="7.79632302020218" distanceToCenter="false" position="right" ratio="6.006645758981335" segment="-2"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e14" source="n14" target="n22">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="-19.37778023894475"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="129.162109375" x="-64.58105048394145" y="4.999974666426056">aSS_T1_&lt;SUBID&gt;.nii<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -1176,52 +1578,13 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e24" source="n20" target="n19">
-      <data key="d9"/>
+    <edge id="e15" source="n10::n3" target="n14">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:Path sx="0.0" sy="0.0" tx="-80.61542968749995" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="129.162109375" x="-64.58105048394134" y="13.209048163014018">aSS_T1_&lt;SUBID&gt;.nii<y:LabelModel>
-              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="1.0" segment="-1"/>
-            </y:ModelParameter>
-            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
-          </y:EdgeLabel>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e25" source="n15::n3" target="n20">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="144.724609375" x="2.721715433611166" y="-2.993908334257526">arpdrt_RS_&lt;SUBID&gt;.nii<y:LabelModel>
-              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/>
-            </y:ModelParameter>
-            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
-          </y:EdgeLabel>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e26" source="n19" target="n6">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="129.443359375" x="-123.23586581814249" y="-38.98437224714223">MNI_T1_&lt;SUBID&gt;.nii<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="144.724609375" x="2.2232992209198983" y="21.015599666426056">arpdrt_RS_&lt;SUBID&gt;.nii<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -1233,8 +1596,7 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e27" source="n19" target="n21">
-      <data key="d9"/>
+    <edge id="e16" source="n18" target="n11::n0">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1244,8 +1606,7 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e28" source="n20" target="n22">
-      <data key="d9"/>
+    <edge id="e17" source="n19" target="n10::n0">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1255,8 +1616,7 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e29" source="n6" target="n23">
-      <data key="d9"/>
+    <edge id="e18" source="n20" target="n10::n1">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1266,8 +1626,7 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e30" source="n15::n0" target="n24">
-      <data key="d9"/>
+    <edge id="e19" source="n9" target="n21">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1277,8 +1636,55 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e31" source="n6" target="n25">
-      <data key="d9"/>
+    <edge id="e20" source="n2" target="n21">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="147.794921875" x="-62.78285581244921" y="4.9999941670572525">lurd_T1_&lt;SUBID&gt;.nii.gz<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.0" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e21" source="n21" target="n12">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="-26.347383073610786" ty="-7.293982599364767"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e22" source="n22" target="n13">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="19.37778023894475" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e23" source="n3" target="n23">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="-19.37778023894475"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e24" source="n23" target="n16">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1288,8 +1694,7 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e32" source="n25" target="n26">
-      <data key="d9"/>
+    <edge id="e25" source="n16" target="n4">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1299,8 +1704,36 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e33" source="n26" target="n7">
-      <data key="d9"/>
+    <edge id="e26" source="n4" target="n6">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="15.0" tx="-97.8154296875" ty="0.0"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e27" source="n15" target="n25">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="-97.8154296875" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="108.5078125" x="-71.93693246031785" y="-45.56877295077334">&lt;SUBID&gt;_CSF.nii
+&lt;SUBID&gt;_WM.nii<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="29.600000000000023" distanceToCenter="true" position="right" ratio="3.0" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e28" source="n6" target="n26">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1310,8 +1743,43 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e34" source="n8" target="n9">
-      <data key="d9"/>
+    <edge id="e29" source="n32" target="n0">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="1.342268343999848" sy="100.96172883398582" tx="0.0" ty="0.0">
+            <y:Point x="229.49075709400134" y="112.76852409799967"/>
+            <y:Point x="402.13467866303506" y="112.76852409799967"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e30" source="n33" target="n0">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="51.99745912699164" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e31" source="n34" target="n0">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="-4.186781308774357" sy="51.48115660598327" tx="0.0" ty="0.0">
+            <y:Point x="552.8314017745583" y="112.30716958083127"/>
+            <y:Point x="402.13467866303506" y="112.82347210183968"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e32" source="n35" target="n11::n2">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1321,12 +1789,232 @@
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e35" source="n2" target="n27">
-      <data key="d9"/>
+    <edge id="e33" source="n36" target="n11::n1">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e34" source="n37" target="n13">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
+            <y:Point x="612.3483468071659" y="892.969599301023"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e35" source="n38" target="n10::n2">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e36" source="n39" target="n3">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e37" source="n40" target="n9">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e38" source="n5" target="n43">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="-35.72158572100943">
+            <y:Point x="362.37588440783253" y="1283.1192535853102"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e39" source="n5" target="n41">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="1.5559352499984413" ty="-35.72158572100943">
+            <y:Point x="362.37588440783253" y="1282.7147146029106"/>
+            <y:Point x="198.8074000937485" y="1282.7147146029106"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e40" source="n5" target="n42">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="-2.760575999999901" ty="-38.28158572100938">
+            <y:Point x="362.37588440783253" y="1282.615830609311"/>
+            <y:Point x="534.0597279719151" y="1282.615830609311"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e41" source="n44" target="n43">
+      <data key="d10">
+        <y:GenericEdge configuration="com.yworks.edge.framed">
+          <y:Path sx="0.0" sy="-34.034185196650014" tx="-5.6843418860808015E-14" ty="58.40581480335004"/>
+          <y:LineStyle color="#000000" type="line" width="3.0"/>
+          <y:Arrows source="standard" target="none"/>
+        </y:GenericEdge>
+      </data>
+    </edge>
+    <edge id="e42" source="n13" target="n24">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-19.37778023894475"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="129.443359375" x="-148.32167548394153" y="6.338550144562646">MNI_T1_&lt;SUBID&gt;.nii<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="83.60000000000008" distanceToCenter="true" position="right" ratio="3.5" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e43" source="n12" target="n14">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="121.80859375" x="-90.90429267144151" y="6.015599666426056">SS_T1_&lt;SUBID&gt;.nii<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e44" source="n13" target="n3">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="153.00390625" x="-135.0161392556426" y="-38.98438967282743">MNI_T1_&lt;SUBID&gt;_WARP<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e45" source="n24" target="n15">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e46" source="n25" target="n16">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e47" source="n26" target="n5">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e48" source="n4" target="n52">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e49" source="n25" target="n5">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="11.5146193608457" sy="8.078784084513472" tx="49.84457088523868" ty="-3.820246495886522">
+            <y:Point x="509.9170412481103" y="1131.05013703124"/>
+            <y:Point x="509.9170412481103" y="1245.2450589377906"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e50" source="n12" target="n5">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="49.87189773266056" ty="5.356890717899887">
+            <y:Point x="634.3058883312603" y="699.8440298422073"/>
+            <y:Point x="634.3058883312603" y="1180.0845748555028"/>
+            <y:Point x="569.4654219578432" y="1254.422196151577"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e51" source="n52" target="n5">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="10.049899665980348" sy="9.50144079081656" tx="-49.85546875" ty="0.0"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
@@ -1334,6 +2022,509 @@
     </edge>
   </graph>
   <data key="d7">
-    <y:Resources/>
+    <y:Resources>
+      <y:Resource id="1" type="java.awt.image.BufferedImage">iVBORw0KGgoAAAANSUhEUgAAAO4AAAEACAYAAAC010pkAAAn1UlEQVR42u1defxW0/ZeKUUSSpky&#13;
+XWMZo4HoGkNlyJCUWchww8V1DV2ZK1NUpDKWmYypKMQ1F1ekQiVDRaUQldT1O09nv/f31vd93732&#13;
+Ofucs8856/l81uf7z/c9e+2193PO3muvtTaRIGrU9aSdJz09Ge7JR5784MlvnqzwZLknP3nypSev&#13;
+ejLAkzM82c4B3Rt5cpInfTwZ6ckUT2Z78qvSHX343pMPPXla9bGtJ+vKsAvSiPU9OdeT1zxZ5smf&#13;
+AWWaJ7092TFmsvZUL5igei9TL6Funqwn00HgOvCVvNeTJSEmfTl52ZPWEere1JMnPPnDst6LPRns&#13;
+yTYyPQSuYWNP7lPLxz8jlhc82dqi7pt48qAn/41Yb2wJhnjSUKaLwAWc48kvMRC2WH5VS/GwOEHt&#13;
+r+PU/WdPzpRpI0gK9ZXD5s8EBUvb2gF0r6VWCEnq/qInG8g0EsSJXT35KuGJX5AJhstPOM7GOaI7&#13;
+nG87yXQSxIHWCSwvdfKJJ2sxVwmfOKb7Ak/2kmkliJq0i0NM0qXkH7NgiXuXJzd7cpsn93syhvwz&#13;
+0aDP7q7RHWer40M8f5Enb3ryqCd3e3KL6sMTqk9LQ+7ZhbyCyJbHQb60CLbo58l+am+pA46ULvVk&#13;
+Epl7m8uhOvnHSUGWstepvq+h0Rtf/P096e/J3ABt/ehJE5lmAtuOKNM97QxPujLJWg7tPfmU2d7I&#13;
+Cs+51VD3LzzpzCBrJefXWZ7MNGz3S7UHFwisYJTB5Pvdkx4hCVuMGp5cTf45aKV2ry7z+yPI7Ky1&#13;
+lyc1LemOr/A1ZBbU8bxMN4ENdDOYdNM92T0iPQ7yZGGZdueoVcHq2NBg34zz1TYR6d7M8Ot7mkw7&#13;
+QRggIoobXPGuIkqU2LnE0hle4nJHKkOZus/zZJeIdceR1QdMfRbGYEtBhnGfAWnjyoipRr4HtpP6&#13;
+W63M/7UiXhgjXkx7xqT7egbkvUumnyAI4N3lxB5PL7NMTRrvMnQHsTvErBe+vF8zdMO+eCuZhgJT&#13;
+DGY6onZzUPe2zK9a34T0a0Y8h1V/mYb5wRpqYlzkySBPXic/Afw78qN0sJ/DscMbaincXS0V11ht&#13;
+ScdJzbvKURu8Rbwjn7UT1PE64gVm1Cn6Dc6jm3tyAflBKwgImabGFGP7rRprjPk9nlzoyR4U/FhL&#13;
+EANZ2yhnzAIKFr0zn/xcWgRKcDzJOKet5aAt9mT2t23Ceq6tiKbT83RPDlBE/THg2OJ3D5HvmRcS&#13;
+OwAQB+lttgP+Ocu4Ux21yb0M3cc6ouvZlsbCRKarF3NNoU8yOJ75xo5C5jg68PiK/czQv7VD+s5P&#13;
+aAzhIDtWaBQfULFhNCWb0dLXUdsczdD9A8d0HpjwWL7kyUZCq2hxMPlB+0mnov3VUfvcz9wzujam&#13;
+SY/nHLWPFkQAlCxd7sAgL3XUKQV8o9Ed5VTrOKZz7Qj2sUH9GqcIzeziYnIn8Xu8ozZqxND9GUd1&#13;
+/9iRsUVAyoVCN3tf2jADMUPtiR8mP6jiAfKzfYJ6oh931E57M3R3tUjbMwHHAmM7Uo3pYDXGoync&#13;
+KQPmzKlCu3BoE2B5jP9HITLkkzbQPH9jtecbS/zypDc4aqv9Gbrv76jufQxI9Yoils6hhNDKLp6M&#13;
+CDCHsGw+UOgXDJsYOqIQV4y6vUFrDiPzZjijnWZCXOvYh6H7k540Dvh8FGM3rXv9PYm3ORBeMTDy&#13;
+ZxYJdQiVPx/u57C90kxcYBCVP2+19fVrQX5IJHdejRIamqGz4Z6ztuX265F/vlgIn0Rs8/lUPoVO&#13;
+iBse1ZRjaDr9f5giLkCzXXt5HU+eMphfxwkdeUA0zWymUe+OgUw1UmK3tBM3TpsjXvke5hzD6quW&#13;
+0FKP7kyDPur4F1CI6zZA3ieYc+1cMZf+TfsNw5ATiVcAXIgrxK2E2so/orMbjpeqi7nKoz3xXPW7&#13;
+iKmEuJaA60U5x0WHiqnKg7N06SdmEuJaxt0M2z0iZiqNNcmveKArFbOpmEqIaxmbe7KM9EX1aoip&#13;
+qoJzCP+YmEmIGxGeZNivpZipKi5nGK69mEmIGxGOYtjvMjFTVQzTGA1LmXXETKkjLpaXqIOF+OLr&#13;
+lI8CZ6g4YqnrkP1QF1uXXviQTLOq0BXKniAmSg1xcXRyOPnOxoUV9JlFbpW3/Uhjv/dkmlXFLBKv&#13;
+XtqJizpc5xDvLL74jNSVM/nHSB9FJVgNujt6bhcTOU1clD6dRsFyYF2JB+6r0fMnmWZVoUu5ui6F&#13;
+fUJkThs1MbfPKHHxtbybwlWe6OHIeF1P+lxvgSFxb0xZf0DW1UuPotLDehkiLnKmx1P4kjHdHBmz&#13;
+3qSvNyZQOICxt4Dcm7Jla7kX0csUTXJE3MRFcvoMC6Rdol4ALuBB0lfggK9lvzwTFjelTzAY4DdT&#13;
+1LdxFH951ziJu7mhAyotdbDeM9D7fU/a5Ymw2OuNCTDAi1LUx6WavvwzxcTF2evkEERF2CrKwqCo&#13;
+m0t1nZDmtzhAf1AlY9uskxaH7r+FGPS0xIrq+nFNSomLJf7ThmOGLcOznpzgyWbkbg517RDzEjH2&#13;
+Z2eRsPA8PhxySTUlRf3NKnHPNByzp1P2NZoeco5ij5yZahnwor5F4fdCZwtxEyUuStkuNNjWHJ/C&#13;
+ufo3C/MU/o06aSct4j/DHhfAk3dryvqdReLexRwv3MOT1kIHWMbfYYG871KK4+qRXzs2YMexD35Z&#13;
+TfBdU9j3rBGXk69auBx8xwysEnf35FrySwQvDjiHR1NK83f7B+js6550JL/SY5qRNeLeQLwbJLJ4&#13;
+vllbOdbeDDCfUxeme4xhBz8kd6+uzDtxkekzi/Hsmyj7QLCQ6QVlR6WlcxsS/+oQvKV7UPYq6GWJ&#13;
+uC0Zz51F9ovSu4oaahnNvc4Ee/4N0tCxQQb72LYZHdwsEfdqxnMvofzhCIP97wDXO9OYeKUul2Rs&#13;
+aZxl4j7HWDXVp3wCS+elxCspvL3LHXmI0pV/KcTV4wvSH33kGZ2Yc97ZJBlkeHCODO7MwWBmibi6&#13;
+oItBJOCccePL3NBF5S9hKD+T8lHwLUvE1W194r7oG45MXKmKihuu3F+LSClOttRFLk5WToreKRkn&#13;
+LDJMONeovED2C7tHRdz5mmeeF6N9cXfx17RqAgMurHbh3P904qUCOgW8+f6rUfobyvbFSbhbhnOB&#13;
+VHF6G2oc1XWcuEOocsncLWKybwtls3LJDEkDx0TfkT58t4FLk/aEhJaHLgChnUGixIq3D80cJu5G&#13;
+SsdSz7s4RjuP1vSthQNz4XrGGHR0afLeylA4izfs1VTL3rBB6TjTPsBR4hbIiy/vPPKPNpA4cmzM&#13;
+ttblcV/qwHzYnTEGfVyawLq34bwMkhaZJA+QnfIthVS4nR0lrgv4XdO33o7MiQUaPUe6ZNQpGmVf&#13;
+ySBxO1skbUFQEmYtIW5JzNX0bZgjer6q0fMzl4yqe8tk7awPR1pzIiBumIulsk5c3fUgUx3Rc4hG&#13;
+zx/TtIzplTHinh8RaQvbirWEuFUwjNG/xg7o2YdSVJtZZ9BrY9QFZ6ldyL9wamxEMpdJQtSLhscd&#13;
+yRS4RpRb0rSjELcKzmX0r58Del5H+iMhZ6ALtI6r9Ay8vCMi/BpyBZ7XI0roh1I+rzF+/4AQtwq2&#13;
+Jl5Y4ZYJ63m7RsfFLhl1NuPLEwd6OEBa3XUpiFddpPn9p0LckuDUL0vaa6u72d6pG/90d9tOjEmP&#13;
+GY4QdxuNno+Q/eLveSDuWUz7/yNBHSdRirKpdDWTEai+vgN77bhEF9qpq+G0QohbEohJ5njzYb/O&#13;
+CehXn/SVMR5wyaAXM4zZOUfE3Uqj51D54gZGd+KXRTonZt1OYeh1gUvGbMFQeFSOiNuzgo71yL8g&#13;
+2fYhfV6IW0NtvbhjgS9c3Zh049yJtYdLxsQRjC79C27wxjkhLs61Dyqz1BvJ+P0wIW5FNCde0Ybi&#13;
+gm1IP4yyoN2uDD1w2Zlzdyfdy1B8eMLEhfd7ggX5iXhLtcHkX8XYSk2cz5kTrYsQ18r2bHVZqLYp&#13;
+cHIhqWN3i2R+kdH+3S4asjXTeG0TJO41ltr5e4Rfa7wU1hHisvCQBXvjXPVm8tMzg+IoZlt7uWrI&#13;
+T5hfvY1STlwEUsxLYH8sxK26333Rkt2DentRyYQTSfehy4bswjTSOxTNdYRxJvOfEQFpZ4RYuuWR&#13;
+uACi5Z6wZP/dDduGz+ID5rOdrmwKJ9VUZkeuSjlx4WR4kuw6tFqG0CevxC3Mu16kL5+kE9OKHtcx&#13;
+nzuJ3L3Qe+Xbp7+B8aaknLikvo6vk53Y5mNC6pJn4hZwOOnDb22mVHIj9cCJvuTgpdcIADe9DOmX&#13;
+DBC38MJ6NMRkwTHawRb0EOL6QIQe6hwvCzAWrQzbWmr4fJxIbOGKofYk/3zK1EgTM0LcwrL5xABv&#13;
++8fIXplWIe6q+Av5x3G/MsdiRIA2JgeY95gjuyVtHByE/0TBvjTnZIi4BSABvqtaPv9B5cvUYkth&#13;
+u3ieELc0cAJwqiePV/jAYMVUJ8CzLww491ExpmlSBtmB/DIcQRS/N6LNukslYrGE3kPtuzqQf+C/&#13;
+eYROCiEuD6hrjPPUwzw5ksLl78IpNjQgB3CEtE3cncc+YpqhosiaeIn8wuFRIa+1nYW4yQLRcaPI&#13;
+3Ks9Va0IYsMzhgo+70mTGPQS4gpxk8Qu6uNkwo3H41LuZAOlsJSOs3C2EFeI6wKOJ/0th8XSKWqF&#13;
+1vPkB6Yy8LhtHbPBhLhCXFewLfGTSuZEvWTuTfyjng0TMJYQV4jrElBfbBKTM5FdVwoi/sZQAMWw&#13;
+Nk3IUEJcIa5raOTJLMbYoOpJvSgU4FRQRA5qqwSNJMQV4roIpLyuYIzP5bYbxtnj14yGb0nYQELc&#13;
+aIm7AfnnntWFi8boyxif6VG8MTgHyusKcTNJXBxzvEGrnhZcSX4AgoAHOHbnU8zJ9jdTMml6Qtzk&#13;
+ibs9lQ9r7S98NMI1jDG6yWaDH5I+La2hEDeTxH2aKqerNRE+srGJ8gNVGqP3bTW2NqOxMY4YRohr&#13;
+n7g/a555kfDRCLq7o5COaCVvdw+yn4AsxE0PcXV5rTcJF41wOWOcdrXR0HGMhg4Q4maWuDqHyv3C&#13;
+RSMcxBinY2w09DdGQ42EuJkl7qeaZ34sXDTCloxxOt9GQ1cwGqolxM0scR9nPHcL4aORzyiWQIye&#13;
+jIaqCXFXAfKVUSQb0WaofzSI/OCUbuSfiVZLEXEvoQTjbBMC7hrCzRMDyY/Pt3m2ugbDnlfH9cVd&#13;
+O2FDYzPPqWo/Qy1D1opIj73Jz1X+Q6MHihDgDtd1U0DcnRjPhed5w4yQFrWVS9UO62fp+evE9cU9&#13;
+j9HQ1gm+GYeQedmQrzxpY1EPBIc/QsEKh3VwnLjAFMazH8oAafFCn1mhj2dZaGNbhi272egM516U&#13;
+tgkYGRE9X1C4esZXWVi2NlYvgjB69KHw4YNREvcSZj9OTDlxO2r696mFNo5g2PFwG53hLJWujdnA&#13;
+2xE/oT/K/RleHnMt6dE/5EskSuJiz86p5rmE0p2B9C/SRwiGxY0MO+5gozNrqgGp1NAHMRoX+8LP&#13;
+LZElzJcC5TynWtbjXEeJy3VSQpCz3S6lxNVl8Ngo4v8hw37Wsq/+zRiw7WIy7kDLZCk4VzYx1OPO&#13;
+CPRYEsJfEDVx1zHYEqxQRK+RMuKO0PTrGwvbKp3tXrPZIc7b9s4YDIuA9v9GQJg/1QuBC1TJXx6R&#13;
+Ho86SlzgUMO+TEzI/xEEeMnoCry9GrKNuynmZPrdGA3iguDNIjbuYINJs4z0AfLFslQRckOG9I9Q&#13;
+D3ytGjlKXOCWAC8jbClws10btaJY30HicpxGd4R4/pbEu2toR9sd41xaHWWN2DWJV/JyhvKE11S/&#13;
+2yqi5XWUelzsMHHxZRpjwT4zQ+7pbWMcQ+cjQzyfU4t8fBQdO485IO0jMmwLRtvYg5S77b5HjKQN&#13;
+q8cIh4lbcMyNd8CrbwtHMldkdQI+vwPTFl2j6Bx3f/NiRMbl3ABfyTsMT92XMRE3rB4zHScuqeXu&#13;
+vy3YakWMjs1SqO/JdxH6HoCXmbY40HbnTiD/xnTufiYKXMloewPNM/rHRNyweixJAXGBtYmXhKCT&#13;
+7gmRFtuvsUwd9wvRDvcCbIy7tZs/TiNeacmCjIvIyP9itF1T84xeMRE3rB4rUkLcApD6+VsIe12R&#13;
+AGkxRk8x9XsjZFtvG9hiOVmIQOtoSFprcZYl0J3Rti6L45WYiBtWj/kpIy4pj/zIgPY6JGbS4mTg&#13;
+VaZuOH7cJ2R7FxjaY7lybAbCXkz3dbG8QNHV3G3LbL9ahf7E5ZwKq8c7KSRuAa3Vi4l73v4exZsW&#13;
+CkfRLIOxHGLJEz/KcA7heLWZaUMNDTuHRi6jaAtl12NOhruoapohbleYQ/EeB4XR49YUE7cAXNrc&#13;
+UxFzRYUX1CYx6IJCD8cEcKZ9RfbOnGuoLcESg/a/Vc4zNkzeDrjUqHFMk+F1pk5IQECaWT9atZC3&#13;
+ThAkcClDxkesxz4ZIG4xEC7ZXDk5z1FLx/0i+tIiNa8L+Qnwg9SSeFGAF+/SIF88BnYmXppk8d3S&#13;
+LJxu8FCcN9aJcQJ0ivAL+baBHu0j1GNiwAntMnHjArK1bBz5YYVwXIR6Io98NNk5XlwJLAvmMR/2&#13;
+BMUfRI6l+CcREcbkDK2aWgJGoUfQXMy8ExdHO1MtkfasmPR9hqnT94rsZXEz80GjVcNJYC+yH+A/&#13;
+NIAeiN/+3bIeT4SwS96J28GC/TGex8eoc00D7/aNlRxSnLM4LEXWS3iQLiC7S9Ogy/3TLerxie6t&#13;
+KsStiKtC2n+m2ofHDThdOQEa2KeXrOt1LePHfyTUuVK40gJZJlnwanan8KmGeHlsHFKPvBP3/BD2&#13;
+f4AiulSaib2Zq8gepVzVnGOK2x0bLDirfg44WM+QPVc/nFVBS9gMIzvVHvNO3C1JX12z1HHUfo7o&#13;
+34+h73e02pHr4YwfzXdgiVwK+GLikHwZ8b+yR5P9o4j66sX2K/EDD2xWmhSvsl/ylpMfjRsID3ZM&#13;
+d3xEOGmrhxb/iFOT+ErHB62hWi49p/YMi5WHEJcw4+rCvurtGvVlzHUZtrwtgnaFuD4QpjteEfRX&#13;
+9ZXCGfoA8gP413NY92sYY3hv4Z/x5dEdAS0lwwiOnCOJGxWEuOlHQ8bKcU7hn3dhDPhTYlMhriAW&#13;
+PMcYx5WXiZ9FFiI3BEJcgRWcyhhHFJVYGQyv+8eNxZ5CXEEs2JQxjisrquoKf30tthTiCmKFrpQO&#13;
+koC08Z2jxI5CXEGs0NWomox/WqD5p8FiRyGuIFbcqxlHnAJp3c+9xY5CXEGs6EOMYoK6ONtrxY5C&#13;
+XEGsuI4YxQR1X9xeYkchrsCpL+5Szh73HrGjEFcQK4YQowqo7lb3l8SOQlxBrNCVtUHNKm0l96/E&#13;
+jkJcQaz4lvQVaFh3dm4kthTiCmIBJ3IKV9isvHlA94+dxZ5CXEEsOIkxjmfiHzmXVj8p9hTiCmIB&#13;
+p/LjTvhHJJbPJ737uZ7YVIgriBQNSF85FEX2/1e9ZShj0C8XuwpxDYFbBVBqBbEAuDf5M/KvtkHI&#13;
+3lharQyLgHUj5f3FPziC8QMwvY7YVojLAKoWohwSp9zvOTJdVmI9xsoXcljxj1Dc/HvGj24S+wpx&#13;
+K6Al8Qt8F8fdbipThnUZAVYrVS7Wu554FfJ2ExsLcVcDCuQNpOD1pbvlfL7sSbzSsj1L/RhntYsZ&#13;
+P0Yu4DrCTSGuAl7k0yhcQfircjxXUFP7C4aNULFyw3IPuY1paBS0WkP4mXviHsV82evk6JzOEyx7&#13;
+RzJtVDHZB0c+PzIfdL+QN9fERQFBG5ev4S6qmjmcI+DOMKaN5hGjHvRZBkZ/jPzbvgX5Iu5Rlkg7&#13;
+k1Sp0ZwBx2RPGdjpVM5Dcbg7xuChuCVgS4eMshn5LvNT1Uuok9r81xTiWiFuU/I9wUFueMddPQ+T&#13;
+H2vb1ZPaEdm/hXr+yeQfdSLSqIYj83Nr8m9a4NrNKDsP7vkfDB7+kyJJtYSMUV85OKZoNvcI3Tww&#13;
+Bj2zSlws16YbEvYDT7pQPA5N3AQwjsrfffuaJ5dSMsdPWBrjzPoXA9vNpgAJPhjkZYaDNIH8w/e4&#13;
+gLfoP4h/0VZBXvdkRyGuMQYZ2PgHtdqJC9XUF52jG5b5z6qVWBzY15P/BFihtAraIJabpmdzOI9q&#13;
+F4Mx6ikCBt1fIarnBCEuG60M5sKbFH8qaJuA8+DJiL/AHQL4A2Dn0Bl5QW5/R4THmhEvjT+14Bz5&#13;
+Uy3xhbh6jGPa84WEHJZXhJgD2OqdEoFOtQy3nAXSWgsDPTuAMfaNcHn8piXSFirmtRHiVkRrpi3H&#13;
+UXKnDH+3MBcGW/7gHBhAh9NtNb62J48GUODwiAaoh0XSFgRx2usLccuCM/5wpDRI0FvbhIKHXK5e&#13;
+FsaWI+2YAO0PtfHygxfx3wENsFUEg4Pb55dEQFzIrULckqijHCW6Z3eg5HGnpbmAFd1aFvTZPmD7&#13;
+8N3UDdoofvh+wIajuk+3V0SkLTir1hfiVsFRzInuAuBZvsyTuRbmg62w3hcCtv82BUijxTp/TMAG&#13;
+XyVGeFbAQfmO0T5iZ5Hp1MyT7Tw5zpP3mLqfIcStgjsYzz2S3ALmCgJxdlYvHqymZgaYyzbGaQNP&#13;
+3gjIpZFkGDjSL2AjbSm64IadGDosotJnczWY+7THhbhV8JrmmQvJnaikSsDXsyPxMnGKHZf7WXqR&#13;
+tCd9veRQW7gOhg9+15PmMRi+C0OXSzV7tXma308V4lbBN5pnjqB0oZYiA3d+f27ZU74X+dFkJhxr&#13;
+r3toPYP9AQ6VL6f4whwvY+i0meYZ95E+51GIuyoWaZ7Zl9IJRHX9zpzrl0Xw9b+K+IEZc3Tbz4HM&#13;
+B2Ew4y70dTVDL92S7UbSH34LcVeFbnJdTekFvmScyhOoBbVuBO23I15drj/V9rWs65rzBoDzZ98E&#13;
+jHwxQ7fGmmfoUql+FuJWwRTNMztSunEOkzh/i6h9jAnniBN5A9uUesCDzA4ck5CBjwnzViI/9VB3&#13;
+HvmRELcKKoW8fk12zjuTBic3dmLEy3YO94as/sOGxMsE6pegcTcnXpxnqZAxBLxPYPx+gBC35H7s&#13;
+ASqd/dOMsoGNiZdhtl2EOtzFaB8fnvrFP7qU8aOZFF3iMxefEP8suTv5geOoo7WQ+bs2QtyyOIj8&#13;
+BHiE5F1C/vlklnALw37dI2wfpx7fMnS4qPhHnK/RyQ4Y90KKLnIKy77qQtzcYluG/R6OWIczGDq8&#13;
+V7xMiHNShwGCv+dERFwctncR4uYan2ns93HE7SNiURcdiO3gymSOExKaaEFxfIRfXVvkFeKmEw9p&#13;
+7Dc3Bh1uYIzjSk9+X8Y/7uKYgQdGTN7OQtxcQpfE8nsMOuzOGEfsx+kV0tcOcg0ItHjSYfIKcdOJ&#13;
+Syiec/5KQCSi7vIv5AVog65HO2pk7Ll7R0zeE4S4uYLuazc8Jj10mXkrY+p/0vzTQMeNjSiuCYaE&#13;
+NPnfTkLcXOH+MrZDWdUdY9JBV01zAf5JF6t5YwqMjeXFAZ7cS6XzLn9Tb7Fzyb846TkD8i5XDjEh&#13;
+bj6AbRiuky0OyEBBiaYO7bURLKWNT74hhcZH9Q7EXu9KfsTV6kdZuNXgeUPydjR4ieied60Q13kg&#13;
+lQ91rJIonq7zLONju3LDXemf7sjowIC8L1gkL14OpxGvbCwSNRB3upUQV1ACutpZK5fKujCrpzJs&#13;
+ILxVXzQk73ElnrOj4T67OPYUuZ5rCHEFRRhO+vBjbRXHSTlYEo0wJO+xRb9HXvIiCufBfobCZ9kI&#13;
+cbODyaSvX10y82N1z2o9IW+VPQbSDFHw+neyc/w0gsLVbhLiZgNwnurqQ8MJy7pipHMODAbyvmRI&#13;
+3p/I7tlxbyFu7nESYxzPxz82ZfzjyJwYbS3V1z8TErxpmwtxc42XGeOI05KVjpF5jAnVOEfkHZUg&#13;
+eccIcXOLnRnLZFyX878CjfcwBv3xHBnQFnnhH4C3GYn9Jre2NckocXFkhqoZSMrHrfFbUnKXobuI&#13;
+4YwxvKv4B39lTqiDckbe0SFI+4qamMWTtivxCoNdk0HiHkJ+XnepUMJx5F+TuWOOSXsoc17ts/oP&#13;
+P2b86Dvl9coTeV8OQNoPqHwR7eMYv38tY8TF15Xrfcfx5LE5+xKj5ttshm0mlPrxyUzDvkHZqOzH&#13;
+xdqkT31cXQ7TPFNXyX5OxogbZOWCiputczK/3mLapOTpDpxUE5kPeEk1KOQtLbr7VXVXYPyRMeL+&#13;
+RsG97AMzPNdqG/hSPqy0CjnIwKjvkP7Kj6yRd4wQN1biFtc03jZj8wnJL+8Z2EB7+dgQg4fNpXwE&#13;
+ZxS/Iccy7NK2wjOqkT6ueXbGiGvDQ48jy6zUcT6R9FUuiuVuzkNxR8o0Q6PiYuODc0LeFsxlTTk/&#13;
+AKc436sZIy6uPl1qgbzwQLdM8dxpY7CfLb4tcB1uAzhH/DmAYVEG5xryq1KU86ri1jEkvSM5fdcU&#13;
+Gh8lNDlJBa+vtrzD785jTuCeGSMuqTGfZoG8+FK5cGy0m5rDsGndMv+zlnKwIf/6ywB9RUjtDqaK&#13;
+HRryLYnggxnkVw94Ta3nvy0zwTdJGXmHGjhXPlErkgUGtmucQeIWHKB4WcPrjlOM28mvn2Q6tz6n&#13;
+aG7P42AzNZ6rjzPm9rtqrr+v5v6KEPxZGmYVezjZy36pJP+hdNxqbrJcDiovB9QpDcQth9ZM30Gx&#13;
+PJKAnii+8GkMfFiq8ZOwlzgLYlD2eEoXhkdgA7yh98ghcQvoZDjX2ses34kx8ABbgb/aUnh74l+4&#13;
+FVRuTxlxsbyfa9kGYQrzZYG4wF9IfydvQWYo30FcGBDDynMb20rD2XRbyHV7JemTQkcVnHBLLPUf&#13;
+lSerC3FXAmG1k5h26xajXrdHNPeXq/lfM2pv2rgIlE/rcdIBFD6h/nEq74XPI3GBRuSnsOn6NJ3i&#13;
+i2tuF8G8x9HfLnFP2FGkzx/khlCmGTj2eSdAvxFRdKGliZc14pJ6mbuUtVaNgiWdlDptGGFzLxsE&#13;
+SF27nHwX+PIAnYAbPQs1rXDUgeCKDxl9XqT2S40stp9F4gIPMfo1OOZl/OwA8xxhrDguQlXPzV0z&#13;
+Mg6icf6LW7O5BcfbUvYgNxnY/TDoPgjfxqzTUcy5/aziAiKm1k2LwW/MwRJZiBsPOFfGbBGzTpyE&#13;
+k6vTaGzO8VFLIa4Ql4FTGH1rF7NOrYkXs54qNGB06iPKLoS4drEDuXUsVIAufx1OqA3SZOj2DEP/&#13;
+U4grxGWitqPz6SqGXoekydD/ZHSoqRBXiGsAXaDLZQno1Jxh84vTZGTdxbxIXKghxBXiGuBVTd9a&#13;
+JaATwi1190sPSJORnyV9WhYJcYW4Bti3AklGJKiXLsd4eJqMrEvReluIK8QNgCPJr4BZ3KdHPamT&#13;
+oE7vkr6+dmaWNW8KcYW4AYFA/L8qEm/pgD66a2rHpsm4uqipj4S4QtyMQHeRwHNp6szDZL+KoRBX&#13;
+iOsidBlMw9LUmT6MSVRXiCvETTnWZ9i8V5o6dAajQ4fmmLg9hbiZACc/97Q0daglo0O3ZXhAZ2n6&#13;
+3lWImwncybB58zR1CAfTvzL2udUzOqC3UOVc3AZC3NSjOmN/+3Ma5zjnhrbjMzqoOFccT6VrC3WK&#13;
+qE0hbrzowrD3iDR2rBujY58k+EZCuzgHjCp7A5eEoTIICsGjaiHqSkV5901eiItKI6h7hrS6pCqn&#13;
+IFz3M4a9u6bRwPC4cW5CuCCBgUdWR3H9Xtz5u3vKJ3QeiHsg+cXhisvB4EKsWjHrcTHD1ospxScn&#13;
+w4hXMK1JjDqVS4DAnrypENdZ4Atb7laNZyi+So+7KFLqbP1gmt+QOxGvCiTuj6kfgz4XavR4S4jr&#13;
+LD7S9O3aGHSAU5FzeRdqj+9IKcdTxCus9UHEe5auzJfI+kJc59CAOYcuilAHfFgmMPV4LAO+hJUO&#13;
+IO6N5Njw2755HEuoq4lfRjOty+WOjL61SGnfWhqMX2/lx7CJ7Yl/qyCO+xpRRnCZgeFx9nWapXZR&#13;
+v9a0gHWHlNqYU3Vkk5T27QTDMcTVrVtZeul3Jd59yKmseKED3oCm1yhivxm0Qn09tef5lcwLV/dI&#13;
+qY11d/YuidGBYxvXU7BbIm4I4TtBLWTT2yleTrGNy2JjT74LMAA46/2HJztrno+C00eQX/l+MeXv&#13;
+OpTpmn5NTvHcGRtiPBerl9oRVLkoOQi3i1odBrkDF0XZG1JGAfItDDEI+C0qDjxNvrt9qCLaVLJ3&#13;
+iyAu8KqZMrtuwejXAymdM2sHXDmV8/ZOVXNmqJpDmEvvhZyXiAloQhlHKwp/u13UkrZrUTgBAWen&#13;
+dL4c7fhcAeH3ppwAIWtzHB6MYSmzJ+eisbSeKz7l8DyZRTFfkekCNqdgV1PGIb+rPXkasC+jP5NT&#13;
+PEf+cHSOoNbUZpRTIP2vV8yDM1XtaTjngWnAC4y+XJ/S+dGXSaDPYpw/y5Q9a5BgpdPqjYgNjrM4&#13;
+HPXUUh5GjjfS9YP0/Zh9b5zCObE1lY9NLpbDlDPxCjI7bw0ir6XUlpHjIGUcm8ZeoL6excnr1Ulf&#13;
+pQLypMO2wmSdyOjDKymdC5z7lWfSqlFSDdRYL7Q8h3Actb/QUw+EmN1A/DCzUsEGcPmfTP6FUaVw&#13;
+KfNZrib738jUv30Kx/8UZt+6l/l9bfWMkcRLLS0lU9SSeDuhYzBguXqSepOiRi2yRJChgbIhKH/z&#13;
+hdrnwBOMsL8DyD/702EdT+YT71x3B8dsguOq5QzdERSftkgeZJT9wujbD8xxBomRx3u5miNvqTkz&#13;
+W82hL9Wcek7NsRPz7HRKCy4k3tsXdx3Vc0TnJsQ/B0/b8m5D0keAFeQcmb75BbcESeF28aRT/rCF&#13;
+4J5/P5eyscCL8WNm3z4m+xlAgpRhH+KHS2JJtWlCeu6plndchxxHT4RKXkJ+VcqzE3wx4bx2IrNv&#13;
+2CK0kGkrAG42cFogUaJlzPp1JrPEiRMZzzyTqh63YM9/eMx9a0VmUXTXy3QVFICjFZMoLgSMIDl/&#13;
+zYj1whfwYTLzht7PeO6+FVYZqBLSn3znXZSA7a4jnpOtuKifBD4IVgGSzGeReRRWFMctmJzneTLP&#13;
+UJ+3iZfZxIn//UZ9uaPYSyIA5gvDvkGfBjJNBaWA5Icgh/coft6JwqcD4gv7d0++DqADPN8bMduZ&#13;
+bPBc/C+qQNQO2TdErKGSxYcB+oYlfBOZnoJKQIpW0NA5kP4+8oM2uEnV26v95vPEC/ErJdPI7Ozx&#13;
+rQBt4Gz1UfUV3pzZzkbqhYble9BUTpQyai7TUsBBswDL1HL3I41T+9SB5AfND/HkCfKrWtoIzZts&#13;
+QKQCLrLQLgIg3vTkEU8GeHK76uPDai8621IbTWU6Ckywg1p+upzEjTjk9QI6495wvG94IW0r01AQ&#13;
+BLhC4jkHJzU8v7dQOA/rWp4MdpS0w6lyfSiBgIWziRc/G4fAu3qAxb4dq5akLvQN++AzZLoJbAKF&#13;
+3ZMso4Islz4RfYkQbngP2Su4F0Tg+Gok00wQFXD51OsxTug/lMPnLzH0DZk5TxPvqhZbMoZyVGxN&#13;
+kDxaqK/EkogmNM4u4andIiHH3ACKrhonwjeRYtdMppEgKcCrWziHDVv/F5FbKOjejqIPp+Q6sI5V&#13;
+X/ywx2M4G3+W/GCOujJtBC6hpvoSI1wRHlsc13yuJj2uxEBcLgIKkKgwSZH9FuWQcb3SAhLyd1bE&#13;
+6+fJaPJTIueq/fcK1cd5qs/o+yBlixaUviLzTuP/AJWpUVnf9Fd4AAAAAElFTkSuQmCC</y:Resource>
+      <y:Resource id="2" type="java.awt.image.BufferedImage">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</y:Resource>
+      <y:Resource id="3" type="java.awt.image.BufferedImage">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</y:Resource>
+      <y:Resource id="4" type="java.awt.image.BufferedImage">iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAL10lEQVR42u3dWWwd1R3HcehrX3jt&#13;
+U1upD7HjGAMJhJ3YJYmIQ0jYigAlKBARKCgRq6BIBAWJQNiXVGxB8EBQyyIBSoPYI4TEDmEVSCwB&#13;
+1Nc+VFWLqtP7v8KSM3futa894+b6fL7ST1Zi37nHvnO+M3POmf8ccAAAAAAAAAAAAAAAAAAAAAAA&#13;
+AAAAAAAAAAAAAAAAAAAAAAAAAAAATJMD+/v7f9fX1/f7gYGBUZl8FjSw+6AnGRoaOmju3Lmb5syZ&#13;
+s7fxNUn3OeGEE34aHh7eYG9CT9HYeRc1jvh/14mnl0bnTytXrkwkgF7q/Esbnf8/OnA1Ali1ahUJ&#13;
+oDdodPxfN3bcf+i81QqABNAT9Pf379Bx6xEACWB/P/r/qrHT/lfHrU8AJID9+dp/jU5bvwBIAPur&#13;
+ALbotDMjABLA/nj9v02nnTkBkAD2KwYGBv6s086sAEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgA&#13;
+BJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5&#13;
+AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgA&#13;
+BJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5AEgABJC5&#13;
+AEgABJC5AEgABJC5AEiAAAggcwGQAAHouJkLgAQIQDIXAAkQgGQuABIgAMlcACRAAJK5AEiAACRz&#13;
+AZAAAUjmAiABApDMBUACBCCZC4AECEAyFwAJEIBMIiMjI7NWACRAADJBjj/++FktABIgAOmQhQsX&#13;
+znoBkAABSJvMmzcvrVixggRAAC4DSAAEkF0af9e0bNkyEgAB5JqhoaG0fPlyEgAB5JrBwcG0ePFi&#13;
+EgAB5Jz58+c31weMjo6SAAhAZnf6+vp26V0EIJmmv7//b3oXAQgBgACEAEAAQgAgACEAEIAQAAhA&#13;
+CAAEIAQAAhACAAEIAYAAhABAAEIAIAAhABCAEAAIQAgABCAEAAIQAgABCAGAAIQAQABCACAAIQAQ&#13;
+gBAACEAIAAQgBAACEAIgADusEAABiBAAAYgQAAGIEAABiBAAAYgQAAGIEAABiBAAAYgQAAGIEAAB&#13;
+iBAAAYgQAAEIAYAAhABAAEIAIAAhABCAEAAIQAgABCAEAAIQAgABCAGAAIQAQABCACAAIQAQgBAA&#13;
+CEAIAAQgBAACEAIAAQgBgACEAEAAQgAgACEAEIAQAAhACAAEIAQAAhACAAEIARCAHVYIgABECIAA&#13;
+RAiAAEQIgABECIAARAiAAEQIgABECIAARAiAAEQIgABECIAARAiAAIQAQABCACAAIQAQgBAACEAI&#13;
+AAQgBAACEAIAAQgBgACEAEAA08zRRx+dzjjjjLRu3bp08cUXp/Xr16dzzz03LV68OM2bN29G2xLv&#13;
+d+KJJ6Zzzjmn2Y5oT7TrzDPPTMcdd1xqfAYEgNkngBUrVqT3339/n5x00km1dbLo4A8//HD68MMP&#13;
+048//tg2X3/9dXr22WfT1VdfnY444oha2rNgwYJ02WWXpaeffjp99dVXHdvz2WefpccffzxddNFF&#13;
+aWhoiAAwOwRw+umnt+zsJ598cqXvEUfPSy65JL399tsdO1m7fPPNN+nuu+9ORx55ZCXtmT9/ftqy&#13;
+ZUv68ssvp9SeTz/9NF1//fXpkEMOIQAQQKcMDw+nnTt3TqmjlR2F4/R8Ou0566yzmmc5VbQnhBZ/&#13;
+PwIAAbTpbF988UXbDhSXAU888US68847m0fkW2+9NW3fvj29+uqr6fvvv2/7uvj5qYwRXHXVVW23&#13;
++91336UXXnghbdu2Ld14441p06ZN6aabbmq2Z/fu3emHH34ofd3evXvTFVdcQQAggPFZvXp1+vbb&#13;
+b0s7zEMPPdQce+g0sHbUUUel6667Ln300UelHS86ZjcSiG2VbWfPnj3p2muvTYcffnjH18dA4ObN&#13;
+m5tnIWXbiUsCAgAB/DywGIN4xe3GkXTZsmVdbevQQw9N99xzT2mnizOGyWzjwgsvLH19DEbGeEA3&#13;
+7QlR3H///S3b2rFjx4zPXBAAAex3AjjssMPSO++807LNJ598clqDZpdeemnp6fuaNWs6vm7RokWl&#13;
+I/xxij+dv9uGDRuaZzNjIum1zk8ABFCLAOKoXNzec889lw4++OBptzU6XXHb7733XkexxBhD8TW3&#13;
+3XZbJX+7mBK84447enaNAAEQQKUCiOv2mLIrTpnF/1fV3gcffLClvddcc03pzy5fvrzlZ2OAcXBw&#13;
+0EpAAiCAqgVwww03tGwrFtpU2d6FCxe2zN+/9dZbpUfhBx54oKU9sbJP5ycAAqhBADHIN347H3/8&#13;
+cSWn/sXEafdEbY5r8uIUZBz9dXwCIIAaBBDr+ovbue+++2ppc9mpfXFQb9WqVZUP/BEACKBNzjvv&#13;
+vJbtXHDBBbW0OU73P//8833eK9bpFxf9FNtz2mmn6fgEQAB1CCAW0xS3MzIyUtvOW1xe/Prrr+/z&#13;
+/VgtWGxPTFHq+ARAADUIoGz6r47r/7E89thjLeMN47//6KOP7vP9GDjs9s7F0dHRrhK3ExMAshTA&#13;
+vffe27K2vs6dt7gaLxb7dJr/jyW/3Ww/1hZ0e3PQSy+9RADIUwDF5bqxaq/OBTLF9QDFI3yMCXQ6&#13;
+QyAAAiCACgVwyy23tGwnCm7U1e5Ye9/pCB83CxVrCnQjJAIAAXSRqNxTd2GR8Xnttdf2ea+XX355&#13;
+n+9v3bq1pT3HHHPMpLcfqwXjDsJOef755wkABBA5++yzW7ZT133ycXSOMYbx7xWDfsWbh4rtianK&#13;
+Kttx++23EwAIYOw22eLdenEHYB1tXrt27YT3A0Rh0boXJhEACGBcoqJOsfhHFNKous0hlmKbi1Nw&#13;
+cb3/7rvvtpQUq7KOHwGAACZYfRc35FTZ3rIlvq+88krpz958880tPxsLlgiAAAigBgFEdZ3iEt2o&#13;
+pRe19qu69n/jjTda2hs1/NuV8SqWJYvpwigSQgAEQAA1FAQpq70XUpjuswZiVL6suEcsAe5Ujafs&#13;
+zsGYQahiipIAQAAlHfXFF18sLekdTwGayjZjgPGpp54qreR7yimnTHhWUlaiLDpr3ME4nYecFMci&#13;
+CADZC2CsDt8nn3xSWhE45ucnW4gzBvJi6q44mDeWK6+8clLbid+nrEhpLB46//zzu16xGDMMxTUA&#13;
+BIBZI4B4Jt7SpUsnlXadOW6OaVdCOwp13HXXXc3nBhRH5ePIumTJkua0XgzutVt1FyW6u/k945Fk&#13;
+xXJl4zvuxo0bO5Yui+9FdeFYgVhWnDTORqJGIAGg5wXQTWJOvtORMsp1dXp9DBLG2UKcpn/wwQel&#13;
+zxIodrTLL798Sr9rXIK0k9JY4qlBu3btSs8880yzmGlIKO4j6PSaOJPoxVJjBEAAtQpg7Bq8rI7+&#13;
+VBIzABNd80+UmBmIh45W0Z6QV9xzUNUzCwkAs04AY1m5cmXzKbxTeY8o/R3X+1VV841r/rjMiRmE&#13;
+qbQnzkKiHkFc5igIgp4WQKygi515qomnAHXzflElKGrzxel1u6fzxmBhHO3jOX2xhqCuh26ECE49&#13;
+9dTmVGGc6re7/Ij2vPnmm+mRRx5p3mNQ1+PKCQAzLoD/Z6IDxuBarBGIU/so9hkzCHVWEppoai8u&#13;
+EeLIHu2Jr/HvXnzqDwEQgAgBEIAIARCACAEQgAgBEIAIARCAEAAIQAgABCAEAAIQAgABCAGAAIQA&#13;
+QABCACAAIQAQgBAAZlIAW+2wUkP+onf1AI0Pap2dVWrIZr2rBxgcHPytnVVquAQ4Vu/qnbOAnXZa&#13;
+qbAa057GbvULPatH6OvrG2h8cP+280pFR/8Rvar3zgJW23mlgvxJb+pdCfyhcTbwTzuxdJvGfvNT&#13;
+4+vGxm50oJ7Uw8yZM+c3jQ9yeyP/smPLZDp+45T/r43M1Xtm1+zALxsf8PDAwMDaxof7R5Hx+Xn6&#13;
+eMnQ0NBBegsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJgu/wM0Ju4fmnwLbwAA&#13;
+AABJRU5ErkJggg==</y:Resource>
+      <y:Resource id="5" type="java.awt.image.BufferedImage">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&#13;
+P7pZAAAAAElFTkSuQmCC</y:Resource>
+      <y:Resource id="6" type="java.awt.image.BufferedImage">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&#13;
+kC0EAAgAEAAgAEAAgAAAAQACAAQACAAQACAAQACAAAABAAIABAAIABAAIABAAIAAAAEAAgAEAAgA&#13;
+EAAgAEAAgAAAAQACAAQACAAQACAAQACAAAABAAKANgnAv0osUT2kpWHMe2lFBAA5FIBr+DVFeust&#13;
+IAAEgAAAASAABAAIAAEgAEAACKB5ArAiG3zRNhJJxTyOABAAFFgAqbFHNdzh/Ko/AkAAgAAQAAIA&#13;
+BIAAEAAgAEAAgADqUK1WZ1fnVecQ1TkuHd0IAEolAPcblrf6VmRRYqB3YE8EAAgAASAAQAAIAAEg&#13;
+AASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAApiZAJIoesJ/ZyNh&#13;
+RddnFYCqzu9XXUToouGu4VkIAHasADgRqGNAAAgAASAABIAAEAACQAAIAAEgAASAAMawkT0gUf1I&#13;
+S0PkIFoRAUAOBQAIAAEgAEAACAABAAIABAAIABAAIABAAIAAAAEAAgAEAAgAEAAgAEAAgAAAAQAC&#13;
+AAQACACKJYAk0p/GohtbGa5z3UorIgDIowB4HBgBIAAEgAAQANlCAAgAAQACQAAIAEosADk3NvH7&#13;
+Ggn32VMQAAKAAgug3S8GAQQACAAQACAAQACAAAABAAIABIAAEAAgAATQqQKozqvO8W8IJnS+S0cP&#13;
+AoBSCcD9huWt3oxUlBjoHdgTAQACQAAIABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAI&#13;
+oBUCEL3a/V3HNxJW5GIEgACgwAJo94EgCAABAAJAAAgAyigA3+lVdQGhC4a7hmchACiVAKB1IAAE&#13;
+MHUHieyKxJjVLY7LaUUEADkUACAABIAAAAEgAAQACAAQACAAQACAAAABAAIABAAIABAAIABAAIAA&#13;
+AAEAAgAEAAgAEAAgAEAAgAAAAQACAAQACAByKwDX8Kus6FOtjETkDloRAUA+BcCJQAgAASAABIAA&#13;
+AAEgAAQACAABIAAoqQBSkTP7VRc1Eu6zJyAABABFFkCb3w0ICAByKIBqtTo7VR0Oid7e3rcgAAQA&#13;
+HSQAVZ0fPM9XXYAAEAAgAASAAAABIAAEAAgAASAAQABT/Qb32d0Varh07IQAoFQCcL9heas3IxUl&#13;
+/KvSEQAgAASAAAABIAAEgAAQAAJAAAhgBwngjZBAAAgAOkwADXU4BIAAAAEgAAQABRWAix+NdJxG&#13;
+Qq5EAAgAii2Ath4IggAQACAABIAAoIwCSNN0btqXVoi00sVWYCibAKB1IAAEME0Hka+nYm9sZcSi&#13;
+36YVEQDkUACAAEZC7iVbeRWAMfcENaLR08kWbDfCOytwBLCGbOXX4rcGWvxcsgXj+o7qN0L6jhW9&#13;
+iWzlFGvMzwIFcAXZgnF9R/WaoL6jej3ZyqvFjbk8aA3AmN+SLdiWWOTusBGAXEy28roGIHJykMUj&#13;
+fcb98R4yBp7hruFZrrBfCOk7ro+dSMbyanETHx56z9015GIyBp5+1SWh/cYaezAZy+sIoC+tZBDA&#13;
+mWQMav1G9ezgDVtJshcZyzEq+ii77iALichDQWtHon8hW3mfBoi9KngUoLofGSv58N/aA0P7i+tb&#13;
+K8lY7gUgHw2fBtgbyVjZr/52VbgA5DAylvf5XJrukkTm2cBG3ZKKvIuslXbuv5/rA1sDb//9x98t&#13;
+IGtFaNhIvxu8qKN6OxkrJd2h9/5Hh/+XkrKCYK19d5bHcLm3W8ahv5ySpY/0qy4ia0WSQKS/ztDA&#13;
+LyVRspCslWSEKLLYRuaV4P5hzGqyVrz53QczHcgR6WNpms4jc52Nf4eDm89vyDRCVB0mc4Uc5ult&#13;
+WRo6Fr2vUqnsQeY6E3+OYOiZEdtcGH5F5ooqADesH30jT3CD24re768SZK/Dir9S6UtU12XqC5F5&#13;
+LY7jAbJXYPwxW1nP5nOf2RhH8b5kr2Pm/Pu7K/mmrP3ADf0vIHvFn/Ptmog8kLXx3Tzxdb9HfGho&#13;
+aGeyWEyq1ersROz5WUeBYyNB/3my2AmjgEq8d6ZV3/H7BB5OjT3C/TXdZLIw9MSqR1rR9Q2e0PzS&#13;
+2EtcoVOGgcYePZMju2udyejpgyKWbOa0jaMocaO2Zf6OzgzaequT/ifIZid2kCyPfU59X/hBN634&#13;
+gRtenubFkkZ2ae1ln0Tbwue8JnUn5Vjk2tAn+nhMvOS4DnMZr9YiJjkr8hIqpAwSUL2Izk5sV/wX&#13;
+UhllkoDYr4Y+CUZ0dGyJVc+gIkq5aGSX2sg8RxGUNCJ9JhY5lEooMX6nlzV6JwVRslC93d81oALA&#13;
+0xMb/VIs+iLF0dlhjXl+9PFv9nXAePwzAH4l2E0LXqVYOqzwI/NKavQ7nOoLIdMC40TwTSvyb4qn&#13;
+6PN88y+/p98fGU/Phkz4veCpsR9LI73OnwlHQRUkKuZJvznIHxDLsxzQvHWCKN4nMfbzfh+Bu6rc&#13;
+4kYJa0e3nW726wdE+yIVfXok97I2Nubm2vDe2ONGD3llfg8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA&#13;
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB54f9xjeNzwZWJBQAAAABJRU5ErkJggg==</y:Resource>
+    </y:Resources>
   </data>
 </graphml>

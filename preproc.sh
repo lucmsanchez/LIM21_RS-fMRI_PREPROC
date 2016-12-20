@@ -136,7 +136,7 @@ open.node () {
     [ ! -f $ii ] && echo "INPUT $ii não encontrado" && a=$((a + 1))
     for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]} ${out_5[$i]}; do
       [ ! -f $iii ] && b=$((b + 1)) || c=$((c + 1))
-      [ $iii -ot $ii ] && d=$((d + 1))
+      [ $iii -nt $ii ] && d=$((d + 1))
     done
   done
   #

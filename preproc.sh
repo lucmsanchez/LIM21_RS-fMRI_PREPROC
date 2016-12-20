@@ -242,7 +242,6 @@ cp.inputs () {
 }
 
 #: INÍCIO =======================================================================
-
 fold -s <<-EOF
 
 Protocolo de pré-processamento de RS-fMRI
@@ -253,7 +252,7 @@ RUNTIME: $(date)
 Programas necessários:
 GNU bash           ...$(check bash)
 AFNI               ...$(check afni)
-FSL                ...$(check "$fsl5"fast)
+FSL                ...$(check fsl5.0-fast)
 Pyhton             ---$(check python)
 MATLAB             ...$(check matlab)
   SPM5

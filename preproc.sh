@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# PROCESSANDO OS ARGUMENTOS ====================================================
+#: PROCESSANDO OS ARGUMENTOS ====================================================
 usage() {
     echo "Argumentos:"
     echo " $0 [ Opções ] --config <txt com variáveis para análise>  --subs <ID das imagens>" 
@@ -94,16 +94,13 @@ while true; do
 break; done
 done
 
-# ==============================================================================
-
-# DECLARANDO VARIÁVEIS ===========================================================
+#: DECLARANDO VARIÁVEIS ===========================================================
 declare -A prefix
 declare -A in in_2 in_3 in_4 in_5
 declare -A out out_2 out_3 ou_4 out_5
 declare -A outrs outt1 prefixrs prefixt1
-# ==============================================================================
 
-# DECLARANDO FUNÇÕES ===========================================================
+#: DECLARANDO FUNÇÕES ===========================================================
 check () {
   if command -v $1 > /dev/null; then
     echo "OK"
@@ -244,10 +241,7 @@ cp.inputs () {
   cp -n ${files[0]} ${steppath[$i]} 2> /dev/null
 }
 
-# ==============================================================================
- 
-
-# INÍCIO =======================================================================
+#: INÍCIO =======================================================================
 
 fold -s <<-EOF
 
@@ -267,12 +261,14 @@ MATLAB             ...$(check matlab)
 
 EOF
 
+# checando se todos os programas necessários estão instalados
 if ( ! command -v bash || ! command -v afni || ! command -v fsl5.0-fast || ! command -v python  ) > /dev/null ; then
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit
 fi
 [ $aztec -eq 1 ] && [ ! $(command -v matlab) ] && echo "o Matlab e os plugins SPM5 e aztec são necessários para a análise e não foram encontrados. Certifique-se que eles estão instalados e configurados na variável de ambiente $PATH" | fold -s && exit 
 
+# checando arquivo indicado pelo argumento --config
 if [ ! -z $config ]; then  
   if [ -f $config ]; then
     source $config
@@ -304,7 +300,6 @@ else
   fi
 fi  
 
-
 # informando os usuários das variáveis definidas ou defaults
 fold -s <<-EOF
 As variáveis que serão usadas como parametros para as análises são:
@@ -319,7 +314,7 @@ TEMPLATE: $template
 
 EOF
 
-# Checando arquivo com nome dos indivíduos
+# Checando arquivo com nome dos indivíduos indicado no arg --subs
 if [ ! -z $subs ]; then  
   if [ ! -f $subs ]; then
     echo "Arquivo com ID dos indivíduos especificado não encontrado"
@@ -333,8 +328,9 @@ else
     exit
   fi
 fi  
-
 ID=$(cat $subs)
+
+# Checando imagens com os nomes fornecidos
 echo "Lista de indivíduos para análise:"
 a=0
 for i in $ID; do 
@@ -354,10 +350,6 @@ if [ ! $a -eq 0 ]; then
     exit
 fi
 
-# CHECANDO SE OUTPUT EXISTE
-#
-#
-
 # BUSCANDO O TEMPLATE
 cp /usr/share/afni/atlases/"$template"* . 2> /dev/null
 temp=$(find . -name "$template*")
@@ -370,6 +362,22 @@ else
   echo "Template $template não encontrado." && exit
 fi
 
+# CHECANDO SE OUTPUT JÁ EXISTE
+for i in $ID; do
+file=$(find . -name "bf*_RS_$i.nii")
+cp -n $file OUTPUT/$i/
+file=$(find . -name "cbf*_RS_$i.nii")
+cp -n $file OUTPUT/$i/
+file=$(find . -name "preproc_$i.log")
+cp -n $file OUTPUT/$i/
+file=$(find . -name "SS_T1_$i.nii")
+cp -n $file OUTPUT/$i/
+# incluir quality report aqui tbm
+#file=$(find . -name "report_$i.html")
+#cp -n $file OUTPUT/$i/
+done
+
+# Preparando para iniciar a análise
 [ -d DATA ] || mkdir DATA
 [ -d OUTPUT ] || mkdir OUTPUT
 
@@ -377,7 +385,7 @@ unset a; a=0
 for i in $ID; do
   [ -d DATA/$i ] || mkdir DATA/$i 
   [ -d OUTPUT/$i ] || mkdir OUTPUT/$i 
-  for ii in T1_$i.nii T1_$i.PAR RS_$i.nii RS_$i.PAR physlog_$i; do
+  for ii in T1_$i.nii RS_$i.nii physlog_$i; do
     [ ! -f DATA/$i/$ii ] && wp=$(find . -name $ii) && rp=DATA/$i/$ii && mv $wp $rp 2> /dev/null && a=$((a + 1))
   done
 done
@@ -387,7 +395,9 @@ if [ ! $a -eq 0 ]; then
   echo
 fi
 
+pwd=($PWD)
 
+#: DATA INPUT ====================================================================
 for i in $ID; do
   prefix[$i]=_RS_
   prefixt1[$i]=_T1_
@@ -398,11 +408,11 @@ for i in $ID; do
   [ ! -f $steppath/T1_$i.nii ] && cp DATA/$i/T1_$i.nii $steppath 2> /dev/null
 done
 
+#: QC1 ========================================================================
 
+#: QC2 ========================================================================
 
-pwd=($PWD)
-
-# AZTEC========================================================================
+#: AZTEC ========================================================================
 if [ $aztec -eq 1 ]; then
   printf "=============================AZTEC==================================\n\n"
   for i in $ID; do
@@ -431,7 +441,7 @@ if [ $aztec -eq 1 ]; then
   echo
 fi
 
-# SLICE TIMING CORRECTION=======================================================
+#: SLICE TIMING CORRECTION =======================================================
 printf "=======================SLICE TIMING CORRECTION====================\n\n"
 for i in $ID; do
   prefix[$i]=t${prefix[$i]}
@@ -453,7 +463,7 @@ done
 input.error
 echo
 
-# MOTION CORRECTION============================================================
+#: MOTION CORRECTION ============================================================
 printf "\n=========================MOTION CORRECTION=======================\n\n"
 for i in $ID; do
   prefix[$i]=r${prefix[$i]}
@@ -482,9 +492,11 @@ done
 input.error
 echo
 
+#: QC3 ========================================================================
+
 [ $break -eq 1 ] && echo "Interrompendo script a pedido do usuário" && exit
 
-# DEOBLIQUE RS============================================================
+#: DEOBLIQUE RS ============================================================
 printf "\n=========================DEOBLIQUE RS=======================\n\n"
 for i in $ID; do
   get.info1 "${out[$i]}"; if [ $is_oblique -eq 1 ]; then 
@@ -506,7 +518,9 @@ done
 input.error
 echo
 
-# DEOBLIQUE T1============================================================
+#: QC4 ========================================================================
+
+#: DEOBLIQUE T1 ============================================================
 printf "\n=========================DEOBLIQUE T1=======================\n\n"
 pwd=($PWD)
 for i in $ID; do
@@ -528,9 +542,8 @@ for i in $ID; do
 done 
 input.error
 echo
- # LEMBAR DE PRINTAR OS DADOS DO GRID NO RELATORIO DO CONTROLE DE QUALIDADE
 
-# HOMOGENIZE RS============================================================
+#: HOMOGENIZE RS ============================================================
 printf "\n=========================HOMOGENIZE RS=======================\n\n"
 for i in $ID; do 
   fromRS
@@ -553,7 +566,7 @@ input.error
 echo
 
 
-# REORIENT T1 TO TEMPLATE================================================
+#: REORIENT T1 TO TEMPLATE ================================================
 printf "\n====================REORIENT T1 TO TEMPLATE===================\n\n"
 for i in $ID; do
   fromT1
@@ -574,7 +587,7 @@ done
 input.error
 echo
 
-# REORIENT RS TO TEMPLATE================================================
+#: REORIENT RS TO TEMPLATE ================================================
 printf "\n====================REORIENT RS TO TEMPLATE===================\n\n"
 for i in $ID; do
   fromRS
@@ -596,7 +609,7 @@ input.error
 echo
 
 
-# Align center T1 TO TEMPLATE================================================
+#: Align center T1 TO TEMPLATE ================================================
 printf "\n====================Align center T1 TO TEMPLATE===================\n\n"
 for i in $ID; do
   fromT1
@@ -615,7 +628,7 @@ done
 input.error
 echo
 
-# Unifaze T1 ===========================================================
+#: Unifaze T1 ===========================================================
 printf "\n=========================Unifaze T1========================\n\n"
 for i in $ID; do
   prefix[$i]=u${prefix[$i]}
@@ -632,9 +645,7 @@ done
 input.error
 echo
 
-## =============================================================================
-## ====================== SKULLSTRIP MANUAL=====================================
-## =============================================================================
+#: SKULLSTRIP ===============================================================
 
 if [ $bet -eq 0 ]; then
   echo "O SKULL STRIP DEVE SER FEITO MANUALMENTE. USE COMO BASE O ARQUIVO QUE ESTÁ NA PASTA OUTPUT/$i/manual_skullstrip. NOMEIE O ARQUIVO mask_T1_<SUBID>.nii.gz e salve no diretório base." | fold -s
@@ -647,9 +658,9 @@ if [ $bet -eq 0 ]; then
     ss=$(find . -name "mask_T1_$i*")
     mv $ss /DATA/$i/STEPS 2> /dev/null
   done
-  else
+else
   FSLDIR=/usr/share/fsl
-  # BET ============================================================
+  #: BET ============================================================
   printf "\n============================BET============================\n\n"
   pwd=($PWD)
   for i in $ID; do
@@ -674,9 +685,11 @@ if [ $bet -eq 0 ]; then
   echo
 fi 
 
+#: QC5 ========================================================================
+
 [ $break -eq 2 ] && echo "Interrompendo script a pedido do usuário" && exit
 
-# APPLY MASK TO T1 ===========================================================
+#: APPLY MASK TO T1 ===========================================================
 printf "\n=========================APPLY MASK T1========================\n\n"
 for i in $ID; do
   prefix[$i]=SS_T1_
@@ -696,7 +709,7 @@ done
 input.error
 echo
 
-# ALIGN CENTER fMRI-T1 ======================================================
+#: ALIGN CENTER fMRI-T1 ======================================================
 printf "\n=======================ALIGN CENTER fMRI-T1=====================\n\n"
 for i in $ID; do
   fromRS
@@ -718,7 +731,7 @@ done
 input.error
 echo
 
-# COREGISTER fMRI-T1 ======================================================
+#: COREGISTER fMRI-T1 ======================================================
 printf "\n=======================COREGISTER fMRI-T1=====================\n\n"
 for i in $ID; do
   fromT1
@@ -742,9 +755,11 @@ done
 input.error
 echo
 
+#: QC6 ========================================================================
+
 [ $break -eq 3 ] && echo "Interrompendo script a pedido do usuário" && exit
 
-# NORMALIZE T1 TO TEMPLATE ======================================================
+#: NORMALIZE T1 TO TEMPLATE ======================================================
 printf "\n=======================NORMALIZE T1 TO TEMPLATE=====================\n\n"
 for i in $ID; do 
   prefix[$i]=MNI_T1_
@@ -766,7 +781,9 @@ done
 input.error
 echo
 
-# fMRI SPATIAL NORMALIZATION ======================================================
+#: QC7 ========================================================================
+
+#: fMRI SPATIAL NORMALIZATION ======================================================
 printf "\n=======================fMRI SPATIAL NORMALIZATION=====================\n\n"
 for i in $ID; do
   fromRS
@@ -790,9 +807,11 @@ done
 input.error
 echo
 
+#: QC8 ========================================================================
+
 [ $break -eq 4 ] && echo "Interrompendo script a pedido do usuário" && exit
 
-# T1 SEGMENTATION ======================================================
+#: T1 SEGMENTATION ======================================================
 printf "\n=======================T1 SEGMENTATION=====================\n\n"
 for i in $ID; do
   fromT1
@@ -857,9 +876,11 @@ done
 input.error
 echo
 
+#: QC9 ========================================================================
+
 [ $break -eq 5 ] && echo "Interrompendo script a pedido do usuário" && exit
 
-# RS FILTERING ======================================================
+#: RS FILTERING ======================================================
 printf "\n=======================RS FILTERING=====================\n\n"
 for i in $ID; do
   fromRS
@@ -882,9 +903,7 @@ done
 input.error
 echo
 
-exit
-
-# RS SMOOTHING ======================================================
+#: RS SMOOTHING ======================================================
 printf "\n=======================RS SMOOTHING=====================\n\n"
 for i in $ID; do
   prefix[$i]=b${prefix[$i]}
@@ -903,10 +922,8 @@ done
 input.error
 echo
 
-exit
-
 if [ $censor -eq 1 ]; then
-# RS MOTIONCENSOR ======================================================
+#: RS MOTIONCENSOR ======================================================
 printf "\n=======================RS MOTIONCENSOR=====================\n\n"
 for i in $ID; do
   prefix[$i]=c${prefix[$i]}
@@ -1043,8 +1060,14 @@ for i in $ID; do
 done 
 input.error
 echo
+
+#: QC10 ========================================================================
+
 fi
 
+#: QC11 ========================================================================
+
+#: DATA OUTPUT ===================================================================
 for i in $ID; do
 #rm -r OUTPUT/$i/manual_skullstrip 2> /dev/null
 file=$(find . -name "bf*_RS_$i.nii")

@@ -16,6 +16,8 @@ Esse protocolo ainda está em desenvolvimento.
     - SPM5 (http://wwww.fil.ion.ucl.ac.uk/spm/software/spm5/)  
     - aztec v2.0 (http://www.ni-utrecht.nl/downloads/aztec)  
 
+Caso tenha dificuldade com as configurações podemos disponibilizar uma VM (Neurodebian 8.0) com os programas pré-instalados.  
+
 ## Uso  
 Em primeiro lugar, crie uma nova pasta em que ocorrerá toda a análise dos dados. Em seguida, baixe o repositório ou apenas os arquivos indicados acima como principais e salve na pasta criada. Altere as permissões do arquivo preproc.sh para executável:
   

@@ -432,9 +432,9 @@ for i in $ID; do
   prefixt1[$i]=_T1_
   out[$i]=RS_$i.nii
   steppath[$i]=DATA/$i/STEPS
-  [ ! -d $steppath ] && mkdir -p $steppath
-  [ ! -f $steppath/RS_$i.nii ] && cp DATA/$i/RS_$i.nii ${steppath[$i]} 2> /dev/null
-  [ ! -f $steppath/T1_$i.nii ] && cp DATA/$i/T1_$i.nii ${steppath[$i]} 2> /dev/null
+  [ ! -d ${steppath[$i]} ] && mkdir -p $steppath
+  [ ! -f ${steppath[$i]}/RS_$i.nii ] && cp DATA/$i/RS_$i.nii ${steppath[$i]} 2> /dev/null
+  [ ! -f ${steppath[$i]}/T1_$i.nii ] && cp DATA/$i/T1_$i.nii ${steppath[$i]} 2> /dev/null
 done
 
 #: QC1 ========================================================================

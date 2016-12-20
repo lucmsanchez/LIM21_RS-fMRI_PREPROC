@@ -249,23 +249,7 @@ Protocolo de pré-processamento de RS-fMRI
 
 RUNTIME: $(date)
 
-Programas necessários:
-GNU bash           ...$(check bash)
-AFNI               ...$(check afni)
-FSL                ...$(check fsl5.0-fast)
-Pyhton             ---$(check python)
-MATLAB             ...$(check matlab)
-  SPM5
-  aztec
-
 EOF
-
-# checando se todos os programas necessários estão instalados
-if ( ! command -v bash || ! command -v afni || ! command -v fsl5.0-fast || ! command -v python  ) > /dev/null ; then
-	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
-	exit
-fi
-[ $aztec -eq 1 ] && [ ! $(command -v matlab) ] && echo "o Matlab e os plugins SPM5 e aztec são necessários para a análise e não foram encontrados. Certifique-se que eles estão instalados e configurados na variável de ambiente $PATH" | fold -s && exit 
 
 # checando arquivo indicado pelo argumento --config
 if [ ! -z $config ]; then  
@@ -299,20 +283,6 @@ else
   fi
 fi  
 
-# informando os usuários das variáveis definidas ou defaults
-fold -s <<-EOF
-As variáveis que serão usadas como parametros para as análises são:
-Aztec                   - Tempo de repetição(s)   => $TR
-Slice timing correction - sequência de aquisição  => $ptn
-Motion correction       - valor base              => $mcbase
-Homogenize Grid         - tamanho da grade        => $gRL $gAP $gIS
-BET                     - bet f                   => $betf
-3dBandpass              - filtro gaussiano        => $blur
-
-TEMPLATE: $template
-
-EOF
-
 # Checando arquivo com nome dos indivíduos indicado no arg --subs
 if [ ! -z $subs ]; then  
   if [ ! -f $subs ]; then
@@ -328,6 +298,44 @@ else
   fi
 fi  
 ID=$(cat $subs)
+
+fold -s <<-EOF
+
+Programas necessários:
+GNU bash           ...$(check bash)
+AFNI               ...$(check afni)
+FSL                ...$(check "$fsl5"fast)
+Pyhton             ---$(check python)
+MATLAB             ...$(check matlab)
+  SPM5
+  aztec
+
+EOF
+
+# checando se todos os programas necessários estão instalados
+if ( ! command -v bash || ! command -v afni || ! command -v "$fsl5"fast || ! command -v python  ) > /dev/null ; then
+	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
+	exit
+fi
+[ $aztec -eq 1 ] && [ ! $(command -v matlab) ] && echo "o Matlab e os plugins SPM5 e aztec são necessários para a análise e não foram encontrados. Certifique-se que eles estão instalados e configurados na variável de ambiente $PATH" | fold -s && exit 
+
+
+
+# informando os usuários das variáveis definidas ou defaults
+fold -s <<-EOF
+As variáveis que serão usadas como parametros para as análises são:
+Aztec                   - Tempo de repetição(s)   => $TR
+Slice timing correction - sequência de aquisição  => $ptn
+Motion correction       - valor base              => $mcbase
+Homogenize Grid         - tamanho da grade        => $gRL $gAP $gIS
+BET                     - bet f                   => $betf
+3dBandpass              - filtro gaussiano        => $blur
+
+TEMPLATE: $template
+
+EOF
+
+
 
 # Checando imagens com os nomes fornecidos
 echo "Lista de indivíduos para análise:"
@@ -362,19 +370,19 @@ else
 fi
 
 # CHECANDO SE OUTPUT JÁ EXISTE
-for i in $ID; do
-file=$(find . -name "bf*_RS_$i.nii")
-cp -n $file OUTPUT/$i/
-file=$(find . -name "cbf*_RS_$i.nii")
-cp -n $file OUTPUT/$i/
-file=$(find . -name "preproc_$i.log")
-cp -n $file OUTPUT/$i/
-file=$(find . -name "SS_T1_$i.nii")
-cp -n $file OUTPUT/$i/
-# incluir quality report aqui tbm
-#file=$(find . -name "report_$i.html")
-#cp -n $file OUTPUT/$i/
-done
+# for i in $ID; do
+# file=$(find . -name "bf*_RS_$i.nii")
+# cp -n $file OUTPUT/$i/
+# file=$(find . -name "cbf*_RS_$i.nii")
+# cp -n $file OUTPUT/$i/
+# file=$(find . -name "preproc_$i.log")
+# cp -n $file OUTPUT/$i/
+# file=$(find . -name "SS_T1_$i.nii")
+# cp -n $file OUTPUT/$i/
+# # incluir quality report aqui tbm
+# #file=$(find . -name "report_$i.html")
+# #cp -n $file OUTPUT/$i/
+# done
 
 # Preparando para iniciar a análise
 [ -d DATA ] || mkdir DATA

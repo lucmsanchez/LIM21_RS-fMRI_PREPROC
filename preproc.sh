@@ -299,6 +299,7 @@ else
 fi  
 ID=$(cat $subs)
 
+# checando se todos os programas necessários estão instalados
 fold -s <<-EOF
 
 Programas necessários:
@@ -312,7 +313,6 @@ MATLAB             ...$(check matlab)
 
 EOF
 
-# checando se todos os programas necessários estão instalados
 if ( ! command -v bash || ! command -v afni || ! command -v "$fsl5"fast || ! command -v python  ) > /dev/null ; then
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit

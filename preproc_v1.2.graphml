@@ -140,7 +140,7 @@
           <y:Geometry height="30.0" width="195.63085937499994" x="262.29692109374963" y="1111.065305433677"/>
           <y:Fill color="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="129.056640625" x="33.287109375" y="6.015625">MOTION CENSORING<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="129.056640625" x="33.28710937499994" y="6.015625">MOTION CENSORING<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -565,7 +565,7 @@
           <y:Geometry height="38.793620636087574" width="39.45145430555556" x="177.52573769097222" y="209.63504724062065"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="8.813617777777779" y="10.412435318043777">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC1<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -582,7 +582,7 @@
           <y:Geometry height="38.793620636087574" width="39.45145430555556" x="487.9277804687496" y="200.24063136507934"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="8.813617777777836" y="10.412435318043777">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC2<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -599,7 +599,7 @@
           <y:Geometry height="38.793620636087574" width="39.45145430555556" x="177.52573769097222" y="421.8475712388036"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="8.813617777777779" y="10.412435318043777">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC3<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -616,7 +616,7 @@
           <y:Geometry height="38.793620636087574" width="39.45145430555556" x="177.52573769097222" y="571.0218044428563"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="8.813617777777779" y="10.412435318043777">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC4<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -633,7 +633,7 @@
           <y:Geometry height="38.793620636087574" width="39.45145430555556" x="461.5803973951388" y="616.0504092061198"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="8.813617777777836" y="10.412435318043777">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC5<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -650,7 +650,7 @@
           <y:Geometry height="38.793620636087574" width="39.45145430555556" x="487.9277804687495" y="813.6376504782949"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="8.813617777777836" y="10.412435318043777">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC6<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -667,7 +667,7 @@
           <y:Geometry height="38.793620636087574" width="39.45145430555556" x="177.52573769097225" y="923.2289948447652"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="8.813617777777779" y="10.412435318043777">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC8<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -684,7 +684,7 @@
           <y:Geometry height="38.793620636087574" width="39.45145430555556" x="487.9277804687495" y="923.2289948447652"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="8.813617777777779" y="10.412435318043777">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC7<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -701,7 +701,7 @@
           <y:Geometry height="38.793620636087574" width="39.45145430555556" x="342.92839971478156" y="979.2716847975893"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="8.813617777777836" y="10.41243531804389">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC9<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -718,7 +718,7 @@
           <y:Geometry height="38.793620636087574" width="39.45145430555556" x="342.65015725505475" y="1165.2716847975896"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="21.82421875" x="8.813617777777779" y="10.41243531804389">QC<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="37.09375" x="1.1788521527777789" y="10.41243531804389">QC10<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -730,13 +730,12 @@
       </data>
     </node>
     <node id="n27">
-      <data key="d5"/>
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="18.801246753246822" width="19.302613333333376" x="263.1567400062492" y="501.0954841201545"/>
           <y:Fill color="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.349609375" x="3.476501979166642" y="0.4162483766234004">1<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.349609375" x="3.4765019791666987" y="0.4162483766234004">1<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -748,7 +747,6 @@
       </data>
     </node>
     <node id="n28">
-      <data key="d5"/>
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="18.801246753246822" width="19.302613333333376" x="568.9663239756939" y="675.2748530445758"/>
@@ -766,7 +764,6 @@
       </data>
     </node>
     <node id="n29">
-      <data key="d5"/>
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="18.801246753246822" width="19.302613333333376" x="591.9448630777773" y="861.169599301023"/>
@@ -784,7 +781,6 @@
       </data>
     </node>
     <node id="n30">
-      <data key="d5"/>
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="18.801246753246822" width="19.302613333333376" x="594.2517302777774" y="973.7460341731031"/>
@@ -802,13 +798,12 @@
       </data>
     </node>
     <node id="n31">
-      <data key="d5"/>
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="18.801246753246822" width="19.302613333333376" x="304.6234605555548" y="973.7460341731032"/>
           <y:Fill color="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.349609375" x="3.476501979166642" y="0.41624837662345726">5<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.349609375" x="3.4765019791666987" y="0.41624837662345726">5<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -820,7 +815,6 @@
       </data>
     </node>
     <node id="n32">
-      <data key="d5"/>
       <data key="d6">
         <y:ImageNode>
           <y:Geometry height="52.232605042016786" width="48.559999999999974" x="203.86848875000152" y="-28.590268800000203"/>
@@ -836,7 +830,6 @@ TEMPLATE</y:NodeLabel>
       </data>
     </node>
     <node id="n33">
-      <data key="d5"/>
       <data key="d6">
         <y:ImageNode>
           <y:Geometry height="50.26000000000002" width="63.69584158415844" x="370.28675787095585" y="-27.60396627899182"/>
@@ -848,7 +841,6 @@ TEMPLATE</y:NodeLabel>
       </data>
     </node>
     <node id="n34">
-      <data key="d5"/>
       <data key="d6">
         <y:ImageNode>
           <y:Geometry height="51.19999999999999" width="51.19999999999999" x="531.4181830833327" y="-28.073966278991804"/>
@@ -860,7 +852,6 @@ TEMPLATE</y:NodeLabel>
       </data>
     </node>
     <node id="n35">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.bpmn.Conversation">
           <y:Geometry height="30.0" width="34.18927999999994" x="642.862472465277" y="405.70821934184625"/>
@@ -875,8 +866,8 @@ TEMPLATE</y:NodeLabel>
           </y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
-            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
           </y:StyleProperties>
@@ -884,13 +875,12 @@ TEMPLATE</y:NodeLabel>
       </data>
     </node>
     <node id="n36">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.bpmn.Conversation">
           <y:Geometry height="30.0" width="34.18927999999994" x="642.8624724652772" y="345.70821934184625"/>
           <y:Fill color="#00FF00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="18" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="24.953125" modelName="custom" textColor="#000000" visible="true" width="16.2783203125" x="8.955479843750027" y="4.0">T<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="18" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="24.953125" modelName="custom" textColor="#000000" visible="true" width="16.2783203125" x="8.955479843749913" y="4.0">T<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -899,8 +889,8 @@ TEMPLATE</y:NodeLabel>
           </y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
-            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
           </y:StyleProperties>
@@ -908,7 +898,6 @@ TEMPLATE</y:NodeLabel>
       </data>
     </node>
     <node id="n37">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.bpmn.Conversation">
           <y:Geometry height="30.0" width="34.18927999999994" x="642.8624724652772" y="877.969599301023"/>
@@ -923,8 +912,8 @@ TEMPLATE</y:NodeLabel>
           </y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
-            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
           </y:StyleProperties>
@@ -932,7 +921,6 @@ TEMPLATE</y:NodeLabel>
       </data>
     </node>
     <node id="n38">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.bpmn.Conversation">
           <y:Geometry height="30.0" width="34.18927999999994" x="29.958938888194552" y="684.8440298422073"/>
@@ -947,8 +935,8 @@ TEMPLATE</y:NodeLabel>
           </y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
-            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
           </y:StyleProperties>
@@ -956,7 +944,6 @@ TEMPLATE</y:NodeLabel>
       </data>
     </node>
     <node id="n39">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.bpmn.Conversation">
           <y:Geometry height="30.0" width="34.18927999999994" x="29.958938888194552" y="871.5831152099851"/>
@@ -971,8 +958,8 @@ TEMPLATE</y:NodeLabel>
           </y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
-            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
           </y:StyleProperties>
@@ -980,7 +967,6 @@ TEMPLATE</y:NodeLabel>
       </data>
     </node>
     <node id="n40">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.bpmn.Conversation">
           <y:Geometry height="30.0" width="34.18927999999994" x="642.8624724652772" y="556.0504092061198"/>
@@ -995,8 +981,8 @@ TEMPLATE</y:NodeLabel>
           </y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
-            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
           </y:StyleProperties>
@@ -1004,7 +990,6 @@ TEMPLATE</y:NodeLabel>
       </data>
     </node>
     <node id="n41">
-      <data key="d5"/>
       <data key="d6">
         <y:ImageNode>
           <y:Geometry height="52.232605042016786" width="48.559999999999974" x="172.97146484375008" y="1330.621113809312"/>
@@ -1022,7 +1007,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </node>
     <node id="n42">
-      <data key="d5"/>
       <data key="d6">
         <y:ImageNode>
           <y:Geometry height="67.20000000000005" width="67.20000000000005" x="503.220303971915" y="1323.1374163303205"/>
@@ -1034,7 +1018,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </node>
     <node id="n43">
-      <data key="d5"/>
       <data key="d6">
         <y:ImageNode>
           <y:Geometry height="62.0" width="62.0" x="331.37588440783253" y="1325.7374163303205"/>
@@ -1046,7 +1029,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </node>
     <node id="n44">
-      <data key="d5"/>
       <data key="d6">
         <y:ImageNode>
           <y:Geometry height="69.12000000000006" width="69.12000000000006" x="327.8158844078324" y="1461.3374163303204"/>
@@ -1058,7 +1040,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </node>
     <node id="n45">
-      <data key="d5"/>
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="152.0" width="531.874" x="110.48648806447977" y="1574.7374163303205"/>
@@ -1072,7 +1053,7 @@ bfpdf_RS_&lt;SUBID&gt;.nii
               <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
             </y:ModelParameter>
           </y:NodeLabel>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="61.57421875" x="4.000000000000028" y="-15.984375">LEGENDA<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="61.57421875" x="4.0" y="-15.984375">LEGENDA<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -1092,7 +1073,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </node>
     <node id="n46">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.bpmn.Conversation">
           <y:Geometry height="30.0" width="34.18927999999994" x="132.3918480644798" y="1588.7374163303205"/>
@@ -1114,8 +1094,8 @@ bfpdf_RS_&lt;SUBID&gt;.nii
           </y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.line.color" value="#000000"/>
-            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.ConversationTypeEnum" name="com.yworks.bpmn.conversationType" value="CONVERSATION_TYPE_COMMUNICATION"/>
+            <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill2" value="#d4d4d4cc"/>
             <y:Property class="java.awt.Color" name="com.yworks.bpmn.icon.fill" value="#ffffffe6"/>
             <y:Property class="com.yworks.yfiles.bpmn.view.BPMNTypeEnum" name="com.yworks.bpmn.type" value="CONVERSATION_TYPE"/>
           </y:StyleProperties>
@@ -1123,7 +1103,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </node>
     <node id="n47">
-      <data key="d5"/>
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="18.801246753246822" width="19.302613333333376" x="139.83518139781307" y="1692.336792953697"/>
@@ -1243,6 +1222,23 @@ bfpdf_RS_&lt;SUBID&gt;.nii
             </y:ModelParameter>
           </y:NodeLabel>
           <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n52">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="38.793620636087574" width="39.45145430555556" x="177.52573769097228" y="1146.7967743213994"/>
+          <y:Fill color="#3366FF" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="37.09375" x="1.1788521527777789" y="10.41243531804389">QC11<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-2.220446049250313E-16" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:Shape type="diamond"/>
         </y:ShapeNode>
       </data>
     </node>
@@ -1601,7 +1597,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e16" source="n18" target="n11::n0">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1612,7 +1607,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e17" source="n19" target="n10::n0">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1623,7 +1617,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e18" source="n20" target="n10::n1">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1634,7 +1627,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e19" source="n9" target="n21">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1645,7 +1637,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e20" source="n2" target="n21">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1664,7 +1655,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e21" source="n21" target="n12">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="-26.347383073610786" ty="-7.293982599364767"/>
@@ -1675,7 +1665,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e22" source="n22" target="n13">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="19.37778023894475" tx="0.0" ty="0.0"/>
@@ -1686,7 +1675,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e23" source="n3" target="n23">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="-19.37778023894475"/>
@@ -1697,7 +1685,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e24" source="n23" target="n16">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1708,7 +1695,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e25" source="n16" target="n4">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1719,7 +1705,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e26" source="n4" target="n6">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="15.0" tx="-97.8154296875" ty="0.0"/>
@@ -1730,7 +1715,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e27" source="n15" target="n25">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-97.8154296875" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1750,7 +1734,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e28" source="n6" target="n26">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1761,7 +1744,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e29" source="n32" target="n0">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="1.342268343999848" sy="100.96172883398582" tx="0.0" ty="0.0">
@@ -1775,7 +1757,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e30" source="n33" target="n0">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="51.99745912699164" tx="0.0" ty="0.0"/>
@@ -1786,7 +1767,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e31" source="n34" target="n0">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-4.186781308774357" sy="51.48115660598327" tx="0.0" ty="0.0">
@@ -1800,7 +1780,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e32" source="n35" target="n11::n2">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1811,7 +1790,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e33" source="n36" target="n11::n1">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1822,7 +1800,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e34" source="n37" target="n13">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -1835,7 +1812,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e35" source="n38" target="n10::n2">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1846,7 +1822,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e36" source="n39" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1857,7 +1832,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e37" source="n40" target="n9">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1868,7 +1842,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e38" source="n5" target="n43">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="-35.72158572100943">
@@ -1881,7 +1854,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e39" source="n5" target="n41">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="1.5559352499984413" ty="-35.72158572100943">
@@ -1895,7 +1867,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e40" source="n5" target="n42">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="-2.760575999999901" ty="-38.28158572100938">
@@ -1909,7 +1880,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e41" source="n44" target="n43">
-      <data key="d9"/>
       <data key="d10">
         <y:GenericEdge configuration="com.yworks.edge.framed">
           <y:Path sx="0.0" sy="-34.034185196650014" tx="-5.6843418860808015E-14" ty="58.40581480335004"/>
@@ -1919,7 +1889,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e42" source="n13" target="n24">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="15.0" tx="0.0" ty="-19.37778023894475"/>
@@ -1938,7 +1907,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e43" source="n12" target="n14">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1957,7 +1925,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e44" source="n13" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1976,7 +1943,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e45" source="n24" target="n15">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1987,7 +1953,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e46" source="n25" target="n16">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -1998,7 +1963,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e47" source="n26" target="n5">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -2008,14 +1972,10 @@ bfpdf_RS_&lt;SUBID&gt;.nii
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e48" source="n4" target="n5">
-      <data key="d9"/>
+    <edge id="e48" source="n4" target="n52">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="15.0" tx="-49.85546875" ty="0.0">
-            <y:Point x="197.25146484375006" y="1185.4424928242477"/>
-            <y:Point x="266.7844601414407" y="1249.0653054336772"/>
-          </y:Path>
+          <y:Path sx="0.0" sy="15.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
@@ -2023,7 +1983,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e49" source="n25" target="n5">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="11.5146193608457" sy="8.078784084513472" tx="49.84457088523868" ty="-3.820246495886522">
@@ -2037,7 +1996,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e50" source="n12" target="n5">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="49.87189773266056" ty="5.356890717899887">
@@ -2046,6 +2004,17 @@ bfpdf_RS_&lt;SUBID&gt;.nii
             <y:Point x="569.4654219578432" y="1254.422196151577"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e51" source="n52" target="n5">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="10.049899665980348" sy="9.50144079081656" tx="-49.85546875" ty="0.0"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>

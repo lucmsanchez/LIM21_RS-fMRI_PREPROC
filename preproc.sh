@@ -99,10 +99,8 @@ done
 # DECLARANDO VARIÁVEIS ===========================================================
 declare -A prefix
 declare -A in in_2 in_3 in_4 in_5
-declare -A inpath
 declare -A out out_2 out_3 ou_4 out_5
-declare -A outpath
-declare -A outrs outt1 outpathrs outpatht1 prefixrs prefixt1
+declare -A outrs outt1 prefixrs prefixt1
 # ==============================================================================
 
 # DECLARANDO FUNÇÕES ===========================================================
@@ -184,7 +182,6 @@ close.node () {
 
 get.info1() {
   local image=$1
-
   space=$(3dinfo -space $image) 
   is_oblique=$(3dinfo -is_oblique $image) 
   afniprefix=$(3dinfo -prefix $image) 
@@ -196,7 +193,6 @@ get.info1() {
 get.info2 () {
   local image1=$1
   local image2=$2
-
   #comparações
   same_grid=$(3dinfo -same_grid $image1 $image2) 
   same_dim=$(3dinfo -same_dim $image1 $image2) 
@@ -208,16 +204,14 @@ get.info2 () {
 
 log () {
 if [ $go -eq 1 ]; then
-  echo >> DATA/preproc_$i.log
-  echo "ETAPA: $1  - RUNTIME: $(date)" >> DATA/preproc_$i.log
-  echo >> DATA/preproc_$i.log
-  echo "PREFIX: ${prefix[$i]}" >> DATA/preproc_$i.log
-  echo "INPUT PATH: ${inpath[$i]} "  >> DATA/preproc_$i.log
-  echo "INPUTS: ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}" >>DATA/preproc_$i.log
-  echo "OUTPUT PATH: ${outpath[$i]}" >> DATA/preproc_$i.log
-  echo "OUTPUTS: ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}" >> DATA/preproc_$i.log
-  echo >> DATA/preproc_$i.log
-  cat DATA/$i/STEPS/${prefix[$i]}$i.log >> DATA/preproc_$i.log 2> /dev/null
+{ echo 
+  echo "ETAPA: $1  - RUNTIME: $(date)" 
+  echo 
+  echo "PREFIX: ${prefix[$i]}"  
+  echo "INPUTS: ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}" 
+  echo "OUTPUTS: ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}"
+  echo 
+  cat DATA/$i/STEPS/${prefix[$i]}$i.log } >> OUTPUT/$i/preproc_$i.log
 fi
 }
 
@@ -302,21 +296,8 @@ else
   echo "O arquivo de configuração não foi especificado"
   if [ ! -f preproc.cfg ]; then
     echo "Será criado um arquivo de configuração com valores padrão: preproc.cfg"
-    cat > preproc.cfg << EOL
-# Variáveis RS-fMRI Preprocessing:
-
-fsl5=fsl5.0-
-TR=2
-ptn=seq+z
-mcbase=100
-gRL=90
-gAP=90
-gIS=60
-template="MNI152_1mm_uni+tlrc"
-betf=0.1
-blur=6
-EOL
-exit
+    printf '# Variáveis RS-fMRI Preprocessing:\n\nfsl5=fsl5.0-\nTR=2\nptn=seq+z\nmcbase=100\ngRL=90\ngAP=90\ngIS=60\ntemplate="MNI152_1mm_uni+tlrc"\nbetf=0.1\nblur=6\n' > preproc.cfg
+    exit
   else
     echo "Será usado o arquivo local preproc.cfg"
     source preproc.cfg
@@ -364,7 +345,7 @@ for i in $ID; do
   [ $(find . -name "t*_RS_$i.nii") ] && printf " stc"
   [ $(find . -name "rt*_RS_$i.nii") ] && printf " mc"
   [ $(find . -name "SS_T1_$i.nii") ] && printf " ss"
-  [ $(find . -name "SS_T1_$i.nii") ] && printf " ss"
+  [ $(find . -name "MNI_T1_$i.nii") ] && printf " nm"
   printf "\n"
 done
 echo
@@ -374,13 +355,8 @@ if [ ! $a -eq 0 ]; then
 fi
 
 # CHECANDO SE OUTPUT EXISTE
-for i in $ID; do
-[ -f "OUTPUT/$i/bf*_RS_$i.nii" ] && [ -f "OUTPUT/$i/preproc_$i.log" ] && [ -f "OUTPUT/$i/SS_T1_$i.nii" ] && [ -f "OUTPUT/$i/MNI_T1_$i.nii" ] && printf "OUTPUTS já existem. Protocolo completo." && exit
-[ -f "OUTPUT/$i/cbf*_RS_$i.nii" ] && [ -f "OUTPUT/$i/preproc_$i.log" ] && [ -f "OUTPUT/$i/SS_T1_$i.nii" ] && [ -f "OUTPUT/$i/MNI_T1_$i.nii" ] && printf "OUTPUTS já existem. Protocolo completo." && exit
-# incluir quality report aqui tbm
-done
-
-
+#
+#
 
 # BUSCANDO O TEMPLATE
 cp /usr/share/afni/atlases/"$template"* . 2> /dev/null
@@ -505,6 +481,8 @@ for i in $ID; do
 done
 input.error
 echo
+
+[ $break -eq 1 ] && echo "Interrompendo script a pedido do usuário" && exit
 
 # DEOBLIQUE RS============================================================
 printf "\n=========================DEOBLIQUE RS=======================\n\n"
@@ -696,6 +674,8 @@ if [ $bet -eq 0 ]; then
   echo
 fi 
 
+[ $break -eq 2 ] && echo "Interrompendo script a pedido do usuário" && exit
+
 # APPLY MASK TO T1 ===========================================================
 printf "\n=========================APPLY MASK T1========================\n\n"
 for i in $ID; do
@@ -762,6 +742,8 @@ done
 input.error
 echo
 
+[ $break -eq 3 ] && echo "Interrompendo script a pedido do usuário" && exit
+
 # NORMALIZE T1 TO TEMPLATE ======================================================
 printf "\n=======================NORMALIZE T1 TO TEMPLATE=====================\n\n"
 for i in $ID; do 
@@ -783,8 +765,6 @@ for i in $ID; do
 done 
 input.error
 echo
-
-exit
 
 # fMRI SPATIAL NORMALIZATION ======================================================
 printf "\n=======================fMRI SPATIAL NORMALIZATION=====================\n\n"
@@ -810,7 +790,7 @@ done
 input.error
 echo
 
-exit
+[ $break -eq 4 ] && echo "Interrompendo script a pedido do usuário" && exit
 
 # T1 SEGMENTATION ======================================================
 printf "\n=======================T1 SEGMENTATION=====================\n\n"
@@ -841,8 +821,6 @@ for i in $ID; do
 done 
 input.error
 echo
-
-exit
 
 # RS SEGMENTATION ======================================================
 printf "\n=======================RS SEGMENTATION=====================\n\n"
@@ -879,7 +857,7 @@ done
 input.error
 echo
 
-exit
+[ $break -eq 5 ] && echo "Interrompendo script a pedido do usuário" && exit
 
 # RS FILTERING ======================================================
 printf "\n=======================RS FILTERING=====================\n\n"
@@ -1065,6 +1043,7 @@ for i in $ID; do
 done 
 input.error
 echo
+fi
 
 for i in $ID; do
 #rm -r OUTPUT/$i/manual_skullstrip 2> /dev/null
@@ -1075,8 +1054,6 @@ cp -n $file OUTPUT/$i/
 file=$(find . -name "preproc_$i.log")
 cp -n $file OUTPUT/$i/
 file=$(find . -name "SS_T1_$i.nii")
-cp -n $file OUTPUT/$i/
-file=$(find . -name "MNI_T1_$i.nii")
 cp -n $file OUTPUT/$i/
 # incluir quality report aqui tbm
 #file=$(find . -name "report_$i.html")

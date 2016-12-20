@@ -306,7 +306,7 @@ fold -s <<-EOF
 
 Programas necessários:
 GNU bash           ...$(check bash)
-AFNI               ...$(check afni)
+AFNI               ...$(check 3dTshift)
 FSL                ...$(check "$fsl5"fast)
 Pyhton             ---$(check python)
 MATLAB             ...$(check matlab)
@@ -315,7 +315,7 @@ MATLAB             ...$(check matlab)
 
 EOF
 
-if ( ! command -v bash || ! command -v afni || ! command -v "$fsl5"fast || ! command -v python  ) > /dev/null ; then
+if ( ! command -v bash || ! command -v 3dTshift || ! command -v "$fsl5"fast || ! command -v python  ) > /dev/null ; then
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit
 fi
@@ -492,6 +492,7 @@ done
 input.error
 echo
 exit
+
 #: MOTION CORRECTION ============================================================
 printf "\n=========================MOTION CORRECTION=======================\n\n"
 for i in $ID; do

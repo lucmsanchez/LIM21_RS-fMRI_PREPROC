@@ -140,7 +140,7 @@ open.node () {
     done
   done
   #
-  echo $a $b $c $d
+  #echo $a $b $c $d
   if [ $a -eq 0 ]; then
     if [ $b -eq 0 ]; then 
       if [ ! $d -eq 0 ]; then
@@ -236,11 +236,11 @@ fromT1 () {
 
 cp.inputs () {
   files=$(find . -name "$1")
-  cp -n ${files[0]} ${steppath[$i]} 2> /dev/null
+  [ ! -f "${steppath[$i]}$1" ] && cp ${files[0]} ${steppath[$i]} 2> /dev/null
   files=$(find . -name "$2")
-  cp -n ${files[0]} ${steppath[$i]} 2> /dev/null
+  [ ! -f "${steppath[$i]}$2" ] && cp ${files[0]} ${steppath[$i]} 2> /dev/null
   files=$(find . -name "$3")
-  cp -n ${files[0]} ${steppath[$i]} 2> /dev/null
+  [ ! -f "${steppath[$i]}$3" ] && cp ${files[0]} ${steppath[$i]} 2> /dev/null
 }
 
 #: INÍCIO =======================================================================
@@ -374,7 +374,7 @@ temp=$(find . -name "$template*")
 if [ ! -z "$temp" ];then
   [ ! -d template ] && mkdir template 
   for tp in $temp; do
-    mv -f $tp template 2> /dev/null
+    mv $tp template 2> /dev/null
   done
 else
   echo "Template $template não encontrado. Buscando no afni.."
@@ -383,7 +383,7 @@ else
   if [ ! -z "$temp" ];then
     [ ! -d template ] && mkdir template 
     for tp in $temp; do
-      mv -f $tp template 2> /dev/null
+      mv $tp template 2> /dev/null
     done
   else
     echo "Não encontrado"
@@ -431,10 +431,10 @@ for i in $ID; do
   prefix[$i]=_RS_
   prefixt1[$i]=_T1_
   out[$i]=RS_$i.nii
-  steppath[$i]=DATA/$i/STEPS
+  steppath[$i]=DATA/$i/STEPS/
   [ ! -d ${steppath[$i]} ] && mkdir -p ${steppath[$i]} 2> /dev/null
-  [ ! -f ${steppath[$i]}/RS_$i.nii ] && cp DATA/$i/RS_$i.nii ${steppath[$i]} 2> /dev/null
-  [ ! -f ${steppath[$i]}/T1_$i.nii ] && cp DATA/$i/T1_$i.nii ${steppath[$i]} 2> /dev/null
+  [ ! -f ${steppath[$i]}RS_$i.nii ] && cp DATA/$i/RS_$i.nii ${steppath[$i]} 2> /dev/null
+  [ ! -f ${steppath[$i]}T1_$i.nii ] && cp DATA/$i/T1_$i.nii ${steppath[$i]} 2> /dev/null
 done
 
 #: QC1 ========================================================================
@@ -480,7 +480,6 @@ for i in $ID; do
   open.node; if [ $go -eq 1 ]; then
     #
     3dTshift \
-      -verbose \
       -tpattern $ptn \
       -prefix ${out[$i]} \
       -Fourier \
@@ -506,7 +505,6 @@ for i in $ID; do
     -zpad 2 \
     -twopass \
     -Fourier \
-    -verbose \
     -1Dfile ${out_2[$i]} \
     ${in[$i]} &>> ${prefix[$i]}$i.log && \
     1dplot \
@@ -528,14 +526,13 @@ echo
 #: DEOBLIQUE RS ============================================================
 printf "\n=========================DEOBLIQUE RS=======================\n\n"
 for i in $ID; do
-  get.info1 "${out[$i]}"; if [ $is_oblique -eq 1 ]; then 
+  get.info1 "${steppath[$i]}${out[$i]}"; if [ $is_oblique -eq 1 ]; then 
   prefix[$i]=d${prefix[$i]}
   inputs "${out[$i]}"
   outputs "${prefix[$i]}$i.nii"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
     3dWarp \
-    -verb \
     -deoblique \
     -prefix  ${out[$i]} \
     ${in[$i]} &> ${prefix[$i]}$i.log 
@@ -553,14 +550,13 @@ echo
 printf "\n=========================DEOBLIQUE T1=======================\n\n"
 pwd=($PWD)
 for i in $ID; do
-  get.info1 "T1_$i.nii"; if [ $is_oblique -eq 1 ]; then 
+  get.info1 "${steppath[$i]}T1_$i.nii"; if [ $is_oblique -eq 1 ]; then 
   prefix[$i]=d_T1_
   inputs "T1_$i.nii"
   outputs "${prefix[$i]}$i.nii"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
     3dWarp \
-    -verb \
     -deoblique \
     -prefix  ${out[$i]} \
     ${in[$i]} &> ${prefix[$i]}$i.log 
@@ -593,7 +589,6 @@ for i in $ID; do
 done
 input.error
 echo
-
 
 #: REORIENT T1 TO TEMPLATE ================================================
 printf "\n====================REORIENT T1 TO TEMPLATE===================\n\n"
@@ -637,13 +632,13 @@ done
 input.error
 echo
 
-
 #: Align center T1 TO TEMPLATE ================================================
 printf "\n====================Align center T1 TO TEMPLATE===================\n\n"
 for i in $ID; do
   fromT1
   prefix[$i]=a${prefix[$i]}
   inputs "${out[$i]}"
+  outputs "${prefix[$i]}$i.nii"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
     @Align_Centers \
@@ -699,7 +694,7 @@ else
     echo -n "$i> "
     open.node; if [ $go -eq 1 ]; then
       "$fsl5"bet ${in[$i]} ${i}_step1 -B -f $betf && \
-      "$fsl5"flirt -ref ${FSLDIR}/data/standard/MNI152_T1_2mm_brain -in ${i}_step1.nii.gz -omat ${i}_step2.mat -out ${i}_step2 -search rx -30 30 -searchry -30 30 -searchrz -30 30 && \
+      "$fsl5"flirt -ref ${FSLDIR}/data/standard/MNI152_T1_2mm_brain -in ${i}_step1.nii.gz -omat ${i}_step2.mat -out ${i}_step2 -searchrx -30 30 -searchry -30 30 -searchrz -30 30 && \
       "$fsl5"fnirt --in=${in[$i]} --aff=${i}_step2.mat --cout=${i}_step3 --config=T1_2_MNI152_2mm && \
       "$fsl5"applywarp --ref=${FSLDIR}/data/standard/MNI152_T1_2mm --in=${in[$i]} --warp=${i}_step3 --out=${i}_step4 && \
       "$fsl5"invwarp -w ${i}_step3.nii.gz -o ${i}_step5.nii.gz -r ${i}_step1.nii.gz && \
@@ -764,7 +759,7 @@ echo
 printf "\n=======================COREGISTER fMRI-T1=====================\n\n"
 for i in $ID; do
   fromT1
-  prefix[$i]=c${prefix[$i]}; decalre -A segrs[$i]=${prefix[$i]}
+  prefix[$i]=c${prefix[$i]}; declare -A segrs[$i]=${prefix[$i]}
   inputs "${out[$i]}" "${prefixrs[$i]}$i.nii"
   outputs "${prefix[$i]}$i.nii"
   echo -n "$i> "
@@ -777,7 +772,7 @@ for i in $ID; do
     -volreg off \
     -tshift off \
     -deoblique off &> ${prefix[$i]}$i.log
-    3dAFNItoNIFTI -prefix ${out[$i]} SS_T1_${i}_al+orig
+    3dAFNItoNIFTI -prefix ${out[$i]} SS_T1_${i}_al+orig &>> ${prefix[$i]}$i.log
   fi; close.node
   log "COREGISTER fMRI-T1 "
 done 
@@ -792,8 +787,8 @@ echo
 printf "\n=======================NORMALIZE T1 TO TEMPLATE=====================\n\n"
 for i in $ID; do 
   prefix[$i]=MNI_T1_
-  inputs "${out[$i]}" 
-  outputs "${prefix[$i]}$i.nii"
+  inputs "${out[$i]}"
+  outputs "${prefix[$i]}$i.nii" "${prefix[$i]}${i}_WARP.nii"
   cp.inputs "$template.HEAD" "$template.BRIK.gz"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
@@ -816,26 +811,26 @@ echo
 printf "\n=======================fMRI SPATIAL NORMALIZATION=====================\n\n"
 for i in $ID; do
   fromRS
-  prefix[$i]=${prefix[$i]}_MNI_
-  inputs "${out[$i]}" "$template.HEAD" "$template.BRIK.gz"
+  prefix[$i]=${prefix[$i]}MNI_
+  inputs "${out[$i]}" "${out_2[$i]}"
   outputs "${prefix[$i]}$i.nii"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
-   3drename MNI_T1_"$i"_WARP+tlrc MNI_T1_WARP
+#   3drename MNI_T1_"$i"_WARP MNI_T1_WARP &> ${prefix[$i]}$i.log
     3dNwarpApply \
     -source ${in[$i]} \
-    -nwarp 'MNI_T1_WARP+tlrc' \
+    -nwarp ${in_2[$i]} \
     -master "$template" \
     -newgrid 3 \
     -prefix ${out[$i]} &> ${prefix[$i]}$i.log
-    3drename MNI_T1_WARP+tlrc MNI_T1_"$i"_WARP
+#    3drename MNI_T1_WARP MNI_T1_"$i"_WARP &>> ${prefix[$i]}$i.log
   fi; close.node
   log "fMRI SPATIAL NORMALIZATION "
   toRS
 done 
 input.error
 echo
-
+exit
 #: QC8 ========================================================================
 
 [ $break -eq 4 ] && echo "Interrompendo script a pedido do usuário" && exit

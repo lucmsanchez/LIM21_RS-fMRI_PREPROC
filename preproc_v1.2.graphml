@@ -78,7 +78,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="30.0" width="195.63085937499994" x="99.43603515625006" y="871.5831152099851"/>
-          <y:Fill color="#FF0000" transparent="false"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="157.908203125" x="18.861328125" y="6.015625">SPATIAL NORMALIZATION<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -487,7 +487,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="30.0" width="191.11644531249996" x="412.0952849652773" y="871.5831152099851"/>
-          <y:Fill color="#FF0000" transparent="false"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="162.0625" x="14.526972656249995" y="6.015625">NORMALIZE TO TEMPLATE<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -529,7 +529,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="30.0" width="195.63085937499994" x="409.8380779340274" y="983.6684951156329"/>
-          <y:Fill color="#FF0000" transparent="false"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="100.240234375" x="47.6953125" y="6.015625">SEGMENTATION<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -1680,6 +1680,14 @@ bfpdf_RS_&lt;SUBID&gt;.nii
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="-19.37778023894475"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="177.818359375" x="-88.90917968749997" y="2.838550144562646">farpdrt_RS_MNI_&lt;SUBID&gt;.nii<y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="6.283185307179586" distance="93.11354879999999" distanceToCenter="true" position="center" ratio="1.0" segment="-1"/>
+            </y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
@@ -2010,7 +2018,6 @@ bfpdf_RS_&lt;SUBID&gt;.nii
       </data>
     </edge>
     <edge id="e51" source="n52" target="n5">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="10.049899665980348" sy="9.50144079081656" tx="-49.85546875" ty="0.0"/>

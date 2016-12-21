@@ -331,7 +331,7 @@ Slice timing correction - sequência de aquisição  => $ptn
 Motion correction       - valor base              => $mcbase
 Homogenize Grid         - tamanho da grade        => $gRL $gAP $gIS
 BET                     - bet f                   => $betf
-3dBandpass              - filtro gaussiano        => $blur
+3dMerge	                - filtro gaussiano        => $blur
 
 TEMPLATE: $template
 

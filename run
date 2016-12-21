@@ -1,1 +1,1 @@
-./preproc.sh --config preproc.cfg --subs preproc.sbj
+./preproc.sh -b --config preproc.cfg --subs preproc.sbj

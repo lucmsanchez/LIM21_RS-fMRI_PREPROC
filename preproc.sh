@@ -373,9 +373,11 @@ fi
 temp=$(find . -name "$template*")
 if [ ! -z "$temp" ];then
   [ ! -d template ] && mkdir template 
+  if [ ! -f "template/${temp[0]}"]; then
   for tp in $temp; do
     mv $tp template 2> /dev/null
   done
+  fi
 else
   echo "Template $template não encontrado. Buscando no afni.."
   cp /usr/share/afni/atlases/"$template"* . 2> /dev/null

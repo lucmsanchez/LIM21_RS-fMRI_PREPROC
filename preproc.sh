@@ -501,20 +501,20 @@ for i in $ID; do
   outputs "${prefix[$i]}${i}.nii" "mc_${i}.1d" "${prefix[$i]}mcplot_${i}.jpg"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
-    3dvolreg \
+   ( 3dvolreg \
     -prefix ${out[$i]} \
     -base 100 \
     -zpad 2 \
     -twopass \
     -Fourier \
     -1Dfile ${out_2[$i]} \
-    ${in[$i]} &>> ${prefix[$i]}$i.log && \
+    ${in[$i]} && \
     1dplot \
     -jpg ${out_3[$i]} \
     -volreg -dx $TR \
     -xlabel Time \
     -thick \
-    ${out_2[$i]} &>> ${prefix[$i]}$i.log 
+    ${out_2[$i]} ) &>> ${prefix[$i]}$i.log 
   fi; close.node
   log "Motion Correction "
 done
@@ -640,14 +640,14 @@ for i in $ID; do
   fromT1
   prefix[$i]=a${prefix[$i]}
   inputs "${out[$i]}"
-  outputs "${prefix[$i]}$i.nii"
+  outputs "${prefix[$i]}$i.nii" "${prefix[$i]}$i.1D"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
     @Align_Centers \
     -base "$template" \
     -dset ${in[$i]} &> ${prefix[$i]}$i.log 
-    mv *_shft.nii ${prefix[$i]}$i.nii &>> ${prefix[$i]}$i.log 
-    mv *_shft.1D ${prefix[$i]}$i.1D &>> ${prefix[$i]}$i.log 
+    mv *_shft.nii ${out[$i]} &>> ${prefix[$i]}$i.log 
+    mv *_shft.1D ${out_2[$i]} &>> ${prefix[$i]}$i.log 
   fi; close.node
   log "Align center T1 TO TEMP "
 done 
@@ -695,15 +695,15 @@ else
     outputs "${prefix[$i]}$i.nii.gz"
     echo -n "$i> "
     open.node; if [ $go -eq 1 ]; then
-      "$fsl5"bet ${in[$i]} ${i}_step1 -B -f $betf && \
+    ( "$fsl5"bet ${in[$i]} ${i}_step1 -B -f $betf && \
       "$fsl5"flirt -ref ${FSLDIR}/data/standard/MNI152_T1_2mm_brain -in ${i}_step1.nii.gz -omat ${i}_step2.mat -out ${i}_step2 -searchrx -30 30 -searchry -30 30 -searchrz -30 30 && \
       "$fsl5"fnirt --in=${in[$i]} --aff=${i}_step2.mat --cout=${i}_step3 --config=T1_2_MNI152_2mm && \
       "$fsl5"applywarp --ref=${FSLDIR}/data/standard/MNI152_T1_2mm --in=${in[$i]} --warp=${i}_step3 --out=${i}_step4 && \
       "$fsl5"invwarp -w ${i}_step3.nii.gz -o ${i}_step5.nii.gz -r ${i}_step1.nii.gz && \
       "$fsl5"applywarp --ref=${in[$i]} --in=${FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz --warp=${i}_step5.nii.gz --out=${i}_step6 --interp=nn && \
       "$fsl5"fslmaths ${i}_step6.nii.gz -bin invmask_$i.nii.gz && \
-      "$fsl5"fslmaths invmask_$i.nii.gz -mul -1 -add 1 ${out[$i]} &> ${prefix[$i]}$i.log
-       rm invmask_$i.nii.gz ${i}_step1.nii.gz ${i}_step1_mask.nii.gz ${i}_step2.nii.gz ${i}_step2.mat ${i}_step3.nii.gz ${i}_step4.nii.gz ${i}_step5.nii.gz ${i}_step6.nii.gz ${i}_to_MNI152_T1_2mm.log 2> /dev/null
+      "$fsl5"fslmaths invmask_$i.nii.gz -mul -1 -add 1 ${out[$i]} ) &> ${prefix[$i]}$i.log
+       rm invmask_$i.nii.gz ${i}_step1.nii.gz ${i}_step1_mask.nii.gz ${i}_step2.nii.gz ${i}_step2.mat ${i}_step3.nii.gz ${i}_step4.nii.gz ${i}_step5.nii.gz ${i}_step6.nii.gz *_to_MNI152_T1_2mm.log 2> /dev/null
     fi; close.node
     log "BET "
   done 
@@ -763,7 +763,7 @@ for i in $ID; do
   fromT1
   prefix[$i]=c${prefix[$i]}; declare -A segrs[$i]=${prefix[$i]}
   inputs "${out[$i]}" "${prefixrs[$i]}$i.nii"
-  outputs "${prefix[$i]}$i.nii"
+  outputs "${prefix[$i]}$i.nii" "${prefix[$i]}$i.1D"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
     align_epi_anat.py \
@@ -775,6 +775,8 @@ for i in $ID; do
     -tshift off \
     -deoblique off &> ${prefix[$i]}$i.log
     3dAFNItoNIFTI -prefix ${out[$i]} SS_T1_${i}_al+orig &>> ${prefix[$i]}$i.log
+    rm SS_T1_${i}_al+orig* &>> ${prefix[$i]}$i.log
+    mv SS_T1_${i}_al_mat* ${out_2[$i]} &>> ${prefix[$i]}$i.log
   fi; close.node
   log "COREGISTER fMRI-T1 "
 done 
@@ -790,7 +792,7 @@ printf "\n=======================NORMALIZE T1 TO TEMPLATE=====================\n
 for i in $ID; do 
   prefix[$i]=MNI_T1_
   inputs "${out[$i]}"
-  outputs "${prefix[$i]}$i.nii" "${prefix[$i]}${i}_WARP.nii"
+  outputs "${prefix[$i]}$i.nii" "${prefix[$i]}${i}_WARP.nii" 
   cp.inputs "$template.HEAD" "$template.BRIK.gz"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
@@ -800,6 +802,7 @@ for i in $ID; do
       -base $template \
       -allineate \
       -source ${in[$i]} &> ${prefix[$i]}$i.log
+    rm MNI_T1_${i}_Allin* &>> ${prefix[$i]}$i.log
    fi; close.node
   log "NORMALIZE T1 TO TEMPLATE "
   toT1
@@ -858,6 +861,7 @@ for i in $ID; do
     -a seg_"$i"_pve_2.nii.gz \
     -expr 'equals(a,1)' \
     -prefix ${out_2[$i]} &>> ${prefix[$i]}$i.log
+    rm seg_${i}_* &>> ${prefix[$i]}$i.log
   fi; close.node
   log "T1 SEGMENTATION "
 done 
@@ -893,6 +897,7 @@ for i in $ID; do
     -quiet \
     ${in[$i]} \
     > ${out_2[$i]} &>> ${prefix[$i]}$i.log
+    rm "$i"_CSF_resampled* "$i"_WM_resampled* &>> ${prefix[$i]}$i.log
   fi; close.node
   log "RS SEGMENTATION "
 done 
@@ -909,15 +914,15 @@ for i in $ID; do
   fromRS
   prefix[$i]=f${prefix[$i]}
   inputs "${out[$i]}" "mc_${i}.1d" "${i}_CSF_signal.1d" "${i}_WM_signal.1d "
-  outputs "${prefix[$i]}$i.nii" "mc_$i.1d" "$i_CSF_signal.1d" "$i_WM_signal.1d"
+  outputs "${prefix[$i]}$i.nii" 
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
    3dBandpass \
   -band 0.01 0.08 \
   -despike \
-  -ort ${out_2[$i]} \
-  -ort ${out_3[$i]} \
-  -ort ${out_4[$i]} \
+  -ort ${in_2[$i]} \
+  -ort ${in_3[$i]} \
+  -ort ${in_4[$i]} \
   -prefix ${out[$i]} \
   -input ${in[$i]} &> ${prefix[$i]}$i.log
   fi; close.node
@@ -925,7 +930,7 @@ for i in $ID; do
 done 
 input.error
 echo
-exit
+
 #: RS SMOOTHING ======================================================
 printf "\n=======================RS SMOOTHING=====================\n\n"
 for i in $ID; do

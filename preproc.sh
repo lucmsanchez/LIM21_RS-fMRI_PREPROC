@@ -373,7 +373,7 @@ fi
 temp=$(find . -name "$template*")
 if [ ! -z "$temp" ];then
   [ ! -d template ] && mkdir template 
-  if [ ! -f "template/${temp[0]}"]; then
+  if [ ! -f "template/${temp[0]}" ]; then
   for tp in $temp; do
     mv $tp template 2> /dev/null
   done
@@ -498,7 +498,7 @@ printf "\n=========================MOTION CORRECTION=======================\n\n"
 for i in $ID; do
   prefix[$i]=r${prefix[$i]}
   inputs "${out[$i]}"
-  outputs "${prefix[$i]}$i.nii" "mc_$i.1d" "${prefix[$i]}mcplot_$i.jpg"
+  outputs "${prefix[$i]}${i}.nii" "mc_${i}.1d" "${prefix[$i]}mcplot_${i}.jpg"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
     3dvolreg \
@@ -818,21 +818,18 @@ for i in $ID; do
   outputs "${prefix[$i]}$i.nii"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
-#   3drename MNI_T1_"$i"_WARP MNI_T1_WARP &> ${prefix[$i]}$i.log
     3dNwarpApply \
     -source ${in[$i]} \
     -nwarp ${in_2[$i]} \
     -master "$template" \
     -newgrid 3 \
     -prefix ${out[$i]} &> ${prefix[$i]}$i.log
-#    3drename MNI_T1_WARP MNI_T1_"$i"_WARP &>> ${prefix[$i]}$i.log
   fi; close.node
   log "fMRI SPATIAL NORMALIZATION "
   toRS
 done 
 input.error
 echo
-exit
 #: QC8 ========================================================================
 
 [ $break -eq 4 ] && echo "Interrompendo script a pedido do usuário" && exit
@@ -843,11 +840,11 @@ for i in $ID; do
   fromT1
   prefix[$i]=seg_
   inputs "${out[$i]}"
-  outputs "${prefix[$i]}$i.nii" "${i}_CSF.nii" "${i}_WM.nii"
+  outputs "${i}_CSF.nii" "${i}_WM.nii"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
     ${fsl5}fast \
-    -o ${out[$i]} \
+    -o seg_$i \
     -S 1 \
     -t 1 \
     -n 3 \
@@ -855,12 +852,12 @@ for i in $ID; do
     3dcalc \
     -a seg_"$i"_pve_0.nii.gz \
     -expr 'equals(a,1)' \
-    -prefix ${out_2[$i]} &>> ${prefix[$i]}$i.log
+    -prefix ${out[$i]} &>> ${prefix[$i]}$i.log
     ### now, the WM
     3dcalc \
     -a seg_"$i"_pve_2.nii.gz \
     -expr 'equals(a,1)' \
-    -prefix ${out_3[$i]} &>> ${prefix[$i]}$i.log
+    -prefix ${out_2[$i]} &>> ${prefix[$i]}$i.log
   fi; close.node
   log "T1 SEGMENTATION "
 done 
@@ -870,7 +867,7 @@ echo
 # RS SEGMENTATION ======================================================
 printf "\n=======================RS SEGMENTATION=====================\n\n"
 for i in $ID; do
-  inputs "${segrs[$i]}$i.nii" "${out_2[$i]}" "${out_3[$i]}"
+  inputs "${segrs[$i]}$i.nii" "${out[$i]}" "${out_2[$i]}"
   outputs "${i}_CSF_signal.1d" "${i}_WM_signal.1d"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
@@ -878,7 +875,7 @@ for i in $ID; do
     3dresample \
     -master ${in[$i]} \
     -inset ${in_2[$i]} \
-    -prefix "$i"_CSF_resampled+orig &>> ${prefix[$i]}$i.log
+    -prefix "$i"_CSF_resampled+orig &> ${prefix[$i]}$i.log
     ### resample WM mask
     3dresample \
     -master ${in[$i]} \
@@ -889,13 +886,13 @@ for i in $ID; do
     -mask "$i"_CSF_resampled+orig \
     -quiet \
     ${in[$i]} \
-    > ${out[$i]}
+    > ${out[$i]} &>> ${prefix[$i]}$i.log
     ### now, mean WM signal
     3dmaskave \
     -mask "$i"_WM_resampled+orig \
     -quiet \
     ${in[$i]} \
-    > ${out_2[$i]}
+    > ${out_2[$i]} &>> ${prefix[$i]}$i.log
   fi; close.node
   log "RS SEGMENTATION "
 done 
@@ -911,16 +908,16 @@ printf "\n=======================RS FILTERING=====================\n\n"
 for i in $ID; do
   fromRS
   prefix[$i]=f${prefix[$i]}
-  inputs "${out[$i]}" 
+  inputs "${out[$i]}" "mc_${i}.1d" "${i}_CSF_signal.1d" "${i}_WM_signal.1d "
   outputs "${prefix[$i]}$i.nii" "mc_$i.1d" "$i_CSF_signal.1d" "$i_WM_signal.1d"
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
    3dBandpass \
   -band 0.01 0.08 \
   -despike \
-  -ort mc_"$i".1d \
-  -ort "$i"_CSF_signal.1d \
-  -ort "$i"_WM_signal.1d \
+  -ort ${out_2[$i]} \
+  -ort ${out_3[$i]} \
+  -ort ${out_4[$i]} \
   -prefix ${out[$i]} \
   -input ${in[$i]} &> ${prefix[$i]}$i.log
   fi; close.node
@@ -928,7 +925,7 @@ for i in $ID; do
 done 
 input.error
 echo
-
+exit
 #: RS SMOOTHING ======================================================
 printf "\n=======================RS SMOOTHING=====================\n\n"
 for i in $ID; do

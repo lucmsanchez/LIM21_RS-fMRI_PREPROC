@@ -876,7 +876,7 @@ for i in $ID; do
   echo -n "$i> "
   open.node; if [ $go -eq 1 ]; then
     ### resample CSF mask
-    3dresample \
+   ( 3dresample \
     -master ${in[$i]} \
     -inset ${in_2[$i]} \
     -prefix "$i"_CSF_resampled+orig &> ${prefix[$i]}$i.log
@@ -887,16 +887,16 @@ for i in $ID; do
     -prefix "$i"_WM_resampled+orig &>> ${prefix[$i]}$i.log
     ### first, mean CSF signal
     3dmaskave \
-    -mask "$i"_CSF_resampled+orig \
     -quiet \
+    -mask "$i"_CSF_resampled+orig \
     ${in[$i]} \
-    > ${out[$i]} &>> ${prefix[$i]}$i.log
+    > ${out[$i]} 
     ### now, mean WM signal
     3dmaskave \
-    -mask "$i"_WM_resampled+orig \
     -quiet \
+    -mask "$i"_WM_resampled+orig \
     ${in[$i]} \
-    > ${out_2[$i]} &>> ${prefix[$i]}$i.log
+    > ${out_2[$i]} ) &>> ${prefix[$i]}$i.log
     rm "$i"_CSF_resampled* "$i"_WM_resampled* &>> ${prefix[$i]}$i.log
   fi; close.node
   log "RS SEGMENTATION "
@@ -926,7 +926,7 @@ for i in $ID; do
   -prefix ${out[$i]} \
   -input ${in[$i]} &> ${prefix[$i]}$i.log
   fi; close.node
-  log "RS SEGMENTATION "
+  log "RS FILTERING "
 done 
 input.error
 echo

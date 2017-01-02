@@ -4,20 +4,37 @@
 # creation date: Tue Nov 29 09:50:08 2016
 
 # set data directories
-set top_dir   = /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/DATA/T000328
+set top_dir   = /home/brain/Desktop/PROJETO_CIRCOS/PREPROCESSING/DATA/
 
 # set subject and group identifiers
-set subj      = T000328
+set subj      = C000917
 set group_id  = CTRL
 
 # run afni_proc.py to create a single subject processing script
 afni_proc.py -subj_id $subj                                        \
         -script proc.$subj -scr_overwrite                          \
-        -blocks despike tshift align tlrc volreg blur mask regress \
-        -copy_anat $top_dir/T1_T000328.nii                         \
-        -tcat_remove_first_trs 0                                   \
-        -dsets $top_dir/RS_T000328.nii                             \
-        -tlrc_base MNI_avg152T1+tlrc                               \
+        -check_afni_version yes                                    \
+        -check_results_dir yes                                     \
+        -blocks tshift volreg                                      \
+        -copy_anat $top_dir/$subj/T1_${subj}.nii                   \
+        -dsets $top_dir/$subj/RS_T000328.nii                       \
+        -test_for_dsets yes                                        \
+        -outlier_count yes                                         \ #QC
+        -radial_correlate yes                                      \ #QC
+        -anat_has_skull no                                         \
+        #RICOR
+                -ricor_regress_method per-run                      \
+                -ricor_regress_solver OLSQ                         \
+                -ricor_regs REG1                                   \
+        #tshift
+                -tshift_interp -Fourier                            \
+                -tshift_opts_ts -tpattern seq+z                    \
+        #volreg
+                -volreg_interp -Fourier                            \
+                -volreg_opts_vr -twopass -base 100 -1Dfile mc.${subj}.1d \
+                -volreg_zpad 2                                     \
+        -anat_uniform_method unifaze                               \
+        -tlrc_base MNI_avg152T1+tlrc                               \ 
         -volreg_align_to third                                     \
         -volreg_align_e2a                                          \
         -volreg_tlrc_warp                                          \
@@ -26,5 +43,6 @@ afni_proc.py -subj_id $subj                                        \
         -regress_bandpass 0.01 0.1                                 \
         -regress_apply_mot_types demean deriv                      \
         -regress_est_blur_errts                                    \
-        -regress_run_clustsim no
+        -regress_run_clustsim no                                   \
+        -bash
 

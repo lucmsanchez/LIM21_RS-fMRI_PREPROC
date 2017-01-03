@@ -1566,11 +1566,11 @@ preproc.RS.$ID.nii
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="121.80859375" x="-127.02898837772301" y="-8.984400333573944">SS_T1_&lt;SUBID&gt;.nii<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="95.5234375" x="-97.3471592387503" y="-25.765098353776125">SS.T1.$ID+orig<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
-              <y:SmartEdgeLabelModelParameter angle="0.0" distance="7.79632302020218" distanceToCenter="false" position="center" ratio="0.0" segment="-1"/>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="7.79632302020218" distanceToCenter="false" position="right" ratio="0.5" segment="0"/>
             </y:ModelParameter>
             <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
           </y:EdgeLabel>
@@ -1690,7 +1690,7 @@ preproc.RS.$ID.nii
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="-19.37778023894475"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="165.689453125" x="-82.84472656249997" y="1.838550144562646">resample.RS.$ID_shift+trlc<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="132.61328125" x="-66.30664062499997" y="1.838550144562646">MNI.RS.$ID_shift+trlc<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -2010,7 +2010,6 @@ preproc.RS.$ID.nii
       </data>
     </edge>
     <edge id="e48" source="n15" target="n52">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -2030,7 +2029,6 @@ CSF.T1.$ID.nii<y:LabelModel>
       </data>
     </edge>
     <edge id="e49" source="n52" target="n25">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-97.8154296875" sy="0.0" tx="0.0" ty="0.0"/>
@@ -2050,7 +2048,6 @@ $ID.CSF.signal.1D<y:LabelModel>
       </data>
     </edge>
     <edge id="e50" source="n25" target="n16">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -2061,7 +2058,6 @@ $ID.CSF.signal.1D<y:LabelModel>
       </data>
     </edge>
     <edge id="e51" source="n10::n3" target="n52">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="44.99230260311839" sy="14.963056042215385" tx="0.0" ty="0.0">
@@ -2076,7 +2072,6 @@ $ID.CSF.signal.1D<y:LabelModel>
       </data>
     </edge>
     <edge id="e52" source="n7" target="n16">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -2090,7 +2085,6 @@ $ID.CSF.signal.1D<y:LabelModel>
       </data>
     </edge>
     <edge id="e53" source="n7" target="n6">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
@@ -2103,23 +2097,7 @@ $ID.CSF.signal.1D<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e54" source="n3" target="n52">
-      <data key="d9"/>
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="40.10225100546589" sy="14.98549634372796" tx="97.79547923721236" ty="-5.1729749333333075">
-            <y:Point x="237.35371584921592" y="908.7911468679988"/>
-            <y:Point x="681.4905636968349" y="908.7911468679988"/>
-            <y:Point x="681.4905636968349" y="1064.565305433677"/>
-          </y:Path>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e55" source="n15" target="n25">
-      <data key="d9"/>
+    <edge id="e54" source="n15" target="n25">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>

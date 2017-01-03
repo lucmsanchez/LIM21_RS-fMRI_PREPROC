@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# TO DO:
+# 1 - trocar associative array por index array
+# 2 - otimizar uso da função open node
+# 3 - conformar nomes de arquivos para evitar confusão
+# 4 - Usar formato AFNI para evitar problemas?
+# 5 - Caso não funcione o 3dbandpass substituir por outro comando
+
+
 #: PROCESSANDO OS ARGUMENTOS ====================================================
 usage() {
     echo "Argumentos:"

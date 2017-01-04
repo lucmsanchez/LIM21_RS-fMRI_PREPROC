@@ -575,9 +575,9 @@ echo
 printf "\n=========================DEOBLIQUE RS=======================\n\n"
 for j in ${!ID[@]}; do
   get.info1 "${steppath[$j]}${out[$j]}"; if [ $is_oblique -eq 1 ]; then 
-  prefix[$j]=d${prefix[$j]}
+  prefix[$j]=warp.RS.
   inputs "${out[$j]}"
-  outputs "${prefix[$j]}${ID[j]}.nii"
+  outputs "${prefix[$j]}${ID[j]}+orig"
   echo -n "${ID[j]}> "
   if open.node; then
     3dWarp \
@@ -598,10 +598,10 @@ echo
 printf "\n=========================DEOBLIQUE T1=======================\n\n"
 pwd=($PWD)
 for j in ${!ID[@]}; do
-  get.info1 "${steppath[$j]}T1_${ID[j]}.nii"; if [ $is_oblique -eq 1 ]; then 
-  prefix[$j]=d_T1_
-  inputs "T1_${ID[j]}.nii"
-  outputs "${prefix[$j]}${ID[j]}.nii"
+  get.info1 "${steppath[$j]}T1.${ID[j]}.nii"; if [ $is_oblique -eq 1 ]; then 
+  prefix[$j]=warp.T1.
+  inputs "T1.${ID[j]}.nii"
+  outputs "${prefix[$j]}${ID[j]}+orig"
   echo -n "${ID[j]}> "
   if open.node; then
     3dWarp \
@@ -620,9 +620,9 @@ echo
 printf "\n=========================HOMOGENIZE RS=======================\n\n"
 for j in ${!ID[@]}; do 
   fromRS
-  prefix[$j]=p${prefix[$j]}
+  prefix[$j]=zeropad.RS.
   inputs "${out[$j]}"
-  outputs "${prefix[$j]}${ID[j]}.nii"
+  outputs "${prefix[$j]}${ID[j]}+orig"
   echo -n "${ID[j]}> "
   if open.node; then
     3dZeropad \
@@ -643,9 +643,9 @@ printf "\n====================REORIENT T1 TO TEMPLATE===================\n\n"
 for j in ${!ID[@]}; do
   fromT1
   get.info1 "template/$template"
-  prefix[$j]=r${prefix[$j]}
+  prefix[$j]=resample.T1.
   inputs "${out[$j]}"
-  outputs "${prefix[$j]}${ID[j]}.nii"
+  outputs "${prefix[$j]}${ID[j]}+orig"
   echo -n "${ID[j]}> "
   if open.node; then
     3dresample \
@@ -664,9 +664,9 @@ printf "\n====================REORIENT RS TO TEMPLATE===================\n\n"
 for j in ${!ID[@]}; do
   fromRS
   get.info1 "template/$template"
-  prefix[$j]=r${prefix[$j]}
+  prefix[$j]=resample.RS.
   inputs "${out[$j]}"
-  outputs "${prefix[$j]}${ID[j]}.nii"
+  outputs "${prefix[$j]}${ID[j]}+orig"
   echo -n "${ID[j]}> "
   if open.node; then
     3dresample \
@@ -684,16 +684,14 @@ echo
 printf "\n====================Align center T1 TO TEMPLATE===================\n\n"
 for j in ${!ID[@]}; do
   fromT1
-  prefix[$j]=a${prefix[$j]}
+  prefix[$j]=align.T1
   inputs "${out[$j]}"
-  outputs "${prefix[$j]}${ID[j]}.nii" "${prefix[$j]}${ID[j]}.1D"
+  outputs "${prefix[$j]}${ID[j]}_shft+orig" "${prefix[$j]}${ID[j]}_shft.1D"
   echo -n "${ID[j]}> "
   if open.node; then
     @Align_Centers \
     -base "$template" \
     -dset ${in[$j]} &> ${prefix[$j]}${ID[j]}.log 
-    mv *_shft.nii ${out[$j]} &>> ${prefix[$j]}${ID[j]}.log 
-    mv *_shft.1D ${out_2[$j]} &>> ${prefix[$j]}${ID[j]}.log 
   fi; close.node
   log "Align center T1 TO TEMP "
 done 
@@ -703,9 +701,9 @@ echo
 #: Unifaze T1 ===========================================================
 printf "\n=========================Unifaze T1========================\n\n"
 for j in ${!ID[@]}; do
-  prefix[$j]=u${prefix[$j]}
+  prefix[$j]=unifize.T1.
   inputs "${out[$j]}"
-  outputs "${prefix[$j]}${ID[j]}.nii"
+  outputs "${prefix[$j]}${ID[j]}+orig"
   echo -n "${ID[j]}> "
   if open.node; then
     3dUnifize \
@@ -722,13 +720,13 @@ echo
 if [ $bet -eq 0 ]; then
   echo "O SKULL STRIP DEVE SER FEITO MANUALMENTE. USE COMO BASE O ARQUIVO QUE ESTÁ NA PASTA OUTPUT/${ID[j]}/manual_skullstrip. NOMEIE O ARQUIVO mask_T1_<SUBID>.nii.gz e salve no diretório base." | fold -s
   for j in ${!ID[@]}; do
-    prefix[$j]=mask_T1_
+    prefix[$j]=mask.T1.
     inputs "${out[$j]}"
     outputs "${prefix[$j]}${ID[j]}.nii.gz"
     [ ! -d "$pwd/OUTPUT/${ID[j]}/manual_skullstrip" ] && mkdir -p $pwd/OUTPUT/${ID[j]}/manual_skullstrip
-    cp DATA/${ID[j]}/STEPS/${in[$j]} OUTPUT/${ID[j]}/manual_skullstrip 2> /dev/null
-    ss=$(find . -name "mask_T1_${ID[j]}*")
-    mv $ss /DATA/${ID[j]}/STEPS 2> /dev/null
+    cp DATA/${ID[j]}/${ID[j]}.results/${in[$j]} OUTPUT/${ID[j]}/manual_skullstrip 2> /dev/null
+    ss=$(find . -name "mask.T1.${ID[j]}*")
+    mv $ss /DATA/${ID[j]}/${ID[j]}.results 2> /dev/null
   done
 else
   FSLDIR=/usr/share/fsl
@@ -736,7 +734,7 @@ else
   printf "\n============================BET============================\n\n"
   pwd=($PWD)
   for j in ${!ID[@]}; do
-    prefix[$j]=mask_T1_
+    prefix[$j]=mask.T1.
     inputs "${out[$j]}"
     outputs "${prefix[$j]}${ID[j]}.nii.gz"
     echo -n "${ID[j]}> "
@@ -764,9 +762,9 @@ fi
 #: APPLY MASK TO T1 ===========================================================
 printf "\n=========================APPLY MASK T1========================\n\n"
 for j in ${!ID[@]}; do
-  prefix[$j]=SS_T1_
-  inputs "${out[$j]}" "uard_T1_${ID[j]}.nii"
-  outputs "${prefix[$j]}${ID[j]}.nii"
+  prefix[$j]=SS.T1.
+  inputs "${out[$j]}" "unifize.T1.${ID[j]}+orig"
+  outputs "${prefix[$j]}${ID[j]}+orig"
   echo -n "${ID[j]}> "
   if open.node; then
     3dcalc \
@@ -785,17 +783,15 @@ echo
 printf "\n=======================ALIGN CENTER fMRI-T1=====================\n\n"
 for j in ${!ID[@]}; do
   fromRS
-  prefix[$j]=a${prefix[$j]}
-  inputs "${out[$j]}" "SS_T1_${ID[j]}.nii"
-  outputs "${prefix[$j]}${ID[j]}.nii" "${prefix[$j]}${ID[j]}.1D"
+  prefix[$j]=align.RS.
+  inputs "${out[$j]}" "SS.T1.${ID[j]}+orig"
+  outputs "${prefix[$j]}${ID[j]}_shft+orig" "${prefix[$j]}${ID[j]}_shft.1D"
   echo -n "${ID[j]}> "
   if open.node; then
     @Align_Centers \
     -cm \
     -base ${in_2[$j]} \
     -dset ${in[$j]} &> ${prefix[$j]}${ID[j]}.log
-    mv *_shft.nii ${prefix[$j]}${ID[j]}.nii &>> ${prefix[$j]}${ID[j]}.log 
-    mv *_shft.1D ${prefix[$j]}${ID[j]}.1D &>> ${prefix[$j]}${ID[j]}.log 
   fi; close.node
   log "Apply mask T1 "
   toRS
@@ -807,9 +803,9 @@ echo
 printf "\n=======================COREGISTER fMRI-T1=====================\n\n"
 for j in ${!ID[@]}; do
   fromT1
-  prefix[$j]=c${prefix[$j]}; declare -A segrs[$j]=${prefix[$j]}
+  prefix[$j]=SS.T1.
   inputs "${out[$j]}" "${prefixrs[$j]}${ID[j]}.nii"
-  outputs "${prefix[$j]}${ID[j]}.nii" "${prefix[$j]}${ID[j]}.1D"
+  outputs "${prefix[$j]}${ID[j]}_al+orig" "${prefix[$j]}${ID[j]}_al_mat.1D"
   echo -n "${ID[j]}> "
   if open.node; then
     align_epi_anat.py \
@@ -819,10 +815,7 @@ for j in ${!ID[@]}; do
     -anat_has_skull no \
     -volreg off \
     -tshift off \
-    -deoblique off &> ${prefix[$j]}${ID[j]}.log
-    3dAFNItoNIFTI -prefix ${out[$j]} SS_T1_${ID[j]}_al+orig &>> ${prefix[$j]}${ID[j]}.log
-    rm SS_T1_${ID[j]}_al+orig* &>> ${prefix[$j]}${ID[j]}.log
-    mv SS_T1_${ID[j]}_al_mat* ${out_2[$j]} &>> ${prefix[$j]}${ID[j]}.log
+    -deoblique off &> ${prefix[$j]}${ID[j]}_al.log
   fi; close.node
   log "COREGISTER fMRI-T1 "
 done 
@@ -836,9 +829,9 @@ echo
 #: NORMALIZE T1 TO TEMPLATE ======================================================
 printf "\n=======================NORMALIZE T1 TO TEMPLATE=====================\n\n"
 for j in ${!ID[@]}; do 
-  prefix[$j]=MNI_T1_
+  prefix[$j]=MNI.T1.
   inputs "${out[$j]}"
-  outputs "${prefix[$j]}${ID[j]}.nii" "${prefix[$j]}${ID[j]}_WARP.nii" 
+  outputs "${prefix[$j]}${ID[j]}+trlc" "${prefix[$j]}${ID[j]}_WARP+trlc" 
   cp.inputs "$template.HEAD" "$template.BRIK.gz"
   echo -n "${ID[j]}> "
   if open.node; then
@@ -862,9 +855,9 @@ echo
 printf "\n=======================fMRI SPATIAL NORMALIZATION=====================\n\n"
 for j in ${!ID[@]}; do
   fromRS
-  prefix[$j]=${prefix[$j]}MNI_
+  prefix[$j]=MNI.RS.
   inputs "${out[$j]}" "${out_2[$j]}"
-  outputs "${prefix[$j]}${ID[j]}.nii"
+  outputs "${prefix[$j]}${ID[j]}+tlrc"
   echo -n "${ID[j]}> "
   if open.node; then
     3dNwarpApply \
@@ -887,27 +880,28 @@ echo
 printf "\n=======================T1 SEGMENTATION=====================\n\n"
 for j in ${!ID[@]}; do
   fromT1
-  prefix[$j]=seg_
-  inputs "${out[$j]}"
-  outputs "${ID[j]}_CSF.nii" "${ID[j]}_WM.nii"
+  prefix[$j]=seg.
+  inputs "SS.T1.${ID[j]}_al+orig"
+  outputs "${ID[j]}.CSF+orig" "${ID[j]}.WM+orig"
   echo -n "${ID[j]}> "
   if open.node; then
+    3dAFNItoNIFTI -prefix SS.T1.${ID[j]}_al.nii ${in[j]}
     ${fsl5}fast \
-    -o seg_${ID[j]} \
+    -o seg.${ID[j]} \
     -S 1 \
     -t 1 \
     -n 3 \
-    cSS_T1_"${ID[j]}".nii &> ${prefix[$j]}${ID[j]}.log
+    SS.T1.${ID[j]}_al.nii &> ${prefix[$j]}${ID[j]}.log
     3dcalc \
-    -a seg_"${ID[j]}"_pve_0.nii.gz \
+    -a seg.${ID[j]}.pve_0.nii.gz \
     -expr 'equals(a,1)' \
     -prefix ${out[$j]} &>> ${prefix[$j]}${ID[j]}.log
     ### now, the WM
     3dcalc \
-    -a seg_"${ID[j]}"_pve_2.nii.gz \
+    -a seg.${ID[j]}.pve_2.nii.gz \
     -expr 'equals(a,1)' \
     -prefix ${out_2[$j]} &>> ${prefix[$j]}${ID[j]}.log
-    rm seg_${ID[j]}_* &>> ${prefix[$j]}${ID[j]}.log
+    rm seg.${ID[j]}.* &>> ${prefix[$j]}${ID[j]}.log
   fi; close.node
   log "T1 SEGMENTATION "
 done 
@@ -917,20 +911,21 @@ echo
 # RS SEGMENTATION ======================================================
 printf "\n=======================RS SEGMENTATION=====================\n\n"
 for j in ${!ID[@]}; do
-  inputs "${segrs[$j]}${ID[j]}.nii" "${out[$j]}" "${out_2[$j]}"
-  outputs "${ID[j]}_CSF_signal.1d" "${ID[j]}_WM_signal.1d"
+  prefix[$j]=segrs.
+  inputs "align.RS.${ID[j]}_shift+orig" "${out[$j]}" "${out_2[$j]}"
+  outputs "${ID[j]}.CSF.signal.1d" "${ID[j]}.WM.signal.1d"
   echo -n "${ID[j]}> "
   if open.node; then
     ### resample CSF mask
    ( 3dresample \
     -master ${in[$j]} \
     -inset ${in_2[$j]} \
-    -prefix "${ID[j]}"_CSF_resampled+orig &> ${prefix[$j]}${ID[j]}.log
+    -prefix "${ID[j]}"_CSF_resampled+orig 
     ### resample WM mask
     3dresample \
     -master ${in[$j]} \
     -inset ${in_3[$j]} \
-    -prefix "${ID[j]}"_WM_resampled+orig &>> ${prefix[$j]}${ID[j]}.log
+    -prefix "${ID[j]}"_WM_resampled+orig 
     ### first, mean CSF signal
     3dmaskave \
     -quiet \
@@ -958,9 +953,9 @@ echo
 printf "\n=======================RS FILTERING=====================\n\n"
 for j in ${!ID[@]}; do
   fromRS
-  prefix[$j]=f${prefix[$j]}
-  inputs "${out[$j]}" "mc_${ID[j]}.1d" "${ID[j]}_CSF_signal.1d" "${ID[j]}_WM_signal.1d "
-  outputs "${prefix[$j]}${ID[j]}.nii" 
+  prefix[$j]=bandpass.RS.
+  inputs "${out[$j]}" "mc.${ID[j]}.1d" "${ID[j]}.CSF.signal.1d" "${ID[j]}.WM.signal.1d"
+  outputs "${prefix[$j]}${ID[j]}+trlc" 
   echo -n "${ID[j]}> "
   if open.node; then
    3dBandpass \
@@ -980,9 +975,9 @@ echo
 #: RS SMOOTHING ======================================================
 printf "\n=======================RS SMOOTHING=====================\n\n"
 for j in ${!ID[@]}; do
-  prefix[$j]=b${prefix[$j]}
+  prefix[$j]=merge.RS.
   inputs "${out[$j]}" 
-  outputs "${prefix[$j]}${ID[j]}.nii"
+  outputs "${prefix[$j]}${ID[j]}+tlrc"
   echo -n "${ID[j]}> "
   if open.node; then
     3dmerge \
@@ -1000,10 +995,9 @@ if [ $censor -eq 1 ]; then
 #: RS MOTIONCENSOR ======================================================
 printf "\n=======================RS MOTIONCENSOR=====================\n\n"
 for j in ${!ID[@]}; do
-  prefix[$j]=c${prefix[$j]}
-  inputs "${out[$j]}" "mc_${ID[j]}.1d" "RS_${ID[j]}.nii"
-  outputs "${prefix[$j]}${ID[j]}.nii"
-  cp.inputs
+  prefix[$j]=censor.RS.
+  inputs "${out[$j]}" "mc.${ID[j]}.1d" "RS.${ID[j]}.nii"
+  outputs "${prefix[$j]}${ID[j]}+tlrc"
   echo -n "${ID[j]}> "
   if open.node; then
     ### take the temporal derivative of each vector (done as first backward difference)
@@ -1125,10 +1119,10 @@ for j in ${!ID[@]}; do
     -a "${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.n.1D \
     -b "${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D \
     -expr 'or(a, b)' \
-    > "${ID[j]}"_powerCensorIntersection.1D
+    > "${ID[j]}".powerCensorIntersection.1D
 
     ### Apply censor file in the final preprocessed image (after temporal filtering and spatial blurring)
-    afni_restproc.py -apply_censor ${in[$j]} "${ID[j]}"_powerCensorIntersection.1D ${out[$j]} &>> ${prefix[$j]}${ID[j]}.log
+    afni_restproc.py -apply_censor ${in[$j]} ${ID[j]}.powerCensorIntersection.1D ${out[$j]} &>> ${prefix[$j]}${ID[j]}.log
   fi; close.node
   log "RS MOTIONCENSOR "
 done 
@@ -1142,21 +1136,28 @@ fi
 #: QC11 ========================================================================
 
 #: DATA OUTPUT ===================================================================
+printf "\n=======================DATA OUTPUT=====================\n\n"
 for j in ${!ID[@]}; do
-#rm -r OUTPUT/${ID[j]}/manual_skullstrip 2> /dev/null
-file=$(find . -name "bf*_RS_${ID[j]}.nii")
-cp -n $file OUTPUT/${ID[j]}/
-file=$(find . -name "cbf*_RS_${ID[j]}.nii")
-cp -n $file OUTPUT/${ID[j]}/
-file=$(find . -name "preproc_${ID[j]}.log")
-cp -n $file OUTPUT/${ID[j]}/
-file=$(find . -name "SS_T1_${ID[j]}.nii")
-cp -n $file OUTPUT/${ID[j]}/
-# incluir quality report aqui tbm
-#file=$(find . -name "report_${ID[j]}.html")
-#cp -n $file OUTPUT/${ID[j]}/
-done
-
+  prefix[$j]=censor.RS.
+  inputs "${out[$j]}" "SS.T1.${ID[j]}+trlc"
+  outputs "preproc.RS.${ID[j]}.nii" "SS.T1.${ID[j]}.nii"
+  echo -n "${ID[j]}> "
+  if open.node; then
+  #rm -r OUTPUT/${ID[j]}/manual_skullstrip 2> /dev/null
+  3dAFNItoNIFTI -prefix ${out[j]} ${in[j]}
+  3dAFNItoNIFTI -prefix ${out_2[j]} ${in_2[j]}
+  file=$(find . -name "${out[j]}")
+  cp -n $file OUTPUT/${ID[j]}/
+  file=$(find . -name "${out_2[j]}")
+  cp -n $file OUTPUT/${ID[j]}/
+  # incluir quality report aqui tbm
+  #file=$(find . -name "report.${ID[j]}.html")
+  #cp -n $file OUTPUT/${ID[j]}/
+  fi; close.node
+  log "DATA OUTPUT "
+done 
+input.error
+echo
 
 
 

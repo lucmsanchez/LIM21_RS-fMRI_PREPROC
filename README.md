@@ -127,9 +127,11 @@ bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
 - Conformar nomes de arquivos com o padrão do afni
 - Adicionar etapas de controle de qualidade (testar etapas do proprio afni tbm)
 - Juntar todas QC em um relatório de qualidade
+- introduzir a contagem de outliers no RQ
 - Melhorar etapas de alinhamento (epi2anat?)
-- Aplicar normalização no RS tbm pode resolver o problema do skullstrip automatizado?
-- Concatenar warps com 3dTproject
+- Melhorar etapa de normalização
+- Concatenar warps
+- Fazer regressões com 3dTproject
   
 ## Atalhos  
   

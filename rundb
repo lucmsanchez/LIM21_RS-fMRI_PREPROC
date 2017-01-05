@@ -1,1 +1,1 @@
-bash -vx ./preproc.sh --config preproc.cfg --subjects preproc.sbj --break 1 --bet
+bash -vx ./preproc.sh --config preproc.cfg --subjects preproc.sbj

@@ -112,7 +112,6 @@ bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
 
 ## Limitações e bugs (Ordem de prioridade)  
   
-- Problemas com a etapa de segmentação, na criação do arquivo CSF.signal.1D
 - Opção --aztec e etapa aztec não funciona. (Bug #7)
     - 1o) qual dos arquivos de log deve-se usar? 
     - 2o) Mesmo com o exemplo fornecido usado o GUI há erro. Incompatibilidade com a versão do matlab? 
@@ -124,7 +123,6 @@ bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
 
 ## TO DO (Ordem de prioridade)   
   
-- Conformar nomes de arquivos com o padrão do afni
 - Adicionar etapas de controle de qualidade (testar etapas do proprio afni tbm)
 - Juntar todas QC em um relatório de qualidade
 - melhorar funções open.node e close.node (não são puras)

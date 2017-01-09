@@ -97,7 +97,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="30.0" width="195.63085937499994" x="99.43603515625009" y="1097.061272879075"/>
-          <y:Fill color="#FF0000" transparent="false"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" modelName="custom" textColor="#000000" visible="true" width="131.669921875" x="31.98046875" y="-0.96875">SPATIAL SMOOTHING
 (3dmerge)<y:LabelModel>
@@ -141,7 +141,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="30.0" width="195.63085937499994" x="226.0860965604163" y="1168.9072227457416"/>
-          <y:Fill color="#FF0000" transparent="false"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" modelName="custom" textColor="#000000" visible="true" width="129.056640625" x="33.287109375" y="-0.96875">MOTION CENSORING
 (afni_restproc.py)<y:LabelModel>
@@ -564,7 +564,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="30.0" width="236.43742191468243" x="79.03275388640884" y="1031.164462561031"/>
-          <y:Fill color="#FF0000" transparent="false"/>
+          <y:Fill hasColor="false" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" modelName="custom" textColor="#000000" visible="true" width="218.06640625" x="9.185507832341244" y="-0.96875">SPATIAL AND TEMPORAL FILTERING
 (3dBandpass)<y:LabelModel>
@@ -720,7 +720,7 @@
           <y:Geometry height="38.793620636087574" width="39.45145430555556" x="345.4701758010913" y="1026.7676522429874"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.412435318043777">QC9<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="29.458984375" x="4.996234965277779" y="10.41243531804389">QC9<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -771,7 +771,7 @@
           <y:Geometry height="18.801246753246822" width="19.302613333333376" x="468.6251671354161" y="851.7628424797545"/>
           <y:Fill color="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.349609375" x="3.476501979166642" y="0.41624837662345726">3<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.349609375" x="3.4765019791666987" y="0.41624837662345726">3<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -805,7 +805,7 @@
           <y:Geometry height="18.801246753246822" width="19.302613333333376" x="304.6234605555548" y="1021.2420016185013"/>
           <y:Fill color="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.349609375" x="3.4765019791666987" y="0.41624837662345726">5<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#FFFFFF" visible="true" width="12.349609375" x="3.4765019791666987" y="0.4162483766233436">5<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -1258,17 +1258,6 @@ preproc.RS.$ID.nii
           </y:NodeLabel>
           <y:Shape type="rectangle"/>
         </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n53">
-      <data key="d6">
-        <y:ImageNode>
-          <y:Geometry height="24.0" width="24.0" x="13.58778645933144" y="48.11786294138892"/>
-          <y:Fill color="#CCCCFF" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="sandwich" modelPosition="s" textColor="#000000" visible="true" width="19.26953125" x="2.365234375" y="28.0">62</y:NodeLabel>
-          <y:Image alphaImage="true" refid="7"/>
-        </y:ImageNode>
       </data>
     </node>
     <edge id="e0" source="n0" target="n17">
@@ -2087,7 +2076,6 @@ $ID.CSF.signal.1D<y:LabelModel>
       </data>
     </edge>
     <edge id="e52" source="n24" target="n3">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -2098,7 +2086,6 @@ $ID.CSF.signal.1D<y:LabelModel>
       </data>
     </edge>
     <edge id="e53" source="n22" target="n15">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -2613,27 +2600,6 @@ UhllkoDYr4Y+CUZ0dGyJVc+gIkq5aGSX2sg8RxGUNCJ9JhY5lEooMX6nlzV6JwVRslC93d81oALA&#13
 6PN88y+/p98fGU/Phkz4veCpsR9LI73OnwlHQRUkKuZJvznIHxDLsxzQvHWCKN4nMfbzfh+Bu6rc&#13;
 4kYJa0e3nW726wdE+yIVfXok97I2Nubm2vDe2ONGD3llfg8AAAAAAAAAAAAAAAAAAAAAAAAAAAAA&#13;
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB54f9xjeNzwZWJBQAAAABJRU5ErkJggg==</y:Resource>
-      <y:Resource id="7" type="java.awt.image.BufferedImage">iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAEYUlEQVR42qVWbUxbZRS+UBlD/JgI&#13;
-RojJ1MQsijHGkKjzY9EEgz8gYwNEA7gx5ua+HZkm4jRzG8viTDadTs3cWMYWGAQBoSwMS8uMZbSU&#13;
-0q6l3729/Vh7W8qHzl/o47mXW9wPoNf4Jk/b+973nOc973POecswMsZKhlmtYJhN9A0Bj+Xl9KQz&#13;
-TDHzf8cKhqlMOBUQco1jkg+jtOi1hbnMjJWXael9hDRCyn/xnyI44OwG8OEAtlaV4RbrAGfRYtfm&#13;
-jfC7JxCj+YqSIqQyzDFanzW/J/kkqQJBmLXBaVCj7q0S+B0GeAwD2LelAiGfEwF6Lny1YCEaCuEF&#13;
-sssQbOUQKAQjnrPBomnH5vIiBOyj8Iz244PaMgQ9VnjH1XinrAQxOrbr/d0gnYbJLo+QLieSBQLz&#13;
-YBtqSgvBWUfg1vVh96ZSBFwWeMYGsXdbDcJ+LwyabjEKsnuacL+cKESCCGuF9bceHNpfB/amFvYb&#13;
-AsFGcA4TXKMqHKzfQWQmqDrPJQieJ2QL9kuKK7GniSJPjECv6sT3Xx7GDyeP4sKZEzj2ST0GOi5g&#13;
-QnsVp48fRNBthqa7KUGwlvDQogQk0raEYMTwmZiabhNit3yYjt3C7FQMM/FJxGMReGwmDCmv4NTx&#13;
-T+Gz6THYdS4pgZiW4SAHPsTh3coNfwrP+oF2+EhMnjVhMujGTCyMP2bimJ6MIuL3wKjpgUnTib6W&#13;
-b/5ORiCmJed1/jVFO4yGg9Cru6bra9djqOMMvCa1KHgsxJJzHr9PxykaHtGAG55xDXounkwagSIj&#13;
-LU3VdqlpLsI5ESVHQiRj6k40bK/AV5/XwzqiEh1ORYUopjAdj4L33oTXqMJPTSeSEqTSTPUz+U/6&#13;
-WNvYXJidEJ3xdGTjQ10YbDuNX3ua4bHoEY8EyDkvRhNyjFCW/YxTh/djRTINpCr8sazkzdteynkh&#13;
-RaN+B/iAFy6qZqtWCR/NR/0uahN+hF1jcOgHoCGBD2yvFJwbpTTNWSpNhclV9NG+s/Zt+K3DRGIh&#13;
-gc2IeM0I2rS0Y51IHHIa4DaqoetvwZXvGlFeuHaO7M6T/bOEB5YqtBSpKz5IPzrer94A1jiIkH0Y&#13;
-YecIQYcwHUlgQivuXHetBZe/PYJdNeuRlZkRI7vXCU8QMpdrFSlSV8ymLTSvzs2JGX9pgVt/FbYb&#13;
-SoyqOnC9txl9l77G2S8OoKp4HbLuuXtGoVCUk81z0vmnJW3VCRKCr/iNda7696pnD324E40Ne9H4&#13;
-8W4c+WjHXMOeLbcfz8u+Rms4wsuERyUdZbVsYdFRIfX21VUJAl5cDA17tqIgf43w/izhEbmddKGy&#13;
-eZ7H7OwsotEoOI5DIBCAx+OBzWYT4XQ6YbVaEzWwhnCv3PtArGyLxQK/3w+WZWG322E2m6HT6aBW&#13;
-q6FUKtHb24vW1tYEQYGQIMt10jvHXXfex3LAzN9oOXIJhDBXEZ6SDF8ivLIMXiTkSzapckVOl4rm&#13;
-YULuIsiTkCutyZr/l/OvyP8ACfTxbS1b6aMAAAAASUVORK5CYII=</y:Resource>
     </y:Resources>
   </data>
 </graphml>

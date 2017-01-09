@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# TO DO:
-# 5 - Caso não funcione o 3dbandpass substituir por outro comando
-
-
 #: PROCESSANDO OS ARGUMENTOS ====================================================
 usage() {
     echo "Argumentos:"

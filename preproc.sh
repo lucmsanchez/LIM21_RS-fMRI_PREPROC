@@ -23,7 +23,7 @@ bet=0
 censor=1
 break=0
 
-while [[ $# -gt 1 ]]
+while [[ $# -gt 0 ]]
 do
 key="$1"
 
@@ -617,7 +617,6 @@ input.error
 echo
 
 #: SKULLSTRIP ===============================================================
-
 if [ $bet -eq 0 ]; then
   echo "O SKULL STRIP DEVE SER FEITO MANUALMENTE. USE COMO BASE O ARQUIVO QUE ESTÁ NA PASTA OUTPUT/${ID[j]}/manual_skullstrip. NOMEIE O ARQUIVO mask.T1.<SUBID>.nii.gz e salve no diretório base." | fold -s
   for j in ${!ID[@]}; do
@@ -638,12 +637,13 @@ else
     outputs "mask.T1.${ID[j]}.nii.gz"
     echo -n "${ID[j]}> "
     if open.node "BET"; then
-    ( "$fsl5"bet ${in[$j]} ${ID[j]}_step1 -B -f $betf && \
+    (  3dAFNItoNIFTI ${in[$j]} unifize.T1.${ID[j]}.nii
+      "$fsl5"bet unifize.T1.${ID[j]}.nii ${ID[j]}_step1 -B -f $betf && \
       "$fsl5"flirt -ref ${FSLDIR}/data/standard/MNI152_T1_2mm_brain -in ${ID[j]}_step1.nii.gz -omat ${ID[j]}_step2.mat -out ${ID[j]}_step2 -searchrx -30 30 -searchry -30 30 -searchrz -30 30 && \
-      "$fsl5"fnirt --in=${in[$j]} --aff=${ID[j]}_step2.mat --cout=${ID[j]}_step3 --config=T1_2_MNI152_2mm && \
-      "$fsl5"applywarp --ref=${FSLDIR}/data/standard/MNI152_T1_2mm --in=${in[$j]} --warp=${ID[j]}_step3 --out=${ID[j]}_step4 && \
+      "$fsl5"fnirt --in=unifize.T1.${ID[j]}.nii --aff=${ID[j]}_step2.mat --cout=${ID[j]}_step3 --config=T1_2_MNI152_2mm && \
+      "$fsl5"applywarp --ref=${FSLDIR}/data/standard/MNI152_T1_2mm --in=unifize.T1.${ID[j]}.nii --warp=${ID[j]}_step3 --out=${ID[j]}_step4 && \
       "$fsl5"invwarp -w ${ID[j]}_step3.nii.gz -o ${ID[j]}_step5.nii.gz -r ${ID[j]}_step1.nii.gz && \
-      "$fsl5"applywarp --ref=${in[$j]} --in=${FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz --warp=${ID[j]}_step5.nii.gz --out=${ID[j]}_step6 --interp=nn && \
+      "$fsl5"applywarp --ref=unifize.T1.${ID[j]}.nii --in=${FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz --warp=${ID[j]}_step5.nii.gz --out=${ID[j]}_step6 --interp=nn && \
       "$fsl5"fslmaths ${ID[j]}_step6.nii.gz -bin invmask_${ID[j]}.nii.gz && \
       "$fsl5"fslmaths invmask_${ID[j]}.nii.gz -mul -1 -add 1 ${out[$j]} )  &>> preproc.${ID[j]}.log
        rm invmask_${ID[j]}.nii.gz ${ID[j]}_step1.nii.gz ${ID[j]}_step1_mask.nii.gz ${ID[j]}_step2.nii.gz ${ID[j]}_step2.mat ${ID[j]}_step3.nii.gz ${ID[j]}_step4.nii.gz ${ID[j]}_step5.nii.gz ${ID[j]}_step6.nii.gz *_to_MNI152_T1_2mm.log 2> /dev/null
@@ -701,15 +701,15 @@ for j in ${!ID[@]}; do
   outputs "SS.T1.${ID[j]}_al+orig" "SS.T1.${ID[j]}_al_mat.aff12.1D"
   echo -n "${ID[j]}> "
   if open.node "COREGISTER fMRI-T1"; then
-    align_epi_anat.py \
+   ( align_epi_anat.py \
     -anat ${in[$j]} \
     -epi  ${in_2[$j]} \
     -epi_base 100 \
-    -giant_move \
     -anat_has_skull no \
     -volreg off \
     -tshift off \
-    -deoblique off &>> preproc.${ID[j]}.log
+    
+    -deoblique off ) &>> preproc.${ID[j]}.log
   fi; close.node
 done 
 input.error
@@ -723,7 +723,7 @@ echo
 printf "\n=======================NORMALIZE T1 TO TEMPLATE=====================\n\n"
 for j in ${!ID[@]}; do 
   inputs "${out[$j]}"
-  outputs "MNI.T1.${ID[j]}+trlc" "MNI.T1.${ID[j]}_WARP+trlc" 
+  outputs "MNI.T1.${ID[j]}" "MNI.T1.${ID[j]}_WARP" 
   cp.inputs "${template}.HEAD" "${template}.BRIK.gz"
   echo -n "${ID[j]}> "
   if open.node "NORMALIZE T1 TO TEMPLATE"; then
@@ -733,7 +733,7 @@ for j in ${!ID[@]}; do
       -base $template \
       -allineate \
       -source ${in[$j]} &>> preproc.${ID[j]}.log
-    rm MNI_T1_${ID[j]}_Allin* &>> preproc.${ID[j]}.log
+    rm MNI.T1.${ID[j]}_Allin* &>> preproc.${ID[j]}.log
    fi; close.node
   toT1
 done 
@@ -746,7 +746,7 @@ echo
 printf "\n=======================fMRI SPATIAL NORMALIZATION=====================\n\n"
 for j in ${!ID[@]}; do
   fromRS
-  inputs "${out[$j]}" "${out_2[$j]}"
+  inputs "${out[$j]}" "${out_2[$j]}+tlrc"
   outputs "MNI.RS.${ID[j]}+tlrc"
   echo -n "${ID[j]}> "
   if open.node "fMRI SPATIAL NORMALIZATION"; then
@@ -781,15 +781,15 @@ for j in ${!ID[@]}; do
     -n 3 \
     SS.T1.${ID[j]}_al.nii 
     3dcalc \
-    -a seg.${ID[j]}.pve_0.nii.gz \
+    -a seg.${ID[j]}_pve_0.nii.gz \
     -expr 'equals(a,1)' \
     -prefix ${out[$j]} 
     ### now, the WM
     3dcalc \
-    -a seg.${ID[j]}.pve_2.nii.gz \
+    -a seg.${ID[j]}_pve_2.nii.gz \
     -expr 'equals(a,1)' \
     -prefix ${out_2[$j]} ) &>> preproc.${ID[j]}.log
-    rm seg.${ID[j]}.* &>> preproc.${ID[j]}.log
+    rm seg.${ID[j]} &>> preproc.${ID[j]}.log
   fi; close.node
 done 
 input.error
@@ -839,7 +839,7 @@ printf "\n=======================RS FILTERING=====================\n\n"
 for j in ${!ID[@]}; do
   fromRS
   inputs "${out[$j]}" "mc.${ID[j]}.1d" "${ID[j]}.CSF.signal.1d" "${ID[j]}.WM.signal.1d"
-  outputs "bandpass.RS.${ID[j]}+trlc" 
+  outputs "bandpass.RS.${ID[j]}+tlrc" 
   echo -n "${ID[j]}> "
   if open.node "RS FILTERING"; then
    3dBandpass \
@@ -884,111 +884,111 @@ for j in ${!ID[@]}; do
   ( 1d_tool.py \
     -infile ${in_2[$j]} \
     -derivative \
-    -write "${ID[j]}"_RS.deltamotion.1D 
+    -write c."${ID[j]}"_RS.deltamotion.1D 
 
     ### calculate total framewise displacement (sum of six parameters)
     1deval \
-    -a "${ID[j]}"_RS.deltamotion.1D'[0]' \
-    -b "${ID[j]}"_RS.deltamotion.1D'[1]' \
-    -c "${ID[j]}"_RS.deltamotion.1D'[2]' \
-    -d "${ID[j]}"_RS.deltamotion.1D'[3]' \
-    -e "${ID[j]}"_RS.deltamotion.1D'[4]' \
-    -f "${ID[j]}"_RS.deltamotion.1D'[5]' \
+    -a c."${ID[j]}"_RS.deltamotion.1D'[0]' \
+    -b c."${ID[j]}"_RS.deltamotion.1D'[1]' \
+    -c c."${ID[j]}"_RS.deltamotion.1D'[2]' \
+    -d c."${ID[j]}"_RS.deltamotion.1D'[3]' \
+    -e c."${ID[j]}"_RS.deltamotion.1D'[4]' \
+    -f c."${ID[j]}"_RS.deltamotion.1D'[5]' \
     -expr '100*sind(abs(a)/2) + 100*sind(abs(b)/2) + 100*sind(abs(c)/2) + abs(d) + abs(e) + abs(f)' \
-    > "${ID[j]}"_RS.deltamotion.FD.1D
+    > c."${ID[j]}"_RS.deltamotion.FD.1D
 
     ### create temporal mask (1 = extreme motion)
     1d_tool.py \
-    -infile "${ID[j]}"_RS.deltamotion.FD.1D \
+    -infile c."${ID[j]}"_RS.deltamotion.FD.1D \
     -extreme_mask -1 0.5 \
-    -write "${ID[j]}"_RS.deltamotion.FD.extreme0.5.1D
+    -write c."${ID[j]}"_RS.deltamotion.FD.extreme0.5.1D
 
     ### create temporal mask (0 = extreme motion)
-    1deval -a "${ID[j]}"_RS.deltamotion.FD.extreme0.5.1D \
+    1deval -a c."${ID[j]}"_RS.deltamotion.FD.extreme0.5.1D \
     -expr 'not(a)' \
-    > "${ID[j]}"_RS.deltamotion.FD.moderate0.5.1D
+    > c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.1D
 
     ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
     1deval \
-    -a "${ID[j]}"_RS.deltamotion.FD.moderate0.5.1D \
-    -b "${ID[j]}"_RS.deltamotion.FD.moderate0.5.1D'{1..$,0}' \
+    -a c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.1D \
+    -b c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.1D'{1..$,0}' \
     -expr 'ispositive(a + b - 1)' \
-    > "${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.1D
+    > c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.1D
 
     ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
     1deval \
-    -a "${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.1D \
-    -b "${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.1D'{0,0..$}' \
+    -a c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.1D \
+    -b c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.1D'{0,0..$}' \
     -expr 'ispositive(a + b - 1)' \
-    > "${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.1D
+    > c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.1D
 
     ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
     1deval \
-    -a "${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.1D \
-    -b "${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.1D'{0,0..$}' \
+    -a c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.1D \
+    -b c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.1D'{0,0..$}' \
     -expr 'ispositive(a + b - 1)' \
-    > "${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.n.1D
+    > c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.n.1D
 
     ### normalize and scale the BOLD to percent signal change
     ### find the mean
     3dTstat \
     -mean \
-    -prefix meanBOLD_"${ID[j]}" \
+    -prefix c.meanBOLD_"${ID[j]}" \
     ${in_3[$j]}
     ### scale BOLD signal to percent change
     3dcalc \
     -a ${in_3[$j]} \
     -b meanBOLD_"${ID[j]}"+orig \
     -expr "(a/b) * 100" \
-    -prefix "${ID[j]}"_RS_scaled
+    -prefix c."${ID[j]}"_RS_scaled
     ### temporal derivative of the frames
     3dcalc \
-    -a "${ID[j]}"_RS_scaled+orig \
+    -a c."${ID[j]}"_RS_scaled+orig \
     -b 'a[0,0,0,-1]' \
     -expr '(a - b)^2' \
-    -prefix "${ID[j]}"_RS.backdif2
+    -prefix c."${ID[j]}"_RS.backdif2
     ### Extract brain mask
     3dAutomask \
-    -prefix "${ID[j]}".auto_mask.brain \
+    -prefix c."${ID[j]}".auto_mask.brain \
     ${in_3[$j]}
     ### average data from each frame (inside brain mask)
     3dmaskave \
-    -mask "${ID[j]}".auto_mask.brain+orig \
-    -quiet "${ID[j]}"_RS.backdif2+orig \
-    > "${ID[j]}"_RS.backdif2.avg.1D
+    -mask c."${ID[j]}".auto_mask.brain+orig \
+    -quiet c."${ID[j]}"_RS.backdif2+orig \
+    > c."${ID[j]}"_RS.backdif2.avg.1D
     ### square root to finally get DVARS
     1deval \
-    -a "${ID[j]}"_RS.backdif2.avg.1D \
+    -a c."${ID[j]}"_RS.backdif2.avg.1D \
     -expr 'sqrt(a)' \
-    > "${ID[j]}"_RS.backdif2.avg.dvars.1D
+    > c."${ID[j]}"_RS.backdif2.avg.dvars.1D
     ### mask extreme (1 = extreme motion)
     1d_tool.py \
-    -infile "${ID[j]}"_RS.backdif2.avg.dvars.1D \
+    -infile c."${ID[j]}"_RS.backdif2.avg.dvars.1D \
     -extreme_mask -1 5 \
-    -write "${ID[j]}"_RS.backdif2.avg.dvars.extreme5.1D
+    -write c."${ID[j]}"_RS.backdif2.avg.dvars.extreme5.1D
     ### mask extreme (0 = extreme motion)
     1deval \
-    -a "${ID[j]}"_RS.backdif2.avg.dvars.extreme5.1D \
+    -a c."${ID[j]}"_RS.backdif2.avg.dvars.extreme5.1D \
     -expr 'not(a)' \
-    > "${ID[j]}"_RS.backdif2.avg.dvars.moderate5.1D
+    > c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.1D
     ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
     1deval \
-    -a "${ID[j]}"_RS.backdif2.avg.dvars.moderate5.1D \
-    -b "${ID[j]}"_RS.backdif2.avg.dvars.moderate5.1D'{1..$,0}' \
+    -a c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.1D \
+    -b c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.1D'{1..$,0}' \
     -expr 'ispositive(a + b - 1)' \
-    > "${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.1D
+    > c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.1D
     ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 2)
     1deval \
-    -a "${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.1D \
-    -b "${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.1D'{0,0..$}' \
+    -a c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.1D \
+    -b c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.1D'{0,0..$}' \
     -expr 'ispositive(a + b - 1)' \
-    > "${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.1D
+    > c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.1D
     ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 3)
     1deval \
-    -a "${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.1D \
-    -b "${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.1D'{0,0..$}' \
+    -a c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.1D \
+    -b c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.1D'{0,0..$}' \
     -expr 'ispositive(a + b - 1)' \
-    > "${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D
+    > c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D
 
 
     ### Integrate FD and DVARS censoring
@@ -996,18 +996,19 @@ for j in ${!ID[@]}; do
 
     ### FD censor OR DVARS censor
     1deval \
-    -a "${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.n.1D \
-    -b "${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D \
+    -a c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.n.1D \
+    -b c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D \
     -expr 'or(a, b)' \
-    > "${ID[j]}".powerCensorIntersection.1D ) &>> preproc.${ID[j]}.log 
+    > c."${ID[j]}".powerCensorIntersection.1D ) &>> preproc.${ID[j]}.log 
 
     ### Apply censor file in the final preprocessed image (after temporal filtering and spatial blurring)
     afni_restproc.py -apply_censor ${in[$j]} ${ID[j]}.powerCensorIntersection.1D ${out[$j]} &>> preproc.${ID[j]}.log  
+    #rm c.*
   fi; close.node
 done 
 input.error
 echo
-
+fi
 #: QC10 ========================================================================
 
 

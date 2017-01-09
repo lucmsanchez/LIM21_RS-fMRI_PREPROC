@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+
+oldIFS="$IFS"
+IFS=$'\n' ID=($(<preproc.sbj))
+IFS="$oldIFS"
+index=${!ID[@]}

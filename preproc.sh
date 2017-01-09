@@ -1,112 +1,69 @@
 #!/usr/bin/env bash
 
 # TO DO:
-# 1 - trocar associative array por index array
-# 2 - otimizar uso da função open node
-# 3 - conformar nomes de arquivos para evitar confusão
-# 4 - Usar formato AFNI para evitar problemas?
 # 5 - Caso não funcione o 3dbandpass substituir por outro comando
 
 
 #: PROCESSANDO OS ARGUMENTOS ====================================================
 usage() {
     echo "Argumentos:"
-    echo " $0 [ Opções ] --config <txt com variáveis para análise>  --subs <ID das imagens>" 
+    echo " $0 [ Opções ] --config <txt com variáveis para análise>  --subjects <ID das imagens>" 
     echo 
     echo "Opções:"
+    echo "-b | --break n interrompe o script no breakpoint de numero indicado"
     echo
-    echo "-a | --aztec  realiza a etapa aztec"
-    echo "-b | --bet    realiza o skull strip automatizado (Padrão: Manual)"
-    echo "-m | --motioncensor  aplica a técnica motion censor"    
-    echo "-p | --break  interrompe o script no breakpoint de numero indicado"
+    echo "--aztec            realiza a etapa aztec"
+    echo "--bet              realiza o skull strip automatizado (Padrão: Manual)"
+    echo "--motioncensor_no  NÃO aplica a técnica motion censor"    
     echo
 }
 
 aztec=0
 bet=0
-censor=0
+censor=1
 break=0
 
-i=$(($# + 1)) # index of the first non-existing argument
-declare -A longoptspec
-longoptspec=( [config]=1 [subs]=1 [break]=1 )
-optspec=":l:h:a:b:c:s:m:p-:"
-while getopts "$optspec" opt; do
-while true; do
-    case "${opt}" in
-        -) #OPTARG is name-of-long-option or name-of-long-option=value
-            if [[ ${OPTARG} =~ .*=.* ]] # with this --key=value format only one argument is possible
-            then
-                opt=${OPTARG/=*/}
-                ((${#opt} <= 1)) && {
-                    echo "Syntax error: Invalid long option '$opt'" >&2
-                    exit
-                }
-                if (($((longoptspec[$opt])) != 1))
-                then
-                    echo "Syntax error: Option '$opt' does not support this syntax." >&2
-                    exit
-                fi
-                OPTARG=${OPTARG#*=}
-            else #with this --key value1 value2 format multiple arguments are possible
-                opt="$OPTARG"
-                ((${#opt} <= 1)) && {
-                    echo "Syntax error: Invalid long option '$opt'" >&2
-                    exit
-                }
-                OPTARG=(${@:OPTIND:$((longoptspec[$opt]))})
-                ((OPTIND+=longoptspec[$opt]))
-                #echo $OPTIND
-                ((OPTIND > i)) && {
-                    echo "Syntax error: Not all required arguments for option '$opt' are given." >&2
-                    exit
-                }
-            fi
+while [[ $# -gt 0 ]]
+do
+key="$1"
 
-            continue #now that opt/OPTARG are set we can process them as
-            # if getopts would've given us long options
-            ;;
-        m|motioncensor)
-            censor=1
-            ;;
-        a|aztec)
-            aztec=1
-            ;;
-        b|bet)
-            bet=1
-            ;;
-        c|config)
-          config=$OPTARG
-            ;;
-        s|subs)
-            subs=$OPTARG
-            ;;
-        p|break)
-            break=$OPTARG
-            ;;
-        h|help)
-            usage
-            exit 0
-            ;;
-        ?)
-            echo "Erro de sintaxe:'$OPTARG' desconhecida" >&2
-            usage
-            exit
-            ;;
-        *)
-            echo "Erro de sintaxe:'$opt' desconhecida'" >&2
-            usage
-            exit
-            ;;
-    esac
-break; done
+case $key in
+    -c|--config)
+    config="$2"
+    shift # past argument
+    ;;
+    -s|--subjects)
+    subs="$2"
+    shift # past argument
+    ;;
+    -b|--break)
+    break="$2"
+    shift # past argument
+    ;;
+    --aztec)
+    aztec=1
+    ;;
+    --bet)
+    bet=1
+    ;;
+    --motioncensor_no)
+    censor=0
+    ;;
+    *)
+     echo "Erro de sintaxe:'$1' desconhecida'" >&2
+     usage
+     exit       # unknown option
+    ;;
+esac
+shift # past argument or value
 done
 
 #: DECLARANDO VARIÁVEIS ===========================================================
-declare -A prefix steppath
-declare -A in in_2 in_3 in_4 in_5
-declare -A out out_2 out_3 ou_4 out_5
-declare -A outrs outt1 prefixrs prefixt1
+declare -a steppath
+declare -a in in_2 in_3 in_4 in_5
+declare -a out out_2 out_3 ou_4 out_5
+declare -a outrs outt1
+ex=0
 
 #: DECLARANDO FUNÇÕES ===========================================================
 check () {
@@ -117,43 +74,61 @@ check () {
 fi
 }
 
+log () {
+if [ $go -eq 1 ]; then
+( echo 
+  echo "================================================================================"
+  echo "ETAPA: $1  - RUNTIME: $(date)" 
+  echo "================================================================================"
+  echo 
+  echo "INPUTS: ${in[$j]} ${in_2[$j]} ${in_3[$j]} ${in_4[$j]}" 
+  echo "OUTPUTS: ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]}"
+  echo ) >> preproc.${ID[j]}.log
+fi
+}
+
 input.error () {
 [ $ex -eq ${#ID[@]} ] && exit
 }
 
 inputs () {
-    in[$i]="$1"
-    in_2[$i]="$2"
-    in_3[$i]="$3"
-    in_4[$i]="$4"
+    in[$j]="$1"
+    in_2[$j]="$2"
+    in_3[$j]="$3"
+    in_4[$j]="$4"
 }
 
 outputs () {
-    out[$i]="$1"
-    out_2[$i]="$2"
-    out_3[$i]="$3"
-    out_4[$i]="$4"
+    out[$j]="$1"
+    out_2[$j]="$2"
+    out_3[$j]="$3"
+    out_4[$j]="$4"
 }
 
 open.node () {
   local a=0; local b=0; local c=0; local d=0
-  ex=0; go=1
+  go=1
   #
-  cd ${steppath[$i]}
-  for ii in ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]} ${in_5[$i]}; do
-    [ ! -f $ii ] && echo "INPUT $ii não encontrado" && a=$((a + 1))
-    for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]} ${out_5[$i]}; do
-      [ ! -f $iii ] && b=$((b + 1)) || c=$((c + 1))
-      [ $iii -ot $ii ] && d=$((d + 1))
+  cd ${steppath[$j]}
+  for ii in ${in[$j]} ${in_2[$j]} ${in_3[$j]} ${in_4[$j]} ${in_5[$j]}; do
+    for file in ${ii}*; do
+      [ ! -f $file ] && echo "INPUT $ii não encontrado" && a=$((a + 1))
+      for iii in ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]} ${out_5[$j]}; do
+        for file2 in ${iii}*; do
+          [ ! -f $file2 ] && b=$((b + 1)) || c=$((c + 1))
+          [ $file2 -ot $file ] && d=$((d + 1))
+        done
+      done
     done
   done
-  #
   #echo $a $b $c $d
   if [ $a -eq 0 ]; then
     if [ $b -eq 0 ]; then 
       if [ ! $d -eq 0 ]; then
         printf "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. " 
-        for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]} ${out_5[$i]}; do rm $iii 2> /dev/null; done
+        for iii in ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]} ${out_5[$j]}; do 
+          rm ${iii}* 2> /dev/null; 
+        done
         go=1
       else
         echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0; ex=0
@@ -161,7 +136,8 @@ open.node () {
     else
       if [ ! $c -eq 0 ]; then
         echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
-        for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]} ${out_5[$i]}; do rm $iii 2> /dev/null; done
+        for iii in ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]} ${out_5[$j]}; do 
+        rm ${iii}* 2> /dev/null; done
         go=1
       else
         go=1
@@ -170,18 +146,27 @@ open.node () {
   else
     go=0; ex=$((ex + 1))
   fi  
+
+  if [ $go -eq 1 ]; then
+    log "$1"
+    return 0
+  else
+    return 1
+  fi
 }
 
 close.node () {
   local a=0
   if [ $go -eq 1 ]; then  
-    for iii in ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}; do 
-      [ -f $iii ] ||  a=$((a + 1)) 
+    for iii in ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]}; do
+      for file2 in ${iii}*; do
+        [ -f $file2 ] ||  a=$((a + 1)) 
+      done
     done
     if [ ! $a -eq 0 ]; then
-      printf "Houve um erro no processamento da imagem %s, consulte o log. \n" "$i" && ex=$((ex + 1))
+      printf "Houve um erro no processamento da imagem %s, consulte o log. \n" "${ID[j]}" && ex=$((ex + 1))
     else
-      printf "Processamento da imagem %s realizado com sucesso! \n" "$i"
+      printf "Processamento da imagem %s realizado com sucesso! \n" "${ID[j]}"
     fi
   fi
   cd $pwd
@@ -209,46 +194,29 @@ get.info2 () {
   same_obl=$(3dinfo -same_obl $image1 $image2) 
 }
 
-log () {
-if [ $go -eq 1 ]; then
-( echo 
-  echo "ETAPA: $1  - RUNTIME: $(date)" 
-  echo 
-  echo "PREFIX: ${prefix[$i]}"  
-  echo "INPUTS: ${in[$i]} ${in_2[$i]} ${in_3[$i]} ${in_4[$i]}" 
-  echo "OUTPUTS: ${out[$i]} ${out_2[$i]} ${out_3[$i]} ${out_4[$i]}"
-  echo 
-  cat DATA/$i/STEPS/${prefix[$i]}$i.log ) >> OUTPUT/$i/preproc_$i.log
-fi
-}
-
 toRS () {
-  outrs[$i]=${out[$i]}
-  prefixrs[$i]=${prefix[$i]}
+  outrs[$j]=${out[$j]}
   }
 
 toT1 () {
-  outt1[$i]=${out[$i]}
-  prefixt1[$i]=${prefix[$i]}
+  outt1[$j]=${out[$j]}
 }
 
 fromRS () {
-  out[$i]=${outrs[$i]}
-  prefix[$i]=${prefixrs[$i]}
+  out[$j]=${outrs[$j]}
 }
 
 fromT1 () {
-  out[$i]=${outt1[$i]}
-  prefix[$i]=${prefixt1[$i]}
+  out[$j]=${outt1[$j]}
 }
 
 cp.inputs () {
   files=$(find . -name "$1")
-  [ ! -f "${steppath[$i]}$1" ] && cp ${files[0]} ${steppath[$i]} 2> /dev/null
+  [ ! -f "${steppath[$j]}$1" ] && cp ${files[0]} ${steppath[$j]} 2> /dev/null
   files=$(find . -name "$2")
-  [ ! -f "${steppath[$i]}$2" ] && cp ${files[0]} ${steppath[$i]} 2> /dev/null
+  [ ! -f "${steppath[$j]}$2" ] && cp ${files[0]} ${steppath[$j]} 2> /dev/null
   files=$(find . -name "$3")
-  [ ! -f "${steppath[$i]}$3" ] && cp ${files[0]} ${steppath[$i]} 2> /dev/null
+  [ ! -f "${steppath[$j]}$3" ] && cp ${files[0]} ${steppath[$j]} 2> /dev/null
 }
 
 #: INÍCIO =======================================================================
@@ -307,7 +275,12 @@ else
     exit
   fi
 fi  
-ID=$(cat $subs)
+
+oldIFS="$IFS"
+IFS=$'\n' ID=($(<${subs}))
+IFS="$oldIFS"
+index=${!ID[@]}
+
 
 # checando se todos os programas necessários estão instalados
 fold -s <<-EOF
@@ -350,30 +323,30 @@ EOF
 # Checando imagens com os nomes fornecidos
 echo "Lista de indivíduos para análise:"
 a=0
-for i in $ID; do 
-  echo -n "$i  ... " 
-  file=$(find . -name "T1_$i.nii")
+for j in ${!ID[@]}; do 
+  echo -n "${ID[j]}  ... " 
+  file=$(find . -name "T1.${ID[j]}.nii")
   if [ ! -z "$file"  ]; then
     printf "T1" 
     else
     printf "(T1 não encontrado)"; a=$((a + 1))
   fi
-  file=$(find . -name "RS_$i.nii")
+  file=$(find . -name "RS.${ID[j]}.nii")
   if [ ! -z "$file" ]; then 
     printf " RS" 
   else
   printf " (RS não encontrado)"; a=$((a + 1))
   fi
-  [ $(find . -name "z_RS_$i.nii") ] && printf " aztec"
-  [ $(find . -name "t*_RS_$i.nii") ] && printf " stc"
-  [ $(find . -name "rt*_RS_$i.nii") ] && printf " mc"
-  [ $(find . -name "SS_T1_$i.nii") ] && printf " ss"
-  [ $(find . -name "MNI_T1_$i.nii") ] && printf " nm"
+  [ $(find . -name "aztec.RS.${ID[j]}*" -print -quit) ] && printf " aztec"
+  [ $(find . -name "tshift.RS.${ID[j]}*" -print -quit) ] && printf " stc"
+  [ $(find . -name "volreg.RS.${ID[j]}*" -print -quit) ] && printf " mc"
+  [ $(find . -name "SS.T1.${ID[j]}*" -print -quit) ] && printf " ss"
+  [ $(find . -name "MNI.T1.${ID[j]}*" -print -quit) ] && printf " nm"
   printf "\n"
 done
 echo
 if [ ! $a -eq 0 ]; then
-    echo "Imagens não foram encontradas ou não estão nomeadas conforme o padrão: RS_<ID>.nii e T1_<ID>.nii" | fold -s ; echo
+    echo "Imagens não foram encontradas ou não estão nomeadas conforme o padrão: RS.<ID>.nii e T1.<ID>.nii" | fold -s ; echo
     exit
 fi
 
@@ -401,35 +374,20 @@ else
   fi
 fi
 
-# CHECANDO SE OUTPUT JÁ EXISTE
-# for i in $ID; do
-# file=$(find . -name "bf*_RS_$i.nii")
-# cp -n $file OUTPUT/$i/
-# file=$(find . -name "cbf*_RS_$i.nii")
-# cp -n $file OUTPUT/$i/
-# file=$(find . -name "preproc_$i.log")
-# cp -n $file OUTPUT/$i/
-# file=$(find . -name "SS_T1_$i.nii")
-# cp -n $file OUTPUT/$i/
-# # incluir quality report aqui tbm
-# #file=$(find . -name "report_$i.html")
-# #cp -n $file OUTPUT/$i/
-# done
-
 # Preparando para iniciar a análise
 [ -d DATA ] || mkdir DATA
 [ -d OUTPUT ] || mkdir OUTPUT
 
 unset a; a=0
-for i in $ID; do
-  [ -d DATA/$i ] || mkdir DATA/$i 
-  [ -d OUTPUT/$i ] || mkdir OUTPUT/$i 
-  for ii in T1_$i.nii RS_$i.nii RS_$i.log; do
-    [ ! -f DATA/$i/$ii ] && wp=$(find . -name $ii) && rp=DATA/$i/$ii && mv $wp $rp 2> /dev/null && a=$((a + 1))
+for j in ${!ID[@]}; do
+  [ -d DATA/${ID[j]} ] || mkdir DATA/${ID[j]} 
+  [ -d OUTPUT/${ID[j]} ] || mkdir OUTPUT/${ID[j]} 
+  for ii in T1.${ID[j]}.nii RS.${ID[j]}.nii RS.${ID[j]}.log; do
+    [ ! -f DATA/${ID[j]}/$ii ] && wp=$(find . -name $ii) && rp=DATA/${ID[j]}/$ii && mv $wp $rp 2> /dev/null && a=$((a + 1))
   done
 done
 if [ ! $a -eq 0 ]; then 
-  echo "O caminho das imagens não está conformado com o padrâo: DATA/<ID>/T1_<ID>.nii"
+  echo "O caminho das imagens não está conformado com o padrâo: DATA/<ID>/T1.<ID>.nii"
   echo "Conformando..."
   echo
 fi
@@ -437,14 +395,13 @@ fi
 pwd=($PWD)
 
 #: DATA INPUT ====================================================================
-for i in $ID; do
-  prefix[$i]=_RS_
-  prefixt1[$i]=_T1_
-  out[$i]=RS_$i.nii
-  steppath[$i]=DATA/$i/STEPS/
-  [ ! -d ${steppath[$i]} ] && mkdir -p ${steppath[$i]} 2> /dev/null
-  [ ! -f ${steppath[$i]}RS_$i.nii ] && cp DATA/$i/RS_$i.nii ${steppath[$i]} 2> /dev/null
-  [ ! -f ${steppath[$i]}T1_$i.nii ] && cp DATA/$i/T1_$i.nii ${steppath[$i]} 2> /dev/null
+for j in ${!ID[@]}; do
+  out[$j]=RS.${ID[j]}.nii
+  steppath[$j]=DATA/${ID[j]}/${ID[j]}.results/
+  [ ! -d ${steppath[$j]} ] && mkdir -p ${steppath[$j]} 2> /dev/null
+  [ ! -f ${steppath[$j]}RS.${ID[j]}.nii ] && cp DATA/${ID[j]}/RS.${ID[j]}.nii ${steppath[$j]} 2> /dev/null
+  [ ! -f ${steppath[$j]}T1.${ID[j]}.nii ] && cp DATA/${ID[j]}/T1.${ID[j]}.nii ${steppath[$j]} 2> /dev/null
+  [ ! -f ${steppath[$j]}T1.${ID[j]}.nii ] && cp DATA/${ID[j]}/RS.${ID[j]}.log ${steppath[$j]} 2> /dev/null
 done
 
 #: QC1 ========================================================================
@@ -454,27 +411,25 @@ done
 #: AZTEC ========================================================================
 if [ $aztec -eq 1 ]; then
   printf "=============================AZTEC==================================\n\n"
-  for i in $ID; do
-    prefix[$i]=z${prefix[$i]}
-    inputs "${out[$i]}" "RS_$i.log"
-    outputs "${prefix[$i]}$i.nii"
-    echo -n "$i> "
-    open.node; if [ $go -eq 1 ]; then
+  for j in ${!ID[@]}; do
+    inputs "${out[$j]}" "RS.${ID[j]}.log"
+    outputs "aztec.RS.${ID[j]}.nii"
+    echo -n "${ID[j]}> "
+    if open.node "AZTEC"; then
       #
    #  if [ ! -d "3d" ]; then  mkdir 3d ; fi && \
-   #  fsl5.0-fslsplit ${in[$i]} 3d_"$i"_ -t && \
-   #  mv 3d_"$i"* 3d && \
+   #  fsl5.0-fslsplit ${in[$j]} 3d_"${ID[j]}"_ -t && \
+   #  mv 3d_"${ID[j]}"* 3d && \
    #  gunzip 3d/3d_$i_* && \
       echo "try aztec(); catch; end" > azt_script.m && \
    #  echo "try aztec('${in[2]}',files ,500,$((TR * 1000)),1,$hp,'/3d') catch  quit" > azt_script.m
       matlab -nosplash -r "run azt_script.m" \
    #  rm 3d/3d* && \
-   #  3dTcat -prefix ${out[$i]} -TR $TR 3d/aztec* && \
+   #  3dTcat -prefix ${out[$j]} -TR $TR 3d/aztec* && \
    #  rm 3d/aztec* 3d azt* && \ 
-     &> ${prefix[$i]}$i.log 
+     &>> preproc.${ID[j]}.log
       #
     fi; close.node
-    log "Aztec"
   done
   input.error
   echo
@@ -482,49 +437,45 @@ fi
 
 #: SLICE TIMING CORRECTION =======================================================
 printf "=======================SLICE TIMING CORRECTION====================\n\n"
-for i in $ID; do
-  prefix[$i]=t${prefix[$i]}
-  inputs "${out[$i]}"
-  outputs "${prefix[$i]}$i.nii"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+for j in ${!ID[@]}; do
+  inputs "${out[$j]}"
+  outputs "tshift.RS.${ID[j]}+orig"
+  echo -n "${ID[j]}> "
+  if open.node "SLICE TIMING CORRECTION"; then
     #
     3dTshift \
       -tpattern $ptn \
-      -prefix ${out[$i]} \
+      -prefix ${out[$j]} \
       -Fourier \
-      ${in[$i]} &> ${prefix[$i]}$i.log 
+      ${in[$j]} &>> preproc.${ID[j]}.log
     #
   fi; close.node
-  log "Slice Timing Correction"
 done
 input.error
 echo
 
 #: MOTION CORRECTION ============================================================
 printf "\n=========================MOTION CORRECTION=======================\n\n"
-for i in $ID; do
-  prefix[$i]=r${prefix[$i]}
-  inputs "${out[$i]}"
-  outputs "${prefix[$i]}${i}.nii" "mc_${i}.1d" "${prefix[$i]}mcplot_${i}.jpg"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+for j in ${!ID[@]}; do
+  inputs "${out[$j]}"
+  outputs "volreg.RS.${ID[j]}+orig" "mc.${ID[j]}.1d" "mcplot.${ID[j]}.jpg"
+  echo -n "${ID[j]}> "
+  if open.node "MOTION CORRECTION"; then
    ( 3dvolreg \
-    -prefix ${out[$i]} \
+    -prefix ${out[$j]} \
     -base 100 \
     -zpad 2 \
     -twopass \
     -Fourier \
-    -1Dfile ${out_2[$i]} \
-    ${in[$i]} && \
+    -1Dfile ${out_2[$j]} \
+    ${in[$j]} && \
     1dplot \
-    -jpg ${out_3[$i]} \
+    -jpg ${out_3[$j]} \
     -volreg -dx $TR \
     -xlabel Time \
     -thick \
-    ${out_2[$i]} ) &>> ${prefix[$i]}$i.log 
+    ${out_2[$j]} ) &>> preproc.${ID[j]}.log
   fi; close.node
-  log "Motion Correction "
 done
 input.error
 echo
@@ -535,20 +486,19 @@ echo
 
 #: DEOBLIQUE RS ============================================================
 printf "\n=========================DEOBLIQUE RS=======================\n\n"
-for i in $ID; do
-  get.info1 "${steppath[$i]}${out[$i]}"; if [ $is_oblique -eq 1 ]; then 
-  prefix[$i]=d${prefix[$i]}
-  inputs "${out[$i]}"
-  outputs "${prefix[$i]}$i.nii"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+for j in ${!ID[@]}; do
+  get.info1 "${steppath[$j]}${out[$j]}"; if [ $is_oblique -eq 1 ]; then 
+  inputs "${out[$j]}"
+  outputs "warp.RS.${ID[j]}+orig"
+  echo -n "${ID[j]}> "
+  if open.node "DEOBLIQUE RS"; then
     3dWarp \
     -deoblique \
-    -prefix  ${out[$i]} \
-    ${in[$i]} &> ${prefix[$i]}$i.log 
+    -prefix  ${out[$j]} \
+    ${in[$j]} &>> preproc.${ID[j]}.log
   fi; close.node
-  else echo "$i não é obliquo"
-  log "DEOBLIQUE RS "; fi
+  else echo "${ID[j]} não é obliquo"
+  fi
   toRS
 done
 input.error
@@ -559,20 +509,19 @@ echo
 #: DEOBLIQUE T1 ============================================================
 printf "\n=========================DEOBLIQUE T1=======================\n\n"
 pwd=($PWD)
-for i in $ID; do
-  get.info1 "${steppath[$i]}T1_$i.nii"; if [ $is_oblique -eq 1 ]; then 
-  prefix[$i]=d_T1_
-  inputs "T1_$i.nii"
-  outputs "${prefix[$i]}$i.nii"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+for j in ${!ID[@]}; do
+  get.info1 "${steppath[$j]}T1.${ID[j]}.nii"; if [ $is_oblique -eq 1 ]; then 
+  inputs "T1.${ID[j]}.nii"
+  outputs "warp.T1.${ID[j]}+orig"
+  echo -n "${ID[j]}> "
+  if open.node "DEOBLIQUE T1"; then
     3dWarp \
     -deoblique \
-    -prefix  ${out[$i]} \
-    ${in[$i]} &> ${prefix[$i]}$i.log 
+    -prefix  ${out[$j]} \
+    ${in[$j]} &>> preproc.${ID[j]}.log
   fi; close.node
-  else echo "$i não é obliquo"
-  log "DEOBLIQUE T1 "; fi
+  else echo "${ID[j]} não é obliquo"
+  fi
   toT1
 done 
 input.error
@@ -580,21 +529,19 @@ echo
 
 #: HOMOGENIZE RS ============================================================
 printf "\n=========================HOMOGENIZE RS=======================\n\n"
-for i in $ID; do 
+for j in ${!ID[@]}; do 
   fromRS
-  prefix[$i]=p${prefix[$i]}
-  inputs "${out[$i]}"
-  outputs "${prefix[$i]}$i.nii"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+  inputs "${out[$j]}"
+  outputs "zeropad.RS.${ID[j]}+orig"
+  echo -n "${ID[j]}> "
+  if open.node "HOMOGENIZE RS"; then
     3dZeropad \
     -RL "$gRL" \
     -AP "$gAP" \
     -IS "$gIS" \
-    -prefix ${out[$i]} \
-    ${in[$i]} &> ${prefix[$i]}$i.log 
+    -prefix ${out[$j]} \
+    ${in[$j]} &>> preproc.${ID[j]}.log
   fi; close.node
-  log "HOMOGENIZE RS ";
   toRS
 done
 input.error
@@ -602,20 +549,18 @@ echo
 
 #: REORIENT T1 TO TEMPLATE ================================================
 printf "\n====================REORIENT T1 TO TEMPLATE===================\n\n"
-for i in $ID; do
+for j in ${!ID[@]}; do
   fromT1
   get.info1 "template/$template"
-  prefix[$i]=r${prefix[$i]}
-  inputs "${out[$i]}"
-  outputs "${prefix[$i]}$i.nii"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+  inputs "${out[$j]}"
+  outputs "resample.T1.${ID[j]}+orig"
+  echo -n "${ID[j]}> "
+  if open.node "REORIENT T1 TO TEMPLATE"; then
     3dresample \
     -orient "$orient" \
-    -prefix ${out[$i]} \
-    -inset ${in[$i]} &> ${prefix[$i]}$i.log 
+    -prefix ${out[$j]} \
+    -inset ${in[$j]} &>> preproc.${ID[j]}.log
   fi; close.node
-  log "REORIENT T1 TO TEMP "
   toT1
 done 
 input.error
@@ -623,20 +568,18 @@ echo
 
 #: REORIENT RS TO TEMPLATE ================================================
 printf "\n====================REORIENT RS TO TEMPLATE===================\n\n"
-for i in $ID; do
+for j in ${!ID[@]}; do
   fromRS
   get.info1 "template/$template"
-  prefix[$i]=r${prefix[$i]}
-  inputs "${out[$i]}"
-  outputs "${prefix[$i]}$i.nii"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+  inputs "${out[$j]}"
+  outputs "resample.RS.${ID[j]}+orig"
+  echo -n "${ID[j]}> "
+  if open.node "REORIENT RS TO TEMPLATE"; then
     3dresample \
     -orient "$orient" \
-    -prefix ${out[$i]} \
-    -inset ${in[$i]} &> ${prefix[$i]}$i.log 
+    -prefix ${out[$j]} \
+    -inset ${in[$j]} &>> preproc.${ID[j]}.log
   fi; close.node
-  log "REORIENT RS TO TEMP "
   toRS
 done 
 input.error
@@ -644,76 +587,67 @@ echo
 
 #: Align center T1 TO TEMPLATE ================================================
 printf "\n====================Align center T1 TO TEMPLATE===================\n\n"
-for i in $ID; do
+for j in ${!ID[@]}; do
   fromT1
-  prefix[$i]=a${prefix[$i]}
-  inputs "${out[$i]}"
-  outputs "${prefix[$i]}$i.nii" "${prefix[$i]}$i.1D"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+  inputs "${out[$j]}"
+  outputs "resample.T1.${ID[j]}_shft+orig" "resample.T1.${ID[j]}_shft.1D"
+  echo -n "${ID[j]}> "
+  if open.node "Align center T1 TO TEMPLATE"; then
     @Align_Centers \
     -base "$template" \
-    -dset ${in[$i]} &> ${prefix[$i]}$i.log 
-    mv *_shft.nii ${out[$i]} &>> ${prefix[$i]}$i.log 
-    mv *_shft.1D ${out_2[$i]} &>> ${prefix[$i]}$i.log 
+    -dset ${in[$j]} &>> preproc.${ID[j]}.log 
   fi; close.node
-  log "Align center T1 TO TEMP "
 done 
 input.error
 echo
 
-#: Unifaze T1 ===========================================================
-printf "\n=========================Unifaze T1========================\n\n"
-for i in $ID; do
-  prefix[$i]=u${prefix[$i]}
-  inputs "${out[$i]}"
-  outputs "${prefix[$i]}$i.nii"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+#: Unifize T1 ===========================================================
+printf "\n=========================Unifize T1========================\n\n"
+for j in ${!ID[@]}; do
+  inputs "${out[$j]}"
+  outputs "unifize.T1.${ID[j]}+orig"
+  echo -n "${ID[j]}> "
+  if open.node "Unifize T1"; then
     3dUnifize \
-    -prefix ${out[$i]} \
-    -input ${in[$i]} &> ${prefix[$i]}$i.log
+    -prefix ${out[$j]} \
+    -input ${in[$j]} &>> preproc.${ID[j]}.log 
   fi; close.node
-  log "Unifaze T1 "
 done 
 input.error
 echo
 
 #: SKULLSTRIP ===============================================================
-
 if [ $bet -eq 0 ]; then
-  echo "O SKULL STRIP DEVE SER FEITO MANUALMENTE. USE COMO BASE O ARQUIVO QUE ESTÁ NA PASTA OUTPUT/$i/manual_skullstrip. NOMEIE O ARQUIVO mask_T1_<SUBID>.nii.gz e salve no diretório base." | fold -s
-  for i in $ID; do
-    prefix[$i]=mask_T1_
-    inputs "${out[$i]}"
-    outputs "${prefix[$i]}$i.nii.gz"
-    [ ! -d "$pwd/OUTPUT/$i/manual_skullstrip" ] && mkdir -p $pwd/OUTPUT/$i/manual_skullstrip
-    cp DATA/$i/STEPS/${in[$i]} OUTPUT/$i/manual_skullstrip 2> /dev/null
-    ss=$(find . -name "mask_T1_$i*")
-    mv $ss /DATA/$i/STEPS 2> /dev/null
+  echo "O SKULL STRIP DEVE SER FEITO MANUALMENTE. USE COMO BASE O ARQUIVO QUE ESTÁ NA PASTA OUTPUT/${ID[j]}/manual_skullstrip. NOMEIE O ARQUIVO mask.T1.<SUBID>.nii.gz e salve no diretório base." | fold -s
+  for j in ${!ID[@]}; do
+    inputs "${out[$j]}"
+    outputs "mask.T1.${ID[j]}.nii.gz"
+    [ ! -d "$pwd/OUTPUT/${ID[j]}/manual_skullstrip" ] && mkdir -p $pwd/OUTPUT/${ID[j]}/manual_skullstrip
+    cp DATA/${ID[j]}/${ID[j]}.results/${in[$j]} OUTPUT/${ID[j]}/manual_skullstrip 2> /dev/null
+    ss=$(find . -name "mask.T1.${ID[j]}*")
+    mv $ss ./DATA/${ID[j]}/${ID[j]}.results 2> /dev/null
   done
 else
   FSLDIR=/usr/share/fsl
   #: BET ============================================================
   printf "\n============================BET============================\n\n"
   pwd=($PWD)
-  for i in $ID; do
-    prefix[$i]=mask_T1_
-    inputs "${out[$i]}"
-    outputs "${prefix[$i]}$i.nii.gz"
-    echo -n "$i> "
-    open.node; if [ $go -eq 1 ]; then
-    ( "$fsl5"bet ${in[$i]} ${i}_step1 -B -f $betf && \
-      "$fsl5"flirt -ref ${FSLDIR}/data/standard/MNI152_T1_2mm_brain -in ${i}_step1.nii.gz -omat ${i}_step2.mat -out ${i}_step2 -searchrx -30 30 -searchry -30 30 -searchrz -30 30 && \
-      "$fsl5"fnirt --in=${in[$i]} --aff=${i}_step2.mat --cout=${i}_step3 --config=T1_2_MNI152_2mm && \
-      "$fsl5"applywarp --ref=${FSLDIR}/data/standard/MNI152_T1_2mm --in=${in[$i]} --warp=${i}_step3 --out=${i}_step4 && \
-      "$fsl5"invwarp -w ${i}_step3.nii.gz -o ${i}_step5.nii.gz -r ${i}_step1.nii.gz && \
-      "$fsl5"applywarp --ref=${in[$i]} --in=${FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz --warp=${i}_step5.nii.gz --out=${i}_step6 --interp=nn && \
-      "$fsl5"fslmaths ${i}_step6.nii.gz -bin invmask_$i.nii.gz && \
-      "$fsl5"fslmaths invmask_$i.nii.gz -mul -1 -add 1 ${out[$i]} ) &> ${prefix[$i]}$i.log
-       rm invmask_$i.nii.gz ${i}_step1.nii.gz ${i}_step1_mask.nii.gz ${i}_step2.nii.gz ${i}_step2.mat ${i}_step3.nii.gz ${i}_step4.nii.gz ${i}_step5.nii.gz ${i}_step6.nii.gz *_to_MNI152_T1_2mm.log 2> /dev/null
+  for j in ${!ID[@]}; do
+    inputs "${out[$j]}"
+    outputs "mask.T1.${ID[j]}.nii.gz"
+    echo -n "${ID[j]}> "
+    if open.node "BET"; then
+    (  3dAFNItoNIFTI ${in[$j]} unifize.T1.${ID[j]}.nii
+      "$fsl5"bet unifize.T1.${ID[j]}.nii ${ID[j]}_step1 -B -f $betf && \
+      "$fsl5"flirt -ref ${FSLDIR}/data/standard/MNI152_T1_2mm_brain -in ${ID[j]}_step1.nii.gz -omat ${ID[j]}_step2.mat -out ${ID[j]}_step2 -searchrx -30 30 -searchry -30 30 -searchrz -30 30 && \
+      "$fsl5"fnirt --in=unifize.T1.${ID[j]}.nii --aff=${ID[j]}_step2.mat --cout=${ID[j]}_step3 --config=T1_2_MNI152_2mm && \
+      "$fsl5"applywarp --ref=${FSLDIR}/data/standard/MNI152_T1_2mm --in=unifize.T1.${ID[j]}.nii --warp=${ID[j]}_step3 --out=${ID[j]}_step4 && \
+      "$fsl5"invwarp -w ${ID[j]}_step3.nii.gz -o ${ID[j]}_step5.nii.gz -r ${ID[j]}_step1.nii.gz && \
+      "$fsl5"applywarp --ref=unifize.T1.${ID[j]}.nii --in=${FSLDIR}/data/standard/MNI152_T1_1mm_brain_mask.nii.gz --warp=${ID[j]}_step5.nii.gz --out=${ID[j]}_step6 --interp=nn && \
+      "$fsl5"fslmaths ${ID[j]}_step6.nii.gz -bin invmask_${ID[j]}.nii.gz && \
+      "$fsl5"fslmaths invmask_${ID[j]}.nii.gz -mul -1 -add 1 ${out[$j]} )  &>> preproc.${ID[j]}.log
+       rm invmask_${ID[j]}.nii.gz ${ID[j]}_step1.nii.gz ${ID[j]}_step1_mask.nii.gz ${ID[j]}_step2.nii.gz ${ID[j]}_step2.mat ${ID[j]}_step3.nii.gz ${ID[j]}_step4.nii.gz ${ID[j]}_step5.nii.gz ${ID[j]}_step6.nii.gz *_to_MNI152_T1_2mm.log 2> /dev/null
     fi; close.node
-    log "BET "
   done 
   input.error
   echo
@@ -725,19 +659,17 @@ fi
 
 #: APPLY MASK TO T1 ===========================================================
 printf "\n=========================APPLY MASK T1========================\n\n"
-for i in $ID; do
-  prefix[$i]=SS_T1_
-  inputs "${out[$i]}" "uard_T1_$i.nii"
-  outputs "${prefix[$i]}$i.nii"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+for j in ${!ID[@]}; do
+  inputs "${out[$j]}" "unifize.T1.${ID[j]}+orig"
+  outputs "SS.T1.${ID[j]}+orig"
+  echo -n "${ID[j]}> "
+  if open.node "APPLY MASK T1"; then
     3dcalc \
-    -a        ${in_2[$i]} \
-    -b        ${in[$i]} \
+    -a        ${in_2[$j]} \
+    -b        ${in[$j]} \
     -expr     'a*abs(b-1)' \
-    -prefix   ${out[$i]} &> ${prefix[$i]}$i.log
+    -prefix   ${out[$j]} &>> preproc.${ID[j]}.log 
   fi; close.node
-  log "Apply mask T1 "
   toT1
 done 
 input.error
@@ -745,21 +677,17 @@ echo
 
 #: ALIGN CENTER fMRI-T1 ======================================================
 printf "\n=======================ALIGN CENTER fMRI-T1=====================\n\n"
-for i in $ID; do
+for j in ${!ID[@]}; do
   fromRS
-  prefix[$i]=a${prefix[$i]}
-  inputs "${out[$i]}" "SS_T1_$i.nii"
-  outputs "${prefix[$i]}$i.nii" "${prefix[$i]}$i.1D"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+  inputs "${out[$j]}" "SS.T1.${ID[j]}+orig"
+  outputs "resample.RS.${ID[j]}_shft+orig" "resample.RS.${ID[j]}_shft.1D"
+  echo -n "${ID[j]}> "
+  if open.node "ALIGN CENTER fMRI-T1"; then
     @Align_Centers \
     -cm \
-    -base ${in_2[$i]} \
-    -dset ${in[$i]} &> ${prefix[$i]}$i.log
-    mv *_shft.nii ${prefix[$i]}$i.nii &>> ${prefix[$i]}$i.log 
-    mv *_shft.1D ${prefix[$i]}$i.1D &>> ${prefix[$i]}$i.log 
+    -base ${in_2[$j]} \
+    -dset ${in[$j]} &>> preproc.${ID[j]}.log 
   fi; close.node
-  log "Apply mask T1 "
   toRS
 done 
 input.error
@@ -767,26 +695,22 @@ echo
 
 #: COREGISTER fMRI-T1 ======================================================
 printf "\n=======================COREGISTER fMRI-T1=====================\n\n"
-for i in $ID; do
+for j in ${!ID[@]}; do
   fromT1
-  prefix[$i]=c${prefix[$i]}; declare -A segrs[$i]=${prefix[$i]}
-  inputs "${out[$i]}" "${prefixrs[$i]}$i.nii"
-  outputs "${prefix[$i]}$i.nii" "${prefix[$i]}$i.1D"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
-    align_epi_anat.py \
-    -anat ${in[$i]} \
-    -epi  ${in_2[$i]} \
+  inputs "${out[$j]}" "SS.T1.${ID[j]}+orig"
+  outputs "SS.T1.${ID[j]}_al+orig" "SS.T1.${ID[j]}_al_mat.aff12.1D"
+  echo -n "${ID[j]}> "
+  if open.node "COREGISTER fMRI-T1"; then
+   ( align_epi_anat.py \
+    -anat ${in[$j]} \
+    -epi  ${in_2[$j]} \
     -epi_base 100 \
     -anat_has_skull no \
     -volreg off \
     -tshift off \
-    -deoblique off &> ${prefix[$i]}$i.log
-    3dAFNItoNIFTI -prefix ${out[$i]} SS_T1_${i}_al+orig &>> ${prefix[$i]}$i.log
-    rm SS_T1_${i}_al+orig* &>> ${prefix[$i]}$i.log
-    mv SS_T1_${i}_al_mat* ${out_2[$i]} &>> ${prefix[$i]}$i.log
+    
+    -deoblique off ) &>> preproc.${ID[j]}.log
   fi; close.node
-  log "COREGISTER fMRI-T1 "
 done 
 input.error
 echo
@@ -797,22 +721,20 @@ echo
 
 #: NORMALIZE T1 TO TEMPLATE ======================================================
 printf "\n=======================NORMALIZE T1 TO TEMPLATE=====================\n\n"
-for i in $ID; do 
-  prefix[$i]=MNI_T1_
-  inputs "${out[$i]}"
-  outputs "${prefix[$i]}$i.nii" "${prefix[$i]}${i}_WARP.nii" 
-  cp.inputs "$template.HEAD" "$template.BRIK.gz"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+for j in ${!ID[@]}; do 
+  inputs "${out[$j]}"
+  outputs "MNI.T1.${ID[j]}" "MNI.T1.${ID[j]}_WARP" 
+  cp.inputs "${template}.HEAD" "${template}.BRIK.gz"
+  echo -n "${ID[j]}> "
+  if open.node "NORMALIZE T1 TO TEMPLATE"; then
     3dQwarp \
-      -prefix ${out[$i]} \
+      -prefix ${out[$j]} \
       -blur 0 3 \
       -base $template \
       -allineate \
-      -source ${in[$i]} &> ${prefix[$i]}$i.log
-    rm MNI_T1_${i}_Allin* &>> ${prefix[$i]}$i.log
+      -source ${in[$j]} &>> preproc.${ID[j]}.log
+    rm MNI.T1.${ID[j]}_Allin* &>> preproc.${ID[j]}.log
    fi; close.node
-  log "NORMALIZE T1 TO TEMPLATE "
   toT1
 done 
 input.error
@@ -822,21 +744,19 @@ echo
 
 #: fMRI SPATIAL NORMALIZATION ======================================================
 printf "\n=======================fMRI SPATIAL NORMALIZATION=====================\n\n"
-for i in $ID; do
+for j in ${!ID[@]}; do
   fromRS
-  prefix[$i]=${prefix[$i]}MNI_
-  inputs "${out[$i]}" "${out_2[$i]}"
-  outputs "${prefix[$i]}$i.nii"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+  inputs "${out[$j]}" "${out_2[$j]}+tlrc"
+  outputs "MNI.RS.${ID[j]}+tlrc"
+  echo -n "${ID[j]}> "
+  if open.node "fMRI SPATIAL NORMALIZATION"; then
     3dNwarpApply \
-    -source ${in[$i]} \
-    -nwarp ${in_2[$i]} \
+    -source ${in[$j]} \
+    -nwarp ${in_2[$j]} \
     -master "$template" \
     -newgrid 3 \
-    -prefix ${out[$i]} &> ${prefix[$i]}$i.log
+    -prefix ${out[$j]} &>> preproc.${ID[j]}.log
   fi; close.node
-  log "fMRI SPATIAL NORMALIZATION "
   toRS
 done 
 input.error
@@ -847,67 +767,65 @@ echo
 
 #: T1 SEGMENTATION ======================================================
 printf "\n=======================T1 SEGMENTATION=====================\n\n"
-for i in $ID; do
+for j in ${!ID[@]}; do
   fromT1
-  prefix[$i]=seg_
-  inputs "${out[$i]}"
-  outputs "${i}_CSF.nii" "${i}_WM.nii"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+  inputs "SS.T1.${ID[j]}_al+orig"
+  outputs "${ID[j]}.CSF+orig" "${ID[j]}.WM+orig"
+  echo -n "${ID[j]}> "
+  if open.node "T1 SEGMENTATION"; then
+  ( 3dAFNItoNIFTI -prefix SS.T1.${ID[j]}_al.nii ${in[j]}
     ${fsl5}fast \
-    -o seg_$i \
+    -o seg.${ID[j]} \
     -S 1 \
     -t 1 \
     -n 3 \
-    cSS_T1_"$i".nii &> ${prefix[$i]}$i.log
+    SS.T1.${ID[j]}_al.nii 
     3dcalc \
-    -a seg_"$i"_pve_0.nii.gz \
+    -a seg.${ID[j]}_pve_0.nii.gz \
     -expr 'equals(a,1)' \
-    -prefix ${out[$i]} &>> ${prefix[$i]}$i.log
+    -prefix ${out[$j]} 
     ### now, the WM
     3dcalc \
-    -a seg_"$i"_pve_2.nii.gz \
+    -a seg.${ID[j]}_pve_2.nii.gz \
     -expr 'equals(a,1)' \
-    -prefix ${out_2[$i]} &>> ${prefix[$i]}$i.log
-    rm seg_${i}_* &>> ${prefix[$i]}$i.log
+    -prefix ${out_2[$j]} ) &>> preproc.${ID[j]}.log
+    rm seg.${ID[j]} &>> preproc.${ID[j]}.log
   fi; close.node
-  log "T1 SEGMENTATION "
 done 
 input.error
 echo
 
 # RS SEGMENTATION ======================================================
 printf "\n=======================RS SEGMENTATION=====================\n\n"
-for i in $ID; do
-  inputs "${segrs[$i]}$i.nii" "${out[$i]}" "${out_2[$i]}"
-  outputs "${i}_CSF_signal.1d" "${i}_WM_signal.1d"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+for j in ${!ID[@]}; do
+  inputs "resample.RS.${ID[j]}_shft+orig" "${out[$j]}" "${out_2[$j]}"
+  outputs "${ID[j]}.CSF.signal.1d" "${ID[j]}.WM.signal.1d"
+  echo -n "${ID[j]}> "
+  if open.node "RS SEGMENTATION"; then
     ### resample CSF mask
    ( 3dresample \
-    -master ${in[$i]} \
-    -inset ${in_2[$i]} \
-    -prefix "$i"_CSF_resampled+orig &> ${prefix[$i]}$i.log
+    -master ${in[$j]} \
+    -inset ${in_2[$j]} \
+    -prefix "${ID[j]}"_CSF_resampled+orig 
     ### resample WM mask
     3dresample \
-    -master ${in[$i]} \
-    -inset ${in_3[$i]} \
-    -prefix "$i"_WM_resampled+orig &>> ${prefix[$i]}$i.log
+    -master ${in[$j]} \
+    -inset ${in_3[$j]} \
+    -prefix "${ID[j]}"_WM_resampled+orig 
     ### first, mean CSF signal
     3dmaskave \
     -quiet \
-    -mask "$i"_CSF_resampled+orig \
-    ${in[$i]} \
-    > ${out[$i]} 
+    -mask "${ID[j]}"_CSF_resampled+orig \
+    ${in[$j]} \
+    > ${out[$j]} 
     ### now, mean WM signal
     3dmaskave \
     -quiet \
-    -mask "$i"_WM_resampled+orig \
-    ${in[$i]} \
-    > ${out_2[$i]} ) &>> ${prefix[$i]}$i.log
-    rm "$i"_CSF_resampled* "$i"_WM_resampled* &>> ${prefix[$i]}$i.log
+    -mask "${ID[j]}"_WM_resampled+orig \
+    ${in[$j]} \
+    > ${out_2[$j]} ) &>> preproc.${ID[j]}.log
+    rm "${ID[j]}"_CSF_resampled* "${ID[j]}"_WM_resampled* &>> preproc.${ID[j]}.log
   fi; close.node
-  log "RS SEGMENTATION "
 done 
 input.error
 echo
@@ -918,42 +836,38 @@ echo
 
 #: RS FILTERING ======================================================
 printf "\n=======================RS FILTERING=====================\n\n"
-for i in $ID; do
+for j in ${!ID[@]}; do
   fromRS
-  prefix[$i]=f${prefix[$i]}
-  inputs "${out[$i]}" "mc_${i}.1d" "${i}_CSF_signal.1d" "${i}_WM_signal.1d "
-  outputs "${prefix[$i]}$i.nii" 
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+  inputs "${out[$j]}" "mc.${ID[j]}.1d" "${ID[j]}.CSF.signal.1d" "${ID[j]}.WM.signal.1d"
+  outputs "bandpass.RS.${ID[j]}+tlrc" 
+  echo -n "${ID[j]}> "
+  if open.node "RS FILTERING"; then
    3dBandpass \
   -band 0.01 0.08 \
   -despike \
-  -ort ${in_2[$i]} \
-  -ort ${in_3[$i]} \
-  -ort ${in_4[$i]} \
-  -prefix ${out[$i]} \
-  -input ${in[$i]} &> ${prefix[$i]}$i.log
+  -ort ${in_2[$j]} \
+  -ort ${in_3[$j]} \
+  -ort ${in_4[$j]} \
+  -prefix ${out[$j]} \
+  -input ${in[$j]} &>> preproc.${ID[j]}.log
   fi; close.node
-  log "RS FILTERING "
 done 
 input.error
 echo
 
 #: RS SMOOTHING ======================================================
 printf "\n=======================RS SMOOTHING=====================\n\n"
-for i in $ID; do
-  prefix[$i]=b${prefix[$i]}
-  inputs "${out[$i]}" 
-  outputs "${prefix[$i]}$i.nii"
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+for j in ${!ID[@]}; do
+  inputs "${out[$j]}" 
+  outputs "merge.RS.${ID[j]}+tlrc"
+  echo -n "${ID[j]}> "
+  if open.node "RS SMOOTHING"; then
     3dmerge \
     -1blur_fwhm "$blur" \
     -doall \
-    -prefix ${out[$i]} \
-    ${in[$i]} &> ${prefix[$i]}$i.log
+    -prefix ${out[$j]} \
+    ${in[$j]} &>> preproc.${ID[j]}.log 
   fi; close.node
-  log "RS SMOOTHING "
 done 
 input.error
 echo
@@ -961,122 +875,120 @@ echo
 if [ $censor -eq 1 ]; then
 #: RS MOTIONCENSOR ======================================================
 printf "\n=======================RS MOTIONCENSOR=====================\n\n"
-for i in $ID; do
-  prefix[$i]=c${prefix[$i]}
-  inputs "${out[$i]}" "mc_$i.1d" "RS_$i.nii"
-  outputs "${prefix[$i]}$i.nii"
-  cp.inputs
-  echo -n "$i> "
-  open.node; if [ $go -eq 1 ]; then
+for j in ${!ID[@]}; do
+  inputs "${out[$j]}" "mc.${ID[j]}.1d" "RS.${ID[j]}.nii"
+  outputs "censor.RS.${ID[j]}+tlrc"
+  echo -n "${ID[j]}> "
+  if open.node "RS MOTIONCENSOR"; then
     ### take the temporal derivative of each vector (done as first backward difference)
-    1d_tool.py \
-    -infile ${in_2[$i]} \
+  ( 1d_tool.py \
+    -infile ${in_2[$j]} \
     -derivative \
-    -write "$i"_RS.deltamotion.1D &>> ${prefix[$i]}$i.log
+    -write c."${ID[j]}"_RS.deltamotion.1D 
 
     ### calculate total framewise displacement (sum of six parameters)
     1deval \
-    -a "$i"_RS.deltamotion.1D'[0]' \
-    -b "$i"_RS.deltamotion.1D'[1]' \
-    -c "$i"_RS.deltamotion.1D'[2]' \
-    -d "$i"_RS.deltamotion.1D'[3]' \
-    -e "$i"_RS.deltamotion.1D'[4]' \
-    -f "$i"_RS.deltamotion.1D'[5]' \
+    -a c."${ID[j]}"_RS.deltamotion.1D'[0]' \
+    -b c."${ID[j]}"_RS.deltamotion.1D'[1]' \
+    -c c."${ID[j]}"_RS.deltamotion.1D'[2]' \
+    -d c."${ID[j]}"_RS.deltamotion.1D'[3]' \
+    -e c."${ID[j]}"_RS.deltamotion.1D'[4]' \
+    -f c."${ID[j]}"_RS.deltamotion.1D'[5]' \
     -expr '100*sind(abs(a)/2) + 100*sind(abs(b)/2) + 100*sind(abs(c)/2) + abs(d) + abs(e) + abs(f)' \
-    > "$i"_RS.deltamotion.FD.1D
+    > c."${ID[j]}"_RS.deltamotion.FD.1D
 
     ### create temporal mask (1 = extreme motion)
     1d_tool.py \
-    -infile "$i"_RS.deltamotion.FD.1D \
+    -infile c."${ID[j]}"_RS.deltamotion.FD.1D \
     -extreme_mask -1 0.5 \
-    -write "$i"_RS.deltamotion.FD.extreme0.5.1D &>> ${prefix[$i]}$i.log
+    -write c."${ID[j]}"_RS.deltamotion.FD.extreme0.5.1D
 
     ### create temporal mask (0 = extreme motion)
-    1deval -a "$i"_RS.deltamotion.FD.extreme0.5.1D \
+    1deval -a c."${ID[j]}"_RS.deltamotion.FD.extreme0.5.1D \
     -expr 'not(a)' \
-    > "$i"_RS.deltamotion.FD.moderate0.5.1D
+    > c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.1D
 
     ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
     1deval \
-    -a "$i"_RS.deltamotion.FD.moderate0.5.1D \
-    -b "$i"_RS.deltamotion.FD.moderate0.5.1D'{1..$,0}' \
+    -a c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.1D \
+    -b c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.1D'{1..$,0}' \
     -expr 'ispositive(a + b - 1)' \
-    > "$i"_RS.deltamotion.FD.moderate0.5.n.1D
+    > c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.1D
 
     ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
     1deval \
-    -a "$i"_RS.deltamotion.FD.moderate0.5.n.1D \
-    -b "$i"_RS.deltamotion.FD.moderate0.5.n.1D'{0,0..$}' \
+    -a c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.1D \
+    -b c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.1D'{0,0..$}' \
     -expr 'ispositive(a + b - 1)' \
-    > "$i"_RS.deltamotion.FD.moderate0.5.n.n.1D
+    > c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.1D
 
     ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
     1deval \
-    -a "$i"_RS.deltamotion.FD.moderate0.5.n.n.1D \
-    -b "$i"_RS.deltamotion.FD.moderate0.5.n.n.1D'{0,0..$}' \
+    -a c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.1D \
+    -b c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.1D'{0,0..$}' \
     -expr 'ispositive(a + b - 1)' \
-    > "$i"_RS.deltamotion.FD.moderate0.5.n.n.n.1D
+    > c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.n.1D
 
     ### normalize and scale the BOLD to percent signal change
     ### find the mean
     3dTstat \
     -mean \
-    -prefix meanBOLD_"$i" \
-    ${in_3[$i]} &>> ${prefix[$i]}$i.log
+    -prefix c.meanBOLD_"${ID[j]}" \
+    ${in_3[$j]}
     ### scale BOLD signal to percent change
     3dcalc \
-    -a ${in_3[$i]} \
-    -b meanBOLD_"$i"+orig \
+    -a ${in_3[$j]} \
+    -b c.meanBOLD_"${ID[j]}"+orig \
     -expr "(a/b) * 100" \
-    -prefix "$i"_RS_scaled &>> ${prefix[$i]}$i.log
-    ### temporal derivative of the frames
+    -prefix c."${ID[j]}"_RS_scaled
+    ### temporal derivative of the frames--------------------------------------
     3dcalc \
-    -a "$i"_RS_scaled+orig \
+    -a c."${ID[j]}"_RS_scaled+orig \
     -b 'a[0,0,0,-1]' \
     -expr '(a - b)^2' \
-    -prefix "$i"_RS.backdif2 &>> ${prefix[$i]}$i.log
+    -prefix c."${ID[j]}"_RS.backdif2
     ### Extract brain mask
     3dAutomask \
-    -prefix "$i".auto_mask.brain \
-    ${in_3[$i]} &>> ${prefix[$i]}$i.log
-    ### average data from each frame (inside brain mask)
+    -prefix c."${ID[j]}".auto_mask.brain \
+    ${in_3[$j]}
+    ### average data from each frame (inside brain mask)------------------------
     3dmaskave \
-    -mask "$i".auto_mask.brain+orig \
-    -quiet "$i"_RS.backdif2+orig \
-    > "$i"_RS.backdif2.avg.1D
+    -mask c."${ID[j]}".auto_mask.brain+orig \
+    -quiet c."${ID[j]}"_RS.backdif2+orig \
+    > c."${ID[j]}"_RS.backdif2.avg.1D
     ### square root to finally get DVARS
     1deval \
-    -a "$i"_RS.backdif2.avg.1D \
+    -a c."${ID[j]}"_RS.backdif2.avg.1D \
     -expr 'sqrt(a)' \
-    > "$i"_RS.backdif2.avg.dvars.1D
+    > c."${ID[j]}"_RS.backdif2.avg.dvars.1D
     ### mask extreme (1 = extreme motion)
     1d_tool.py \
-    -infile "$i"_RS.backdif2.avg.dvars.1D \
+    -infile c."${ID[j]}"_RS.backdif2.avg.dvars.1D \
     -extreme_mask -1 5 \
-    -write "$i"_RS.backdif2.avg.dvars.extreme5.1D &>> ${prefix[$i]}$i.log
+    -write c."${ID[j]}"_RS.backdif2.avg.dvars.extreme5.1D
     ### mask extreme (0 = extreme motion)
     1deval \
-    -a "$i"_RS.backdif2.avg.dvars.extreme5.1D \
+    -a c."${ID[j]}"_RS.backdif2.avg.dvars.extreme5.1D \
     -expr 'not(a)' \
-    > "$i"_RS.backdif2.avg.dvars.moderate5.1D
+    > c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.1D
     ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 1)
     1deval \
-    -a "$i"_RS.backdif2.avg.dvars.moderate5.1D \
-    -b "$i"_RS.backdif2.avg.dvars.moderate5.1D'{1..$,0}' \
+    -a c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.1D \
+    -b c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.1D'{1..$,0}' \
     -expr 'ispositive(a + b - 1)' \
-    > "$i"_RS.backdif2.avg.dvars.moderate5.n.1D
+    > c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.1D
     ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 2)
     1deval \
-    -a "$i"_RS.backdif2.avg.dvars.moderate5.n.1D \
-    -b "$i"_RS.backdif2.avg.dvars.moderate5.n.1D'{0,0..$}' \
+    -a c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.1D \
+    -b c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.1D'{0,0..$}' \
     -expr 'ispositive(a + b - 1)' \
-    > "$i"_RS.backdif2.avg.dvars.moderate5.n.n.1D
+    > c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.1D
     ### temporal are augmented by also marking the frames 1 back and 2 forward from any marked frames (step 3)
     1deval \
-    -a "$i"_RS.backdif2.avg.dvars.moderate5.n.n.1D \
-    -b "$i"_RS.backdif2.avg.dvars.moderate5.n.n.1D'{0,0..$}' \
+    -a c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.1D \
+    -b c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.1D'{0,0..$}' \
     -expr 'ispositive(a + b - 1)' \
-    > "$i"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D
+    > c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D
 
 
     ### Integrate FD and DVARS censoring
@@ -1084,41 +996,48 @@ for i in $ID; do
 
     ### FD censor OR DVARS censor
     1deval \
-    -a "$i"_RS.deltamotion.FD.moderate0.5.n.n.n.1D \
-    -b "$i"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D \
+    -a c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.n.1D \
+    -b c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D \
     -expr 'or(a, b)' \
-    > "$i"_powerCensorIntersection.1D
+    > c."${ID[j]}".powerCensorIntersection.1D ) &>> preproc.${ID[j]}.log 
 
     ### Apply censor file in the final preprocessed image (after temporal filtering and spatial blurring)
-    afni_restproc.py -apply_censor ${in[$i]} "$i"_powerCensorIntersection.1D ${out[$i]} &>> ${prefix[$i]}$i.log
+    afni_restproc.py -apply_censor ${in[$j]} c.${ID[j]}.powerCensorIntersection.1D ${out[$j]} &>> preproc.${ID[j]}.log  
+    rm c.*
   fi; close.node
-  log "RS MOTIONCENSOR "
 done 
 input.error
 echo
-
+fi
 #: QC10 ========================================================================
 
-fi
+
 
 #: QC11 ========================================================================
 
 #: DATA OUTPUT ===================================================================
-for i in $ID; do
-#rm -r OUTPUT/$i/manual_skullstrip 2> /dev/null
-file=$(find . -name "bf*_RS_$i.nii")
-cp -n $file OUTPUT/$i/
-file=$(find . -name "cbf*_RS_$i.nii")
-cp -n $file OUTPUT/$i/
-file=$(find . -name "preproc_$i.log")
-cp -n $file OUTPUT/$i/
-file=$(find . -name "SS_T1_$i.nii")
-cp -n $file OUTPUT/$i/
-# incluir quality report aqui tbm
-#file=$(find . -name "report_$i.html")
-#cp -n $file OUTPUT/$i/
-done
-
+printf "\n=======================DATA OUTPUT=====================\n\n"
+for j in ${!ID[@]}; do
+  inputs "${out[$j]}" "SS.T1.${ID[j]}+orig" "preproc.${ID[j]}.log"
+  outputs "preproc.RS.${ID[j]}.nii" "SS.T1.${ID[j]}.nii" 
+  echo -n "${ID[j]}> "
+  if open.node "DATA OUTPUT"; then
+( rm -r OUTPUT/${ID[j]}/manual_skullstrip 
+  3dAFNItoNIFTI -prefix ${out[j]} ${in[j]}
+  3dAFNItoNIFTI -prefix ${out_2[j]} ${in_2[j]} ) &>> preproc.${ID[j]}.log
+  # incluir quality report aqui tbm
+  #file=$(find . -name "report.${ID[j]}.html")
+  #cp -n $file OUTPUT/${ID[j]}/ 
+  fi; cd $pwd
+( file=$(find . -name "${out[j]}")
+  cp -n $file $pwd/OUTPUT/${ID[j]}/
+  file=$(find . -name "${out_2[j]}")
+  cp -n $file $pwd/OUTPUT/${ID[j]}/  
+  file=$(find . -name "${in_3[j]}")
+cp -n $file $pwd/OUTPUT/${ID[j]}/  ) &> /dev/null
+done 
+input.error
+echo
 
 
 

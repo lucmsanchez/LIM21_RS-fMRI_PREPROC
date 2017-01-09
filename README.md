@@ -8,7 +8,7 @@ Esse protocolo ainda está em desenvolvimento.
 
 ## Pré-requisitos  
   
-- GNU Bash v4.4 (http://www.gnu.org/software/bash/)
+- GNU Bash v3.7+ (http://www.gnu.org/software/bash/)
 - AFNI v16.3.12 (https://afni.nimh.nih.gov/afni/)
 - FSL v5.0 (https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/)
 - Python v2.7 (https://www.python.org/)
@@ -56,9 +56,9 @@ P000003
 ```
 Salve as imagens que serão pré-processadas na pasta base (PREPROC) confome o padrão:
 ```
-RS_C000001.nii  # imagem Funcional
-T1_C000001.nii  # imagem estrutural
-RS_C000001.log  # physlog para análise aztec
+RS.C000001.nii  # imagem Funcional
+T1.C000001.nii  # imagem estrutural
+RS.C000001.log  # physlog para análise aztec
 ```
 Salve também o template na pasta principal. Caso não seja encontrado o script irá buscar o template especificado na pasta do AFNI e copiar para a pasta base
 
@@ -68,16 +68,17 @@ Os arquivos serão automaticamente organizados no seguinte padrão:
 .
 ├── DATA
 │   └── C000001
-│   	├── STEPS
-│   	├── RS_C000001.nii
-│   	├── T1_C000001.nii
-│   	└── RS_C000001.log
+│   	├── /C000001.results
+│   	├── RS.C000001.nii
+│   	├── T1.C000001.nii
+│   	└── RS.C000001.log
 ├── OUTPUT
 │   └── C000001
-│       ├── report_C000001.html
-│       ├── xxxxxx_RS_C000001.nii
-│       ├── SS_T1_C000001.nii
-│       └── preproc_C000001.log
+│   	├── /report.C000001
+│       ├── report.C000001.html
+│       ├── preproc.RS.C000001.nii
+│       ├── SS.T1.C000001.nii
+│       └── preproc.C000001.log
 ├── template
 │   ├── MNI152_1mm_uni+tlrc.BRIK
 │   └── MNI152_1mm_uni+tlrc.HEAD
@@ -89,18 +90,18 @@ Os arquivos serão automaticamente organizados no seguinte padrão:
 Abaixo instruções de como rodar o script. Ele usa a pasta onde é rodado como base para a análise. É necessário especificar o arquivo de configurações e o arquivo com o ID dos indivíduos. Caso o arquivo de configuração não seja especificado na primeira vez que rodar o script irá criar um com valores default.
 
 ```bash
-./preproc.sh [ Opções ] --config <txt com variáveis para análise>  --subs <ID das imagens>
+./preproc.sh [ Opções ] --config <txt com variáveis para análise>  --subjects <ID das imagens>
 
 opções:
-    -a ou --aztec:  realiza correções utilizando dados cardiorespiratórios
-    -b ou --bet:    realiza skull strip automatizado utlizando BET/OpitBET (Padrão: Manual)
-    -m ou --motioncensor  aplica a técnica motion censor
-    -p ou --break  interrompe o script no breakpoint de numero indicado
+-b | --break n interrompe o script no breakpoint de numero indicado
+--aztec            realiza a etapa aztec
+--bet              realiza o skull strip automatizado (Padrão: Manual)
+--motioncensor_no  NÃO aplica a técnica motion censor  
 ```
 
 Por exemplo, se preciso rodar a análise COM skulstrip automatizado, COM motion censor e SEM aztec e preciso interomper o script antes de aplicar a mascara do skullstrip (breakpoint numero 2) para realização de ajustes devo usar o seguinte comando:
 ```bash
-./preproc.sh -bm --break 2 --config preproc.cfg --subs preproc.sbj
+./preproc.sh --config preproc.cfg --subs preproc.sbj --break 2 --bet
 ```
 
 Caso tenha algum problema e queira fazer o Debug, execute como especificado abaixo e crie um novo item na aba Issues anexe o log:
@@ -111,13 +112,27 @@ bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
 
 ## Limitações e bugs (Ordem de prioridade)  
   
-- Opção -a e etapa aztec não funciona. (Bug #7)
+- Problemas com a etapa de segmentação, na criação do arquivo CSF.signal.1D
+- Opção --aztec e etapa aztec não funciona. (Bug #7)
     - 1o) qual dos arquivos de log deve-se usar? 
     - 2o) Mesmo com o exemplo fornecido usado o GUI há erro. Incompatibilidade com a versão do matlab? 
     - 3o) Na tentativa de usar a função sem GUI é necessário especificar a variável highpass, que não é usado no GUI - como é possivel? que valores usar?
+- Script não checa a versão do bash - necessita de 3.7+ para rodar
 - Script não checa os pré-requisitos dentro do matlab - SPM e aztec. (Bug #8)
 - Script não checa atualizações nas variáveis definidas nas configurações. Caso mude uma das configurações deve-se apagar o output da etapa a que a configuração se refere. (Bug #6)
 - Skull strip automatizado tem resultados ruins após o co-registro com fMRI (Bug #9)
+
+## TO DO (Ordem de prioridade)   
+  
+- Conformar nomes de arquivos com o padrão do afni
+- Adicionar etapas de controle de qualidade (testar etapas do proprio afni tbm)
+- Juntar todas QC em um relatório de qualidade
+- melhorar funções open.node e close.node (não são puras)
+- introduzir a contagem de outliers no RQ
+- Melhorar etapas de alinhamento (epi2anat?)
+- Melhorar etapa de normalização
+- Concatenar warps
+- Fazer regressões com 3dTproject
   
 ## Atalhos  
   

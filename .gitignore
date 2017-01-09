@@ -5,3 +5,8 @@ OUTPUT/
 WORK/
 .vscode/
 DATAs/
+
+log
+run
+rundb
+tmp

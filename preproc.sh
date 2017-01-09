@@ -938,10 +938,10 @@ for j in ${!ID[@]}; do
     ### scale BOLD signal to percent change
     3dcalc \
     -a ${in_3[$j]} \
-    -b meanBOLD_"${ID[j]}"+orig \
+    -b c.meanBOLD_"${ID[j]}"+orig \
     -expr "(a/b) * 100" \
     -prefix c."${ID[j]}"_RS_scaled
-    ### temporal derivative of the frames
+    ### temporal derivative of the frames--------------------------------------
     3dcalc \
     -a c."${ID[j]}"_RS_scaled+orig \
     -b 'a[0,0,0,-1]' \
@@ -951,7 +951,7 @@ for j in ${!ID[@]}; do
     3dAutomask \
     -prefix c."${ID[j]}".auto_mask.brain \
     ${in_3[$j]}
-    ### average data from each frame (inside brain mask)
+    ### average data from each frame (inside brain mask)------------------------
     3dmaskave \
     -mask c."${ID[j]}".auto_mask.brain+orig \
     -quiet c."${ID[j]}"_RS.backdif2+orig \
@@ -1002,8 +1002,8 @@ for j in ${!ID[@]}; do
     > c."${ID[j]}".powerCensorIntersection.1D ) &>> preproc.${ID[j]}.log 
 
     ### Apply censor file in the final preprocessed image (after temporal filtering and spatial blurring)
-    afni_restproc.py -apply_censor ${in[$j]} ${ID[j]}.powerCensorIntersection.1D ${out[$j]} &>> preproc.${ID[j]}.log  
-    #rm c.*
+    afni_restproc.py -apply_censor ${in[$j]} c.${ID[j]}.powerCensorIntersection.1D ${out[$j]} &>> preproc.${ID[j]}.log  
+    rm c.*
   fi; close.node
 done 
 input.error
@@ -1018,23 +1018,23 @@ fi
 #: DATA OUTPUT ===================================================================
 printf "\n=======================DATA OUTPUT=====================\n\n"
 for j in ${!ID[@]}; do
-  inputs "${out[$j]}" "SS.T1.${ID[j]}+trlc" "preproc.${ID[j]}.log"
+  inputs "${out[$j]}" "SS.T1.${ID[j]}+orig" "preproc.${ID[j]}.log"
   outputs "preproc.RS.${ID[j]}.nii" "SS.T1.${ID[j]}.nii" 
   echo -n "${ID[j]}> "
   if open.node "DATA OUTPUT"; then
-  #rm -r OUTPUT/${ID[j]}/manual_skullstrip 2> /dev/null
-( 3dAFNItoNIFTI -prefix ${out[j]} ${in[j]}
-  3dAFNItoNIFTI -prefix ${out_2[j]} ${in_2[j]}
-  file=$(find . -name "${out[j]}")
-  cp -n $file OUTPUT/${ID[j]}/
-  file=$(find . -name "${out_2[j]}")
-  cp -n $file OUTPUT/${ID[j]}/  
-  file=$(find . -name "${in_3[j]}")
-  cp -n $file OUTPUT/${ID[j]}/ ) &> /dev/null
+( rm -r OUTPUT/${ID[j]}/manual_skullstrip 
+  3dAFNItoNIFTI -prefix ${out[j]} ${in[j]}
+  3dAFNItoNIFTI -prefix ${out_2[j]} ${in_2[j]} ) &>> preproc.${ID[j]}.log
   # incluir quality report aqui tbm
   #file=$(find . -name "report.${ID[j]}.html")
   #cp -n $file OUTPUT/${ID[j]}/ 
-  fi; close.node
+  fi; cd $pwd
+( file=$(find . -name "${out[j]}")
+  cp -n $file $pwd/OUTPUT/${ID[j]}/
+  file=$(find . -name "${out_2[j]}")
+  cp -n $file $pwd/OUTPUT/${ID[j]}/  
+  file=$(find . -name "${in_3[j]}")
+cp -n $file $pwd/OUTPUT/${ID[j]}/  ) &> /dev/null
 done 
 input.error
 echo

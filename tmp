@@ -249,8 +249,8 @@ read -r -d '' node <<'EOF'
       ${in[$j]} &>> preproc.${ID[j]}.log
 EOF
 node.run -e "TESTE"                                   \
-         -p ""                                        \
-         -l ""                                        \
+         -p "DATA/${ID[j]}/${ID[j]}.results/"         \
+         -l "${!ID[@]}"                                        \
          -i "${out[$j]}"                              \
          -o "tshift.RS.${ID[j]}+orig"                 \
          -n "$node"                                   \

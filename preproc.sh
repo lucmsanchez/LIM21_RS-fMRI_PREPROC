@@ -209,6 +209,107 @@ cp.inputs () {
   [ ! -f "${steppath[$j]}$3" ] && cp ${files[0]} ${steppath[$j]} 2> /dev/null
 }
 
+qc () {
+  while [[ $# -gt 0 ]]
+  do
+  k="$1"
+  case $k in
+    -e)
+    e="$2"
+    shift
+    ;;
+    -i)
+    f1="$2"
+    shift
+    ;;
+    -o)
+    f2="$2"
+    shift # past argument
+    ;;
+    *)
+     echo "Erro de sintaxe" >&2
+     usage
+     exit       # unknown option
+    ;;
+  esac
+  shift # past argument or value
+  done
+
+  local a=0; local b=0; local c=0; local d=0
+  go=1
+
+  cd ${steppath[$j]}
+  echo -n "${ID[j]}> "
+  for ii in $f1; do
+    for file in ${ii}*; do
+      [ ! -f $file ] && echo "INPUT $ii não encontrado" && a=$((a + 1))
+      for iii in $f2; do
+        for file2 in ${iii}*; do
+          [ ! -f $file2 ] && b=$((b + 1)) || c=$((c + 1))
+          [ $file2 -ot $file ] && d=$((d + 1))
+        done
+      done
+    done
+  done
+  #echo $a $b $c $d
+  if [ $a -eq 0 ]; then
+    if [ $b -eq 0 ]; then 
+      if [ ! $d -eq 0 ]; then
+        printf "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. " 
+        for iii in $f2; do 
+          rm ${iii}* 2> /dev/null; 
+        done
+        go=1
+      else
+        echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0; ex=0
+      fi
+    else
+      if [ ! $c -eq 0 ]; then
+        echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
+        for iii in $f2; do 
+        rm ${iii}* 2> /dev/null; done
+        go=1
+      else
+        go=1
+      fi
+    fi
+  else
+    go=0; ex=$((ex + 1))
+  fi  
+
+  if [ $go -eq 1 ]; then
+    ( echo 
+    echo "================================================================================"
+    echo "ETAPA: $e  - RUNTIME: $(date)" 
+    echo "================================================================================"
+    echo 
+    echo "INPUTS: $f1" 
+    echo "OUTPUTS: $f2"
+    echo ) >> preproc.${ID[j]}.log
+    return 0
+  else
+    return 1
+  fi
+}
+
+qc.close () {
+  local a=0
+  if [ $go -eq 1 ]; then  
+    for iii in $f2; do
+      for file2 in ${iii}*; do
+        [ -f $file2 ] ||  a=$((a + 1)) 
+      done
+    done
+    if [ ! $a -eq 0 ]; then
+      printf "Houve um erro no processamento da imagem %s, consulte o log. \n" "${ID[j]}" && ex=$((ex + 1))
+    else
+      printf "Processamento da imagem %s realizado com sucesso! \n" "${ID[j]}"
+    fi
+  fi
+  cd $pwd
+  unset e f1 f2
+}
+
 #: INÍCIO =======================================================================
 fold -s <<-EOF
 
@@ -390,12 +491,17 @@ for j in ${!ID[@]}; do
 done
 
 #: QC1 ========================================================================
-
-# for j in ${!ID[@]}; do
-
-# 3dToutcount -automask -fraction -polort 3 -legendre ${out[$j]} > outcount.${ID[j]}.1D
-# 1dplot outcount.${ID[j]}.jpg -xlabel Time outcount.${ID[j]}.1D
-# done
+printf "=============================QC 1==================================\n\n"
+for j in ${!ID[@]}; do
+qc.open -e "QC 1"                                    \
+        -i ""      \
+        -o ""             \
+if $?; then
+3dToutcount -automask -fraction -polort 3 -legendre ${out[$j]} > outcount.${ID[j]}.1D
+1dplot outcount.${ID[j]}.jpg -xlabel Time outcount.${ID[j]}.1D
+fi; qc.close
+done
+echo
 
 
 
@@ -994,10 +1100,10 @@ for j in ${!ID[@]}; do
     -a c."${ID[j]}"_RS.deltamotion.FD.moderate0.5.n.n.n.1D \
     -b c."${ID[j]}"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D \
     -expr 'or(a, b)' \
-    > c."${ID[j]}".powerCensorIntersection.1D ) &>> preproc.${ID[j]}.log 
+    > "${ID[j]}".powerCensorIntersection.1D ) &>> preproc.${ID[j]}.log 
 
     ### Apply censor file in the final preprocessed image (after temporal filtering and spatial blurring)
-    afni_restproc.py -apply_censor ${in[$j]} c.${ID[j]}.powerCensorIntersection.1D ${out[$j]} &>> preproc.${ID[j]}.log  
+    afni_restproc.py -apply_censor ${in[$j]} ${ID[j]}.powerCensorIntersection.1D ${out[$j]} &>> preproc.${ID[j]}.log  
     rm c.*
   fi; close.node
 done 

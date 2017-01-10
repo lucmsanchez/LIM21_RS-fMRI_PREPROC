@@ -72,14 +72,7 @@ fi
 
 log () {
 if [ $go -eq 1 ]; then
-( echo 
-  echo "================================================================================"
-  echo "ETAPA: $1  - RUNTIME: $(date)" 
-  echo "================================================================================"
-  echo 
-  echo "INPUTS: ${in[$j]} ${in_2[$j]} ${in_3[$j]} ${in_4[$j]}" 
-  echo "OUTPUTS: ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]}"
-  echo ) >> preproc.${ID[j]}.log
+
 fi
 }
 
@@ -144,7 +137,14 @@ open.node () {
   fi  
 
   if [ $go -eq 1 ]; then
-    log "$1"
+  ( echo 
+    echo "================================================================================"
+    echo "ETAPA: $1  - RUNTIME: $(date)" 
+    echo "================================================================================"
+    echo 
+    echo "INPUTS: ${in[$j]} ${in_2[$j]} ${in_3[$j]} ${in_4[$j]}" 
+    echo "OUTPUTS: ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]}"
+    echo ) >> preproc.${ID[j]}.log
     return 0
   else
     return 1
@@ -333,11 +333,6 @@ for j in ${!ID[@]}; do
   else
   printf " (RS não encontrado)"; a=$((a + 1))
   fi
-  [ $(find . -name "aztec.RS.${ID[j]}*" -print -quit) ] && printf " aztec"
-  [ $(find . -name "tshift.RS.${ID[j]}*" -print -quit) ] && printf " stc"
-  [ $(find . -name "volreg.RS.${ID[j]}*" -print -quit) ] && printf " mc"
-  [ $(find . -name "SS.T1.${ID[j]}*" -print -quit) ] && printf " ss"
-  [ $(find . -name "MNI.T1.${ID[j]}*" -print -quit) ] && printf " nm"
   printf "\n"
 done
 echo
@@ -401,6 +396,16 @@ for j in ${!ID[@]}; do
 done
 
 #: QC1 ========================================================================
+
+# for j in ${!ID[@]}; do
+
+# 3dToutcount -automask -fraction -polort 3 -legendre ${out[$j]} > outcount.${ID[j]}.1D
+# 1dplot outcount.${ID[j]}.jpg -xlabel Time outcount.${ID[j]}.1D
+# done
+
+
+
+
 
 #: QC2 ========================================================================
 
@@ -1005,11 +1010,32 @@ done
 input.error
 echo
 fi
+
 #: QC10 ========================================================================
 
 
 
 #: QC11 ========================================================================
+
+# # create a temporal signal to noise ratio dataset 
+# #    signal: if 'scale' block, mean should be 100
+# #    noise : compute standard deviation of errts
+# 3dTstat -mean -prefix rm.signal.all all_runs.$subj+tlrc
+# 3dTstat -stdev -prefix rm.noise.all errts.${subj}.tproject+tlrc
+# 3dcalc -a rm.signal.all+tlrc                                               \
+#        -b rm.noise.all+tlrc                                                \
+#        -c full_mask.$subj+tlrc                                             \
+#        -expr 'c*a/b' -prefix TSNR.$subj 
+
+# # compute and store GCOR (global correlation average)
+# # (sum of squares of global mean of unit errts)
+# 3dTnorm -norm2 -prefix rm.errts.unit errts.${subj}.tproject+tlrc
+# 3dmaskave -quiet -mask full_mask.$subj+tlrc rm.errts.unit+tlrc >           \
+#     gmean.errts.unit.1D
+# 3dTstat -sos -prefix - gmean.errts.unit.1D\' > out.gcor.1D
+
+# 3dFWHMx -detrend -mask full_mask.$subj+tlrc                            \
+#         errts.${subj}.tproject+tlrc"[$trs]" >> blur.errts.1D
 
 #: DATA OUTPUT ===================================================================
 printf "\n=======================DATA OUTPUT=====================\n\n"

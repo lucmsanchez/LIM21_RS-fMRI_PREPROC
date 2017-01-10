@@ -1,0 +1,3 @@
+** guess tcat: failed to determine subject ID from pb00 files
+** failed to match any x-matrix files
+** failed to init basics...

@@ -70,12 +70,6 @@ check () {
 fi
 }
 
-log () {
-if [ $go -eq 1 ]; then
-
-fi
-}
-
 input.error () {
 [ $ex -eq ${#ID[@]} ] && exit
 }

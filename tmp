@@ -116,17 +116,13 @@ qc.close
 #==========================================================================
 
 
-node.open () {
+node.run () {
   while [[ $# -gt 0 ]]
   do
-  k='$1'
+  k="$1"
   case $k in
     -e)
-    e='$2'
-    shift
-    ;;
-    -l)
-    declare -a l=("${!2}")
+    e="$2"
     shift
     ;;
     -i)
@@ -135,6 +131,10 @@ node.open () {
     ;;
     -o)
     f2='$2'
+    shift # past argument
+    ;;
+    -n)
+    n='$2'
     shift # past argument
     ;;
     *)
@@ -147,9 +147,27 @@ node.open () {
   done
 
   printf "=============================${e}==================================\n\n"
+  for j in ${!ID[@]}; do
 
   local a=0; local b=0; local c=0; local d=0
   go=1
+
+  oldIFS="$IFS"
+  IFS=$' ' F1=($(<${f1}))
+  IFS=$' ' F2=($(<${f2}))
+  IFS="$oldIFS"
+ 
+  in[$j]=${F1[1]}
+  in_2[$j]=${F1[2]}
+  in_3[$j]=${F1[3]}
+  in_4[$j]=${F1[4]}
+  in_4[$j]=${F1[5]}
+
+  out[$j]=${F2[1]}
+  out_2[$j]=${F2[2]}
+  out_3[$j]=${F2[3]}
+  out_4[$j]=${F2[4]}
+  out_4[$j]=${F2[5]}
 
   cd ${steppath[$j]}
   echo -n "${ID[j]}> "
@@ -199,13 +217,9 @@ node.open () {
     echo "INPUTS: $f1" 
     echo "OUTPUTS: $f2"
     echo ) >> preproc.${ID[j]}.log
-    return 0
-  else
-    return 1
+    "$node"
   fi
-}
 
-close.node () {
   local a=0
   if [ $go -eq 1 ]; then  
     for iii in $f2; do
@@ -220,21 +234,26 @@ close.node () {
     fi
   fi
   cd $pwd
+ done
+
+[ $ex -eq ${#ID[@]} ] && exit
+
 }
 
-printf "=============================TESTE==================================\n\n"
-for j in ${!ID[@]}; do
-node.open -e "TESTE"                                   \
-          -i "${out[$j]}"                              \
-          -o "tshift.RS.${ID[j]}+orig"                 \
-if $?; then
+
+read -r -d '' node <<'EOF'
 3dTshift \
       -tpattern $ptn \
       -prefix ${out[$j]} \
       -Fourier \
       ${in[$j]} &>> preproc.${ID[j]}.log
-fi
-node.close
-done
-input.error
+EOF
+node.run -e "TESTE"                                   \
+         -p ""                                        \
+         -l ""                                        \
+         -i "${out[$j]}"                              \
+         -o "tshift.RS.${ID[j]}+orig"                 \
+         -n "$node"                                   \
+
+
 

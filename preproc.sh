@@ -500,7 +500,7 @@ cat << EOF > report.${ID[j]}.html
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </HEAD> 
 <body>
-<h1>Relatório de Qualidade de ${ID[j]}</h1>
+<h1>Relatório de Controle de Qualidade -- ${ID[j]}</h1>
 <p>&nbsp;</p>
 <!--QC1-->
 <!--QC2-->

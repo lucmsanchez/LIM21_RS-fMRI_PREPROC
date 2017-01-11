@@ -209,7 +209,7 @@ cp.inputs () {
   [ ! -f "${steppath[$j]}$3" ] && cp ${files[0]} ${steppath[$j]} 2> /dev/null
 }
 
-qc () {
+qc.open () {
   while [[ $# -gt 0 ]]
   do
   k="$1"
@@ -228,7 +228,6 @@ qc () {
     ;;
     *)
      echo "Erro de sintaxe" >&2
-     usage
      exit       # unknown option
     ;;
   esac
@@ -490,23 +489,75 @@ for j in ${!ID[@]}; do
   [ ! -f ${steppath[$j]}T1.${ID[j]}.nii ] && cp DATA/${ID[j]}/RS.${ID[j]}.log ${steppath[$j]} 2> /dev/null
 done
 
+# Iniciar Relatório de qualidade
+for j in ${!ID[@]}; do
+cd ${steppath[$j]}
+if [ ! -f "report.${ID[j]}.html" ]; then
+cat << EOF > report.${ID[j]}.html
+<HTML>
+<HEAD>
+<TITLE>Relatório de Qualidade de ${ID[j]}</TITLE>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</HEAD> 
+<body>
+<h1>Relatório de Qualidade de ${ID[j]}</h1>
+<p>&nbsp;</p>
+<!--QC1-->
+<!--QC2-->
+<!--QC3-->
+<!--QC4-->
+<!--QC5-->
+<!--QC6-->
+<!--QC7-->
+<!--QC8-->
+<!--QC9-->
+<!--QC10-->
+<!--QC11-->
+<!--QC12-->
+</body>
+</HTML>
+EOF
+fi
+cd $pwd
+done
+
+
 #: QC1 ========================================================================
 printf "=============================QC 1==================================\n\n"
 for j in ${!ID[@]}; do
 qc.open -e "QC 1"                                    \
-        -i ""      \
-        -o ""             \
-if $?; then
-3dToutcount -automask -fraction -polort 3 -legendre ${out[$j]} > outcount.${ID[j]}.1D
-1dplot outcount.${ID[j]}.jpg -xlabel Time outcount.${ID[j]}.1D
+        -i "${out[$j]}"      \
+        -o "m.outcount.${ID[j]}.jpg outcount.${ID[j]}.1D"             
+if [ $? -eq 0 ]; then
+( 3dToutcount -automask -fraction -polort 3 -legendre ${out[$j]} > outcount.${ID[j]}.1D
+  1dplot -jpg m.outcount.${ID[j]}.jpg -xlabel Time outcount.${ID[j]}.1D ) &>> preproc.${ID[j]}.log
+  text1="<pre>$(3dinfo RS.${ID[j]}.nii 2> /dev/null)</pre>"
+
+read -r -d '' textf <<EOF
+<h2>QC1 - Imagem RS raw</h2>
+$text1
+<h3>Gráfico de outliers por TR</h3>
+<p><img src="m.outcount.${ID[j]}.jpg" alt="" style="width:90%;height:90%;"/></p>
+<p>&nbsp;</p>
+<hr>
+EOF
+
+echo "$textf" > temp.txt
+sed -i '/<!--QC1-->/,/<!--QC2-->/{
+    /<!--QC1-->/{
+        n
+        r temp.txt 
+    }
+    /<!--QC2-->/!d
+}
+' report.${ID[j]}.html
+
+  rm temp*
 fi; qc.close
 done
 echo
 
-
-
-
-
+exit
 #: QC2 ========================================================================
 
 #: AZTEC ========================================================================

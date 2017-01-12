@@ -544,7 +544,7 @@ if [ $? -eq 0 ]; then
   done ) &>> preproc.${ID[j]}.log
 
 ( cd 3d
-  avconv -f image2 -i 3d.${ID[j]}-%04d.png -r 20 m.3d.${ID[j]}.mp4
+  avconv -f image2 -y -i 3d.${ID[j]}-%04d.png -r 20 m.3d.${ID[j]}.mp4
   rm *.png 
   cd ..
   mv 3d/m.* . ) &>> preproc.${ID[j]}.log
@@ -598,8 +598,67 @@ fi; qc.close
 done
 echo
 
-exit
 #: QC2 ========================================================================
+printf "=============================QC 1==================================\n\n"
+for j in ${!ID[@]}; do
+qc.open -e "QC 2"                                    \
+        -i "T1.${ID[j]}.nii"      \
+        -o "m.slices.T1.${ID[j]}.mp4  m.slices.T1.${ID[j]}.png"              
+if [ $? -eq 0 ]; then
+( text1="<pre>$(3dinfo T1.${ID[j]}.nii 2> /dev/null)</pre>"
+  m=0
+  for n in $(seq 0.10 0.01 0.90); do
+  m=$((m + 1))
+  fsl5.0-slicer T1.$id.nii -s 2 -y $n slice-$m.png
+  convert slice-$m.png -rotate -90 slice-$m.png
+  done
+
+  avconv -f image2 -y -i slice-%d.png -filter:v "setpts=10*PTS" -r 20 m.slices.T1.$id.mp4
+  rm slice* ) &>> preproc.${ID[j]}.log
+ 
+( for d in x y z; do
+  for s in 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
+  fsl5.0-slicer T1.${ID[j]}.nii -s 2 -$d $s im.T1.${ID[j]}.$d.$s.png
+  convert im.T1.${ID[j]}.$d.$s.png -rotate -90 im.T1.${ID[j]}.$d.$s.png
+  done
+  done 
+
+  convert -append im.T1.${ID[j]}.x.*.png imx.T1.${ID[j]}.png
+  convert -append im.T1.${ID[j]}.y.*.png imy.T1.${ID[j]}.png
+  convert -append im.T1.${ID[j]}.z.*.png imz.T1.${ID[j]}.png
+  convert +append imx* imy* imz* m.slices.T1.${ID[j]}.png
+ 
+ rm im* ) &>> preproc.${ID[j]}.log
+
+read -r -d '' textf <<EOF
+<h2>QC2 - Imagem T1 raw</h2>
+$text1
+<p>&nbsp;</p>
+<h3>Vídeo de 1 eixo</h3>
+<p><video controls="controls" width="100%" height="100%">
+<source src="m.slices.T1.${ID[j]}.mp4" /></video></p>
+<p>&nbsp;</p>
+<h3>Imagens de 3 cortes</h3>
+<p><img src="m.slices.T1.${ID[j]}.png" alt=""/></p>
+<p>&nbsp;</p>
+<hr>
+EOF
+
+echo "$textf" > temp.txt
+sed -i '/<!--QC2-->/,/<!--QC3-->/{
+    /<!--QC2-->/{
+        n
+        r temp.txt 
+    }
+    /<!--QC3-->/!d
+}
+' report.${ID[j]}.html
+
+  rm temp*
+fi; qc.close
+done
+
+exit
 
 #: AZTEC ========================================================================
 if [ $aztec -eq 1 ]; then

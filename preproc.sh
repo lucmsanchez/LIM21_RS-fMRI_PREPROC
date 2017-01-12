@@ -381,7 +381,7 @@ AFNI               ...$(check 3dTshift)
 FSL                ...$(check "$fsl5"fast)
 Pyhton             ...$(check python)
 ImageMagick        ...$(check convert)
-avconv             ...$(check avconv)
+Libav(avconv)      ...$(check avconv)
 MATLAB             ...$(check matlab)
   SPM5
   aztec

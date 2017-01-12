@@ -12,6 +12,8 @@ Esse protocolo ainda está em desenvolvimento.
 - AFNI v16.3.12 (https://afni.nimh.nih.gov/afni/)
 - FSL v5.0 (https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/)
 - Python v2.7 (https://www.python.org/)
+- ImageMagick  v7.0.4-3 (https://www.imagemagick.org/)
+- Libav(avconv) v12 (https://libav.org/)
 - Matlab (https://www.mathworks.com/)  
     - SPM5 (http://wwww.fil.ion.ucl.ac.uk/spm/software/spm5/)  
     - aztec v2.0 (http://www.ni-utrecht.nl/downloads/aztec)  

@@ -380,13 +380,15 @@ GNU bash           ...$(check bash)
 AFNI               ...$(check 3dTshift)
 FSL                ...$(check "$fsl5"fast)
 Pyhton             ...$(check python)
+ImageMagick        ...$(check convert)
+avconv             ...$(check avconv)
 MATLAB             ...$(check matlab)
   SPM5
   aztec
 
 EOF
 
-if ( ! command -v bash || ! command -v 3dTshift || ! command -v "$fsl5"fast || ! command -v python  ) > /dev/null ; then
+if ( ! command -v bash || ! command -v 3dTshift || ! command -v "$fsl5"fast || ! command -v python || ! command -v convert || ! command -v avconv ) > /dev/null ; then
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit
 fi
@@ -527,17 +529,56 @@ printf "=============================QC 1==================================\n\n"
 for j in ${!ID[@]}; do
 qc.open -e "QC 1"                                    \
         -i "${out[$j]}"      \
-        -o "m.outcount.${ID[j]}.jpg outcount.${ID[j]}.1D"             
+        -o "m.outcount.${ID[j]}.jpg outcount.${ID[j]}.1D m.axial.RS.${ID[j]}.png m.slices.RS.${ID[j]}.png m.3d.${ID[j]}.mp4"              
 if [ $? -eq 0 ]; then
 ( 3dToutcount -automask -fraction -polort 3 -legendre ${out[$j]} > outcount.${ID[j]}.1D
   1dplot -jpg m.outcount.${ID[j]}.jpg -xlabel Time outcount.${ID[j]}.1D ) &>> preproc.${ID[j]}.log
   text1="<pre>$(3dinfo RS.${ID[j]}.nii 2> /dev/null)</pre>"
 
+( if [ ! -d "3d" ]; then mkdir 3d; fi
+  fsl5.0-fslsplit RS.${ID[j]}.nii 3d/3d.${ID[j]}- -t && \
+  gunzip -f 3d/3d.${ID[j]}-*.nii.gz
+  w=0
+  for q in 3d/3d.${ID[j]}-*; do
+  fsl5.0-slicer $q -s 4 -a ${q/.nii}.png
+  done ) &>> preproc.${ID[j]}.log
+
+( cd 3d
+  avconv -f image2 -i 3d.${ID[j]}-%04d.png -r 20 m.3d.${ID[j]}.mp4
+  rm *.png 
+  cd ..
+  mv 3d/m.* . ) &>> preproc.${ID[j]}.log
+
+( for d in x y z; do
+  for s in 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
+  fsl5.0-slicer RS.${ID[j]}.nii -s 3 -$d $s im.RS.${ID[j]}.$d.$s.png
+  done
+  done 
+
+  convert -append im.RS.${ID[j]}.x.*.png imx.RS.${ID[j]}.png
+  convert -append im.RS.${ID[j]}.y.*.png imy.RS.${ID[j]}.png
+  convert -append im.RS.${ID[j]}.z.*.png imz.RS.${ID[j]}.png
+  convert +append imx* imy* imz* m.slices.RS.${ID[j]}.png
+
+  fsl5.0-slicer RS.${ID[j]}.nii -s 3 -A 1000 m.axial.RS.${ID[j]}.png
+
+ rm im* ) &>> preproc.${ID[j]}.log
+
 read -r -d '' textf <<EOF
 <h2>QC1 - Imagem RS raw</h2>
 $text1
-<h3>Gráfico de outliers por TR</h3>
-<p><img src="m.outcount.${ID[j]}.jpg" alt="" style="width:90%;height:90%;"/></p>
+<h3>Gráfico de outliers por TS</h3>
+<p><img src="m.outcount.${ID[j]}.jpg" alt="" style="width:716px;height:548px%;/></p>
+<p>&nbsp;</p>
+<h3>Vídeo de 3 cortes ao longo dos TS</h3>
+<p><video controls="controls" width="100%" height="100%">
+<source src="m.3d.${ID[j]}.mp4" /></video></p>
+<p>&nbsp;</p>
+<h3>Imagens de 3 cortes</h3>
+<p><img src="m.slices.RS.${ID[j]}.png" alt=""/></p>
+<p>&nbsp;</p>
+<h3>Todo os cortes axiais</h3>
+<p><img src="m.axial.RS.${ID[j]}.png" alt=""/></p>
 <p>&nbsp;</p>
 <hr>
 EOF

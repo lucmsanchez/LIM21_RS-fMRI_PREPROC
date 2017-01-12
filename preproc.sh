@@ -568,7 +568,7 @@ read -r -d '' textf <<EOF
 <h2>QC1 - Imagem RS raw</h2>
 $text1
 <h3>Gráfico de outliers por TS</h3>
-<p><img src="m.outcount.${ID[j]}.jpg" alt="" style="width:716px;height:548px%;/></p>
+<p><img src="m.outcount.${ID[j]}.jpg" alt="" style="width:716px;height:548px%";/></p>
 <p>&nbsp;</p>
 <h3>Vídeo de 3 cortes ao longo dos TS</h3>
 <p><video controls="controls" width="100%" height="100%">

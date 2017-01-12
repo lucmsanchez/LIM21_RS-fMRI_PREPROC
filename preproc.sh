@@ -617,7 +617,7 @@ if [ $? -eq 0 ]; then
   rm slice* ) &>> preproc.${ID[j]}.log
  
 ( for d in x y z; do
-  for s in 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95; do
+  for s in 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
   fsl5.0-slicer T1.${ID[j]}.nii -$d $s im.T1.${ID[j]}.$d.$s.png
   done
   done 

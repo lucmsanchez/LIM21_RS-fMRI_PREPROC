@@ -599,7 +599,7 @@ done
 echo
 
 #: QC2 ========================================================================
-printf "=============================QC 1==================================\n\n"
+printf "=============================QC 2==================================\n\n"
 for j in ${!ID[@]}; do
 qc.open -e "QC 2"                                    \
         -i "T1.${ID[j]}.nii"      \
@@ -609,17 +609,16 @@ if [ $? -eq 0 ]; then
   m=0
   for n in $(seq 0.10 0.01 0.90); do
   m=$((m + 1))
-  fsl5.0-slicer T1.$id.nii -s 2 -y $n slice-$m.png
+  fsl5.0-slicer T1.${ID[j]}.nii -s 2 -y $n slice-$m.png
   convert slice-$m.png -rotate -90 slice-$m.png
   done
 
-  avconv -f image2 -y -i slice-%d.png -filter:v "setpts=10*PTS" -r 20 m.slices.T1.$id.mp4
+  avconv -f image2 -y -i slice-%d.png -filter:v "setpts=10*PTS" -r 20 m.slices.T1.${ID[j]}.mp4
   rm slice* ) &>> preproc.${ID[j]}.log
  
 ( for d in x y z; do
   for s in 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
-  fsl5.0-slicer T1.${ID[j]}.nii -s 2 -$d $s im.T1.${ID[j]}.$d.$s.png
-  convert im.T1.${ID[j]}.$d.$s.png -rotate -90 im.T1.${ID[j]}.$d.$s.png
+  fsl5.0-slicer T1.${ID[j]}.nii -$d $s im.T1.${ID[j]}.$d.$s.png
   done
   done 
 
@@ -634,7 +633,7 @@ read -r -d '' textf <<EOF
 <h2>QC2 - Imagem T1 raw</h2>
 $text1
 <p>&nbsp;</p>
-<h3>Vídeo de 1 eixo</h3>
+<h3>Vídeo axial</h3>
 <p><video controls="controls" width="100%" height="100%">
 <source src="m.slices.T1.${ID[j]}.mp4" /></video></p>
 <p>&nbsp;</p>

@@ -583,17 +583,10 @@ $text1
 <hr>
 EOF
 
-echo "$textf" > temp.txt
-sed -i '/<!--QC1-->/,/<!--QC2-->/{
-    /<!--QC1-->/{
-        n
-        r temp.txt 
-    }
-    /<!--QC2-->/!d
-}
-' report.${ID[j]}.html
+export textf
+perl -pe 'BEGIN{undef $/;} s/<!--QC1-->.*<!--QC2-->/<!--QC1-->\n $ENV{textf} \n<!--QC2-->/smg' report.${ID[j]}.html > rename.report.${ID[j]}.html
+mv rename.report.${ID[j]}.html report.${ID[j]}.html
 
-  rm temp*
 fi; qc.close
 done
 echo
@@ -643,17 +636,10 @@ $text1
 <hr>
 EOF
 
-echo "$textf" > temp.txt
-sed -i '/<!--QC2-->/,/<!--QC3-->/{
-    /<!--QC2-->/{
-        n
-        r temp.txt 
-    }
-    /<!--QC3-->/!d
-}
-' report.${ID[j]}.html
+export textf
+perl -pe 'BEGIN{undef $/;} s/<!--QC2-->.*<!--QC3-->/<!--QC2-->\n $ENV{textf} \n<!--QC3-->/smg' report.${ID[j]}.html > rename.report.${ID[j]}.html
+mv rename.report.${ID[j]}.html report.${ID[j]}.html
 
-  rm temp*
 fi; qc.close
 done
 

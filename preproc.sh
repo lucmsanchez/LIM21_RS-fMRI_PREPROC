@@ -657,6 +657,7 @@ mv rename.report.${ID[j]}.html report.${ID[j]}.html
 fi; qc.close
 done
 input.error
+echo 
 
 #: AZTEC ========================================================================
 if [ $aztec -eq 1 ]; then
@@ -756,6 +757,7 @@ mv rename.report.${ID[j]}.html report.${ID[j]}.html
 fi; qc.close
 done
 input.error
+echo
 
 [ $break -eq 1 ] && echo "Interrompendo script a pedido do usuário" && exit
 
@@ -785,7 +787,6 @@ echo
 printf "\n=========================DEOBLIQUE T1=======================\n\n"
 pwd=($PWD)
 for j in ${!ID[@]}; do
-  get.info1 "${steppath[$j]}T1.${ID[j]}.nii"; if [ $is_oblique -eq 1 ]; then 
   inputs "T1.${ID[j]}.nii"
   outputs "warp.T1.${ID[j]}+orig"
   echo -n "${ID[j]}> "
@@ -796,7 +797,6 @@ for j in ${!ID[@]}; do
     ${in[$j]} &>> preproc.${ID[j]}.log
   fi; close.node
   else echo "${ID[j]} não é obliquo"
-  fi
   toT1
 done 
 input.error
@@ -1052,7 +1052,19 @@ done
 input.error
 echo
 
-#: QC6 ========================================================================
+#: QC5 ========================================================================
+for j in ${!ID[@]}; do
+qc.open -e "QC 4"                                    \
+        -i "unifize.T1.${ID[j]}.nii"      \
+        -o "m.over.SS.T1.${ID[j]}.png m.overz.T1.${ID[j]}.mp4 m.overy.T1.${ID[j]}.mp4 m.overx.T1.${ID[j]}.mp4"              
+if [ $? -eq 0 ]; then
+3dAFNItoNIFTI unifize.T1.${ID[j]}+orig unifize.T1.${ID[j]}.nii
+
+fi; qc.close
+done
+input.error
+
+exit
 
 [ $break -eq 3 ] && echo "Interrompendo script a pedido do usuário" && exit
 
@@ -1077,8 +1089,6 @@ done
 input.error
 echo
 
-#: QC7 ========================================================================
-
 #: fMRI SPATIAL NORMALIZATION ======================================================
 printf "\n=======================fMRI SPATIAL NORMALIZATION=====================\n\n"
 for j in ${!ID[@]}; do
@@ -1098,7 +1108,8 @@ for j in ${!ID[@]}; do
 done 
 input.error
 echo
-#: QC8 ========================================================================
+
+#: QC6 ========================================================================
 
 [ $break -eq 4 ] && echo "Interrompendo script a pedido do usuário" && exit
 

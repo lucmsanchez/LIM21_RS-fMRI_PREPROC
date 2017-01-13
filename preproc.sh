@@ -504,6 +504,9 @@ cat << EOF > report.${ID[j]}.html
 <body>
 <h1>Relatório de Controle de Qualidade -- ${ID[j]}</h1>
 <p>&nbsp;</p>
+<!--index-->
+<!--index-->
+<p>&nbsp;</p>
 <!--QC1-->
 <!--QC2-->
 <!--QC3-->
@@ -558,7 +561,7 @@ if [ $? -eq 0 ]; then
   convert -append im.RS.${ID[j]}.x.*.png imx.RS.${ID[j]}.png
   convert -append im.RS.${ID[j]}.y.*.png imy.RS.${ID[j]}.png
   convert -append im.RS.${ID[j]}.z.*.png imz.RS.${ID[j]}.png
-  convert +append imx* imy* imz* m.slices.RS.${ID[j]}.png
+  convert +append imx.RS* imy.RS* imz.RS* m.slices.RS.${ID[j]}.png
 
   fsl5.0-slicer RS.${ID[j]}.nii -s 3 -A 1000 m.axial.RS.${ID[j]}.png
 
@@ -609,18 +612,27 @@ if [ $? -eq 0 ]; then
   avconv -f image2 -y -i slice-%d.png -filter:v "setpts=10*PTS" -r 20 m.slices.T1.${ID[j]}.mp4
   rm slice* ) &>> preproc.${ID[j]}.log
  
-( for d in x y z; do
-  for s in 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
-  fsl5.0-slicer T1.${ID[j]}.nii -$d $s im.T1.${ID[j]}.$d.$s.png
+( for s in 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
+  fsl5.0-slicer T1.${ID[j]}.nii -x $s im.T1.${ID[j]}.x.$s.png
+  convert im.T1.${ID[j]}.x.$s.png -rotate 90 im.T1.${ID[j]}.x.$s.png
   done
-  done 
+  
+  for s in 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
+  fsl5.0-slicer T1.${ID[j]}.nii -y $s im.T1.${ID[j]}.y.$s.png
+  convert im.T1.${ID[j]}.y.$s.png -rotate -90 im.T1.${ID[j]}.y.$s.png
+  done
+
+  for s in 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
+  fsl5.0-slicer T1.${ID[j]}.nii -z $s im.T1.${ID[j]}.z.$s.png
+  convert im.T1.${ID[j]}.z.$s.png -rotate 180 im.T1.${ID[j]}.z.$s.png
+  done  
 
   convert -append im.T1.${ID[j]}.x.*.png imx.T1.${ID[j]}.png
   convert -append im.T1.${ID[j]}.y.*.png imy.T1.${ID[j]}.png
   convert -append im.T1.${ID[j]}.z.*.png imz.T1.${ID[j]}.png
-  convert +append imx* imy* imz* m.slices.T1.${ID[j]}.png
+  convert +append imx.T1* imy.T1* imz.T1* m.slices.T1.${ID[j]}.png
  
- rm im* ) &>> preproc.${ID[j]}.log
+  rm im* ) &>> preproc.${ID[j]}.log
 
 read -r -d '' textf <<EOF
 <h2>QC2 - Imagem T1 raw</h2>
@@ -634,6 +646,7 @@ $text1
 <p><img src="m.slices.T1.${ID[j]}.png" alt=""/></p>
 <p>&nbsp;</p>
 <hr>
+<p>&nbsp;</p>
 EOF
 
 export textf

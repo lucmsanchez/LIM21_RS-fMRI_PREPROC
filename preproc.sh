@@ -657,7 +657,12 @@ mv rename.report.${ID[j]}.html report.${ID[j]}.html
 fi; qc.close
 done
 input.error
+<<<<<<< HEAD
 echo 
+||||||| merged common ancestors
+=======
+echo
+>>>>>>> 3956c8ba63f937ddb481f2af47c655b664eab133
 
 #: AZTEC ========================================================================
 if [ $aztec -eq 1 ]; then
@@ -962,7 +967,7 @@ done
 rm im* ) &>> preproc.${ID[j]}.log 
 
 read -r -d '' textf <<EOF
-<h2>QC3 - T1 vs. SS mask</h2>
+<h2>QC4 - T1 vs. SS mask</h2>
 <p>&nbsp;</p>
 <h3>Vídeo axial</h3>
 <p><video controls="controls" width="100%" height="100%">
@@ -983,14 +988,14 @@ read -r -d '' textf <<EOF
 EOF
 
 export textf
-perl -pe 'BEGIN{undef $/;} s/<!--QC3-->.*<!--QC4-->/<!--QC3-->\n $ENV{textf} \n<!--QC4-->/smg' report.${ID[j]}.html > rename.report.${ID[j]}.html
+perl -pe 'BEGIN{undef $/;} s/<!--QC4-->.*<!--QC5-->/<!--QC4-->\n $ENV{textf} \n<!--QC5-->/smg' report.${ID[j]}.html > rename.report.${ID[j]}.html
 mv rename.report.${ID[j]}.html report.${ID[j]}.html
 
 fi; qc.close
 done
 input.error
 
-exit
+
 
 [ $break -eq 2 ] && echo "Interrompendo script a pedido do usuário" && exit
 
@@ -1033,7 +1038,6 @@ echo
 #: COREGISTER fMRI-T1 ======================================================
 printf "\n=======================COREGISTER fMRI-T1=====================\n\n"
 for j in ${!ID[@]}; do
-  fromT1
   inputs "${out[$j]}" "SS.T1.${ID[j]}+orig"
   outputs "SS.T1.${ID[j]}_al+orig" "SS.T1.${ID[j]}_al_mat.aff12.1D"
   echo -n "${ID[j]}> "
@@ -1045,8 +1049,9 @@ for j in ${!ID[@]}; do
     -anat_has_skull no \
     -volreg off \
     -tshift off \
-    
-    -deoblique off ) &>> preproc.${ID[j]}.log
+    -deoblique off \
+    -AddEdge
+    -cost nmi  ) &>> preproc.${ID[j]}.log
   fi; close.node
 done 
 input.error

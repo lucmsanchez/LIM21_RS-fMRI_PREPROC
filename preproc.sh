@@ -764,7 +764,6 @@ echo
 #: DEOBLIQUE RS ============================================================
 printf "\n=========================DEOBLIQUE RS=======================\n\n"
 for j in ${!ID[@]}; do
-  get.info1 "${steppath[$j]}${out[$j]}"; if [ $is_oblique -eq 1 ]; then 
   inputs "${out[$j]}"
   outputs "warp.RS.${ID[j]}+orig"
   echo -n "${ID[j]}> "
@@ -774,8 +773,6 @@ for j in ${!ID[@]}; do
     -prefix  ${out[$j]} \
     ${in[$j]} &>> preproc.${ID[j]}.log
   fi; close.node
-  else echo "${ID[j]} não é obliquo"
-  fi
   toRS
 done
 input.error
@@ -796,7 +793,6 @@ for j in ${!ID[@]}; do
     -prefix  ${out[$j]} \
     ${in[$j]} &>> preproc.${ID[j]}.log
   fi; close.node
-  else echo "${ID[j]} não é obliquo"
   toT1
 done 
 input.error

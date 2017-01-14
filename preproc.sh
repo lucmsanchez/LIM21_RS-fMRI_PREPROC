@@ -1050,8 +1050,7 @@ for j in ${!ID[@]}; do
     -volreg off \
     -tshift off \
     -deoblique off \
-    -AddEdge
-    -cost nmi  ) &>> preproc.${ID[j]}.log
+    -AddEdge ) &>> preproc.${ID[j]}.log
   fi; close.node
 done 
 input.error

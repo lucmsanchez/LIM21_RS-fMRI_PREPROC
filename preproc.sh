@@ -613,17 +613,17 @@ if [ $? -eq 0 ]; then
   avconv -f image2 -y -i slice-%d.png -filter:v "setpts=10*PTS" -r 20 m.slices.T1.${ID[j]}.mp4
   rm slice* ) &>> preproc.${ID[j]}.log
  
-( for s in 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
+( for s in 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
   fsl5.0-slicer T1.${ID[j]}.nii -x $s im.T1.${ID[j]}.x.$s.png
   convert im.T1.${ID[j]}.x.$s.png -rotate 90 im.T1.${ID[j]}.x.$s.png
   done
   
-  for s in 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
+  for s in 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
   fsl5.0-slicer T1.${ID[j]}.nii -y $s im.T1.${ID[j]}.y.$s.png
   convert im.T1.${ID[j]}.y.$s.png -rotate -90 im.T1.${ID[j]}.y.$s.png
   done
 
-  for s in 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
+  for s in 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85; do
   fsl5.0-slicer T1.${ID[j]}.nii -z $s im.T1.${ID[j]}.z.$s.png
   convert im.T1.${ID[j]}.z.$s.png -rotate 180 im.T1.${ID[j]}.z.$s.png
   done  

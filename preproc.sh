@@ -657,12 +657,7 @@ mv rename.report.${ID[j]}.html report.${ID[j]}.html
 fi; qc.close
 done
 input.error
-<<<<<<< HEAD
 echo 
-||||||| merged common ancestors
-=======
-echo
->>>>>>> 3956c8ba63f937ddb481f2af47c655b664eab133
 
 #: AZTEC ========================================================================
 if [ $aztec -eq 1 ]; then

@@ -382,16 +382,24 @@ FSL                ...$(check "$fsl5"fast)
 Python             ...$(check python)
 ImageMagick        ...$(check convert)
 Libav(avconv)      ...$(check avconv)
+Xvfb               ...$(check Xvfb)
+perl               ...$(check perl)
+sed                ...$(check sed)
 MATLAB             ...$(check matlab)
   SPM5
   aztec
 
 EOF
-
-if ( ! command -v bash || ! command -v 3dTshift || ! command -v "$fsl5"fast || ! command -v python || ! command -v convert || ! command -v avconv ) > /dev/null ; then
+co=0
+for c in bash 3dTshift "$fsl5"fast python convert avconv Xvfb perl sed; do
+[ ! $(commandd -v $c) ] && co=((co + 1))
+done
+if [ ! $co -eq 0 ];then
+if ( ! command -v  || ! command -v  || ! command -v  || ! command -v  || ! command -v  || ! command -v  ) > /dev/null ; then
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit
 fi
+
 [ $aztec -eq 1 ] && [ ! $(command -v matlab) ] && echo "o Matlab e os plugins SPM5 e aztec são necessários para a análise e não foram encontrados. Certifique-se que eles estão instalados e configurados na variável de ambiente $PATH" | fold -s && exit 
 
 

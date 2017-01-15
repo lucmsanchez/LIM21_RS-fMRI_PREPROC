@@ -1056,18 +1056,58 @@ echo
 
 #: QC5 ========================================================================
 for j in ${!ID[@]}; do
-qc.open -e "QC 4"                                    \
-        -i ""      \
-        -o ""              
+qc.open -e "QC 5"                                    \
+        -i "resample.RS.${ID[j]}_shft+orig SS.T1.${ID[j]}_al+orig"      \
+        -o "m.over.SS.T1.${ID[j]}_al.jpg"              
 if [ $? -eq 0 ]; then
-#3dAFNItoNIFTI 
 
+3dedge3 -input resample.RS.${ID[j]}_shft+orig -prefix e.resample.RS.${ID[j]}_shft+orig
+
+over=e.resample.RS.${ID[j]}_shft+orig
+under=SS.T1.${ID[j]}_al+orig
+
+ Xvfb :1 -screen 0 1200x800x24 &
+
+ export AFNI_NOSPLASH=YES
+ export AFNI_SPLASH_MELT=NO
+
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:10 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage mont=1x3:10 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage mont=1x3:10 geom=1200x800" \
+-com "SET_XHAIRS OFF" \
+-com "SWITCH_UNDERLAY $under" \
+-com "SWITCH_OVERLAY $over" \
+-com "SET_DICOM_XYZ A 15 45 45" \
+-com "SET_THRESHOLD A.3500 3" \
+-com "SAVE_JPEG A.axialimage imx.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.sagitalimage imy.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.coronalimage imz.${ID[j]}.jpg" \
+-com "QUIT"
+
+sleep 5
+
+killall Xvfb
+
+convert +append imx.* imy.* imz.* m.over.SS.T1.${ID[j]}_al.jpg
+ 
+rm im* 
+
+read -r -d '' textf <<EOF
+<h2>QC5 - Checagem de alinhamento T1 vs. RS</h2>
+<p>&nbsp;</p>
+<h3>Grade 3 x 3</h3>
+<p><img src="m.over.SS.T1.${ID[j]}_al.png" alt="" style="width:1000px;height:800px%"/></p>
+<p>&nbsp;</p>
+<hr>
+EOF
+
+export textf
+perl -pe 'BEGIN{undef $/;} s/<!--QC5-->.*<!--QC6-->/<!--QC5-->\n $ENV{textf} \n<!--QC6-->/smg' report.${ID[j]}.html > rename.report.${ID[j]}.html
+mv rename.report.${ID[j]}.html report.${ID[j]}.html
 
 fi; qc.close
 done
 input.error
-
-exit
 
 [ $break -eq 3 ] && echo "Interrompendo script a pedido do usuário" && exit
 

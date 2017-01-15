@@ -1050,10 +1050,11 @@ echo
 #: QC5 ========================================================================
 for j in ${!ID[@]}; do
 qc.open -e "QC 4"                                    \
-        -i "unifize.T1.${ID[j]}.nii"      \
-        -o "m.over.SS.T1.${ID[j]}.png m.overz.T1.${ID[j]}.mp4 m.overy.T1.${ID[j]}.mp4 m.overx.T1.${ID[j]}.mp4"              
+        -i ""      \
+        -o ""              
 if [ $? -eq 0 ]; then
-3dAFNItoNIFTI unifize.T1.${ID[j]}+orig unifize.T1.${ID[j]}.nii
+#3dAFNItoNIFTI 
+
 
 fi; qc.close
 done

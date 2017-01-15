@@ -390,12 +390,12 @@ MATLAB             ...$(check matlab)
   aztec
 
 EOF
+
 co=0
 for c in bash 3dTshift "$fsl5"fast python convert avconv Xvfb perl sed; do
-[ ! $(commandd -v $c) ] && co=((co + 1))
+[ ! $(command -v $c) ] && co=$((co + 1))
 done
 if [ ! $co -eq 0 ];then
-if ( ! command -v  || ! command -v  || ! command -v  || ! command -v  || ! command -v  || ! command -v  ) > /dev/null ; then
 	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit
 fi

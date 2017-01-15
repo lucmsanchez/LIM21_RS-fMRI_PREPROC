@@ -513,6 +513,14 @@ cat << EOF > report.${ID[j]}.html
 <h1>Relatório de Controle de Qualidade -- ${ID[j]}</h1>
 <p>&nbsp;</p>
 <!--index-->
+<a href="#qc1">QC1 - Imagem RS raw</a>
+<a href="#qc2">QC2 - Imagem T1 raw</a>
+<a href="#qc3">QC3 - RS Motion Correction</a>
+<a href="#qc4">QC4 - T1 vc. SS mask</a>
+<a href="#qc5">QC5 - Checagem de alinhamento T1 vs. RS</a>
+<a href="#qc6">QC6 - Checagem de normalização T1 e RS vs. MNI</a>
+<a href="#qc7">QC7 - Checagem de segmentação</a>
+<a href="#qc8">QC8 - Imagem RS final</a>
 <!--index-->
 <p>&nbsp;</p>
 <!--QC1-->
@@ -576,7 +584,7 @@ if [ $? -eq 0 ]; then
  rm im* ) &>> preproc.${ID[j]}.log
 
 read -r -d '' textf <<EOF
-<h2>QC1 - Imagem RS raw</h2>
+<h2 id="qc1">QC1 - Imagem RS raw</h2>
 $text1
 <h3>Gráfico de outliers por TS</h3>
 <p><img src="m.outcount.${ID[j]}.jpg" alt="" style="width:716px;height:548px%";/></p>
@@ -644,7 +652,7 @@ if [ $? -eq 0 ]; then
   rm im* ) &>> preproc.${ID[j]}.log
 
 read -r -d '' textf <<EOF
-<h2>QC2 - Imagem T1 raw</h2>
+<h2 id="qc2">QC2 - Imagem T1 raw</h2>
 $text1
 <p>&nbsp;</p>
 <h3>Vídeo axial</h3>
@@ -749,7 +757,7 @@ if [ $? -eq 0 ]; then
     ${out_2[$j]} ) &>> preproc.${ID[j]}.log
 
 read -r -d '' textf <<EOF
-<h2>QC3 - RS Motion Correction</h2>
+<h2 id="qc3">QC3 - RS Motion Correction</h2>
 <p>&nbsp;</p>
 <h3>Gráfico de Correções realizadas pelo volreg</h3>
 <p><img src="m.mcplot.${ID[j]}.jpg" alt=""/></p>
@@ -966,7 +974,7 @@ done
 rm im* ) &>> preproc.${ID[j]}.log 
 
 read -r -d '' textf <<EOF
-<h2>QC4 - T1 vs. SS mask</h2>
+<h2 id="qc4">QC4 - T1 vs. SS mask</h2>
 <p>&nbsp;</p>
 <h3>Vídeo axial</h3>
 <p><video controls="controls" width="100%" height="100%">
@@ -1094,7 +1102,7 @@ convert +append imx.* imy.* imz.* m.over.SS.T1.${ID[j]}_al.jpg
 rm im* 
 
 read -r -d '' textf <<EOF
-<h2>QC5 - Checagem de alinhamento T1 vs. RS</h2>
+<h2 id="qc5">QC5 - Checagem de alinhamento T1 vs. RS</h2>
 <p>&nbsp;</p>
 <h3>Grade 3 x 3</h3>
 <p><img src="m.over.SS.T1.${ID[j]}_al.png" alt="" style="width:1000px;height:800px%"/></p>

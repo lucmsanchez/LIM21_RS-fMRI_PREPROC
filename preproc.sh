@@ -1042,8 +1042,8 @@ for j in ${!ID[@]}; do
   echo -n "${ID[j]}> "
   if open.node "COREGISTER fMRI-T1"; then
    ( align_epi_anat.py \
-    -anat ${in[$j]} \
-    -epi  ${in_2[$j]} \
+    -anat ${in_2[$j]} \
+    -epi  ${in[$j]} \
     -epi_base 100 \
     -anat_has_skull no \
     -volreg off \

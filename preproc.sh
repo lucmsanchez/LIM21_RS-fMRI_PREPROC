@@ -513,14 +513,17 @@ cat << EOF > report.${ID[j]}.html
 <h1>Relatório de Controle de Qualidade -- ${ID[j]}</h1>
 <p>&nbsp;</p>
 <!--index-->
-<a href="#qc1">QC1 - Imagem RS raw</a>
-<a href="#qc2">QC2 - Imagem T1 raw</a>
-<a href="#qc3">QC3 - RS Motion Correction</a>
-<a href="#qc4">QC4 - T1 vc. SS mask</a>
-<a href="#qc5">QC5 - Checagem de alinhamento T1 vs. RS</a>
-<a href="#qc6">QC6 - Checagem de normalização T1 e RS vs. MNI</a>
-<a href="#qc7">QC7 - Checagem de segmentação</a>
-<a href="#qc8">QC8 - Imagem RS final</a>
+<h3>Conteúdo:</h3>
+<ul>
+<li><h3><a href="#qc1">QC1 - Imagem RS raw</a></h3></li>
+<li><h3><a href="#qc2">QC2 - Imagem T1 raw</a></h3></li>
+<li><h3><a href="#qc3">QC3 - RS Motion Correction</a></h3></li>
+<li><h3><a href="#qc4">QC4 - T1 vc. SS mask</a></h3></li>
+<li><h3><a href="#qc5">QC5 - Checagem de alinhamento T1 vs. RS</a></h3></li>
+<li><h3><a href="#qc6">QC6 - Checagem de normalização T1 e RS vs. MNI</a></h3></li>
+<li><h3><a href="#qc7">QC7 - Checagem de segmentação</a></h3></li>
+<li><h3><a href="#qc8">QC8 - Imagem RS final</a></h3></li>
+</ul>
 <!--index-->
 <p>&nbsp;</p>
 <!--QC1-->

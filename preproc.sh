@@ -1040,8 +1040,7 @@ for j in ${!ID[@]}; do
     -anat_has_skull no \
     -volreg off \
     -tshift off \
-    -deoblique off \
-    -AddEdge ) &>> preproc.${ID[j]}.log
+    -deoblique off ) &>> preproc.${ID[j]}.log
   fi; close.node
 done 
 input.error

@@ -1070,11 +1070,12 @@ printf "=============================QC 5==================================\n\n"
 for j in ${!ID[@]}; do
 qc.open -e "QC 5"                                    \
         -i "resample.RS.${ID[j]}_shft+orig SS.T1.${ID[j]}_al+orig"      \
-        -o "m.over.SS.T1.${ID[j]}_al.jpg"              
+        -o "m.over.SS.T1.${ID[j]}_al.jpg m.over2.SS.T1.${ID[j]}_al.jpg"              
 if [ $? -eq 0 ]; then
 
-3dedge3 -input resample.RS.${ID[j]}_shft+orig -prefix e.resample.RS.${ID[j]}_shft+orig
+( 3dedge3 -input resample.RS.${ID[j]}_shft+orig -prefix e.resample.RS.${ID[j]}_shft+orig
 
+over2=resample.RS.${ID[j]}_shft+orig
 over=e.resample.RS.${ID[j]}_shft+orig
 under=SS.T1.${ID[j]}_al+orig
 
@@ -1089,11 +1090,18 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:10 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $under" \
 -com "SWITCH_OVERLAY $over" \
--com "SET_DICOM_XYZ A 15 45 45" \
+-com "SET_DICOM_XYZ A 10 40 45" \
 -com "SET_THRESHOLD A.3500 3" \
 -com "SAVE_JPEG A.axialimage imx.${ID[j]}.jpg" \
 -com "SAVE_JPEG A.sagitalimage imy.${ID[j]}.jpg" \
 -com "SAVE_JPEG A.coronalimage imz.${ID[j]}.jpg" \
+-com "SWITCH_OVERLAY $over2" \
+-com "ALTER_WINDOW A.axialimage opacity=3" 
+-com "ALTER_WINDOW A.sagitalimage opacity=3" 
+-com "ALTER_WINDOW A.coronalimage opacity=3" 
+-com "SAVE_JPEG A.axialimage imx2.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.sagitalimage imy2.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.coronalimage imz2.${ID[j]}.jpg" \
 -com "QUIT"
 
 sleep 5
@@ -1101,14 +1109,17 @@ sleep 5
 killall Xvfb
 
 convert +append imx.* imy.* imz.* m.over.SS.T1.${ID[j]}_al.jpg
- 
-rm im* 
+convert +append imx2.* imy2.* imz2.* m.over2.SS.T1.${ID[j]}_al.jpg
+
+rm im*  ) &>> preproc.${ID[j]}.log
 
 read -r -d '' textf <<EOF
 <h2 id="qc5">QC5 - Checagem de alinhamento T1 vs. RS</h2>
 <p>&nbsp;</p>
 <h3>Grade 3 x 3</h3>
-<p><img src="m.over.SS.T1.${ID[j]}_al.png" alt="" style="width:1000px;height:800px%"/></p>
+<p><img src="m.over.SS.T1.${ID[j]}_al.jpg" alt="" style="width:1000px;height:800px%"/></p>
+<p>&nbsp;</p>
+<p><img src="m.over2.SS.T1.${ID[j]}_al.jpg" alt="" style="width:1000px;height:800px%"/></p>
 <p>&nbsp;</p>
 <hr>
 EOF
@@ -1459,6 +1470,7 @@ for j in ${!ID[@]}; do
   cp -n $file $pwd/OUTPUT/${ID[j]}/  
   file=$(find . -name "${in_3[j]}")
 cp -n $file $pwd/OUTPUT/${ID[j]}/  ) &> /dev/null
+close.node
 done 
 input.error
 echo

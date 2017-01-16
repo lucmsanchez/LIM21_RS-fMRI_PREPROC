@@ -1086,13 +1086,13 @@ under=SS.T1.${ID[j]}_al+orig
  export AFNI_NOSPLASH=YES
  export AFNI_SPLASH_MELT=NO
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:10 geom=1200x800" \
--com "OPEN_WINDOW A.sagitalimage mont=1x3:10 geom=1200x800" \
--com "OPEN_WINDOW A.coronalimage mont=1x3:10 geom=1200x800" \
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:20 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage mont=1x3:20 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage mont=1x3:20 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $under" \
 -com "SWITCH_OVERLAY $over" \
--com "SET_DICOM_XYZ A 10 40 45" \
+-com "SET_DICOM_XYZ A 0 30 40" \
 -com "SET_THRESHOLD A.3500 3" \
 -com "SAVE_JPEG A.axialimage imx.${ID[j]}.jpg" \
 -com "SAVE_JPEG A.sagitalimage imy.${ID[j]}.jpg" \
@@ -1101,13 +1101,13 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:10 geom=1200x800" \
 
 sleep 5
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:10 geom=1200x800" \
--com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:10 geom=1200x800" \
--com "OPEN_WINDOW A.coronalimage opacity=6 mont=1x3:10 geom=1200x800" \
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:20 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:20 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage opacity=6 mont=1x3:20 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $under" \
 -com "SWITCH_OVERLAY $over2" \
--com "SET_DICOM_XYZ A 10 40 45" \
+-com "SET_DICOM_XYZ A 0 30 40" \
 -com "SAVE_JPEG A.axialimage imx2.${ID[j]}.jpg" \
 -com "SAVE_JPEG A.sagitalimage imy2.${ID[j]}.jpg" \
 -com "SAVE_JPEG A.coronalimage imz2.${ID[j]}.jpg" \
@@ -1186,6 +1186,164 @@ echo
 
 #: QC6 ========================================================================
 
+printf "=============================QC 6==================================\n\n"
+for j in ${!ID[@]}; do
+qc.open -e "QC 5"                                    \
+        -i "MNI.RS.${ID[j]}+tlrc MNI.T1.${ID[j]}+tlrc"      \
+        -o "m.overa.MNI.${ID[j]}.jpg m.overb.MNI.${ID[j]}.jpg m.overc.MNI.${ID[j]}.jpg m.overa2.MNI.${ID[j]}.jpg m.overb2.MNI.${ID[j]}.jpg m.overc2.MNI.${ID[j]}.jpg"              
+if [ $? -eq 0 ]; then
+
+( 3dedge3 -input MNI.RS.${ID[j]}+tlrc -prefix e.MNI.RS.${ID[j]}+tlrc
+  3dedge3 -input $template -prefix e.$template
+  
+overa2=MNI.RS.${ID[j]}+tlrc
+overa=e.MNI.RS.${ID[j]}+tlrc
+undera=MNI.T1.${ID[j]}+tlrc
+
+underb=MNI.T1.${ID[j]}+tlrc
+overb=e.$template
+overb2=$template
+
+underc=$template
+overc=e.MNI.RS.${ID[j]}+tlrc
+overc2=MNI.RS.${ID[j]}+tlrc
+
+ Xvfb :1 -screen 0 1200x800x24 &
+
+ export AFNI_NOSPLASH=YES
+ export AFNI_SPLASH_MELT=NO
+
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage mont=1x3:25 geom=1200x800" \
+-com "SET_XHAIRS OFF" \
+-com "SWITCH_UNDERLAY $undera" \
+-com "SWITCH_OVERLAY $overa" \
+-com "SET_DICOM_XYZ A 0 20 15" \
+-com "SET_THRESHOLD A.3500 3" \
+-com "SAVE_JPEG A.axialimage imx.a.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.sagitalimage imy.a.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.coronalimage imz.a.${ID[j]}.jpg" \
+-com "QUIT"
+
+sleep 5
+
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage opacity=6 mont=1x3:25 geom=1200x800" \
+-com "SET_XHAIRS OFF" \
+-com "SWITCH_UNDERLAY $undera" \
+-com "SWITCH_OVERLAY $overa2" \
+-com "SET_DICOM_XYZ A 0 20 15" \
+-com "SAVE_JPEG A.axialimage imx2.a.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.sagitalimage imy2.a.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.coronalimage imz2.a.${ID[j]}.jpg" \
+-com "QUIT"
+
+sleep 5
+
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage mont=1x3:25 geom=1200x800" \
+-com "SET_XHAIRS OFF" \
+-com "SWITCH_UNDERLAY $underb" \
+-com "SWITCH_OVERLAY $overb" \
+-com "SET_DICOM_XYZ A 0 20 15" \
+-com "SET_THRESHOLD A.3500 3" \
+-com "SAVE_JPEG A.axialimage imx.b.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.sagitalimage imy.b.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.coronalimage imz.b.${ID[j]}.jpg" \
+-com "QUIT"
+
+sleep 5
+
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage opacity=6 mont=1x3:25 geom=1200x800" \
+-com "SET_XHAIRS OFF" \
+-com "SWITCH_UNDERLAY $underb" \
+-com "SWITCH_OVERLAY $overb2" \
+-com "SET_DICOM_XYZ A 0 20 15" \
+-com "SAVE_JPEG A.axialimage imx2.b.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.sagitalimage imy2.b.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.coronalimage imz2.b.${ID[j]}.jpg" \
+-com "QUIT"
+
+sleep 5
+
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage mont=1x3:25 geom=1200x800" \
+-com "SET_XHAIRS OFF" \
+-com "SWITCH_UNDERLAY $underc" \
+-com "SWITCH_OVERLAY $overc" \
+-com "SET_DICOM_XYZ A 0 20 15" \
+-com "SET_THRESHOLD A.3500 3" \
+-com "SAVE_JPEG A.axialimage imx.c.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.sagitalimage imy.c.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.coronalimage imz.c.${ID[j]}.jpg" \
+-com "QUIT"
+
+sleep 5
+
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage opacity=6 mont=1x3:25 geom=1200x800" \
+-com "SET_XHAIRS OFF" \
+-com "SWITCH_UNDERLAY $underc" \
+-com "SWITCH_OVERLAY $overc2" \
+-com "SET_DICOM_XYZ A 0 20 15" \
+-com "SAVE_JPEG A.axialimage imx2.c.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.sagitalimage imy2.c.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.coronalimage imz2.c.${ID[j]}.jpg" \
+-com "QUIT"
+
+sleep 5
+
+killall Xvfb
+
+convert +append imx.a.* imy.a.* imz.a.* m.overa.MNI.${ID[j]}.jpg
+convert +append imx2.a.* imy2.a.* imz2.a.* m.overa2.MNI.${ID[j]}.jpg
+
+convert +append imx.b.* imy.b.* imz.b.* m.overb.MNI.${ID[j]}.jpg
+convert +append imx2.b.* imy2.b.* imz2.b.* m.overb2.MNI.${ID[j]}.jpg
+
+convert +append imx.c.* imy.c.* imz.c.* m.overc.MNI.${ID[j]}.jpg
+convert +append imx2.c.* imy2.c.* imz2.c.* m.overc2.MNI.${ID[j]}.jpg
+
+rm im*  
+
+) &>> preproc.${ID[j]}.log
+
+read -r -d '' textf <<EOF
+<h2 id="qc6">QC6 - Checagem de normalização T1 e RS vs. MNI</h2>
+<p>&nbsp;</p>
+<h3>T1 vs. RS (MNI)</h3>
+<p><img src="m.overa.MNI.${ID[j]}.jpg" alt="" style="width:1000px;height:800px%"/></p>
+<p>&nbsp;</p>
+<p><img src="m.overa2.MNI.${ID[j]}.jpg" alt="" style="width:1000px;height:800px%"/></p>
+<p>&nbsp;</p>
+<h3>T1 vs. MNI</h3>
+<p><img src="m.overb.MNI.${ID[j]}.jpg" alt="" style="width:1000px;height:800px%"/></p>
+<p>&nbsp;</p>
+<p><img src="m.overb2.MNI.${ID[j]}.jpg" alt="" style="width:1000px;height:800px%"/></p>
+<p>&nbsp;</p>
+<h3>MNI vs. RS</h3>
+<p><img src="m.overc.MNI.${ID[j]}.jpg" alt="" style="width:1000px;height:800px%"/></p>
+<p>&nbsp;</p>
+<p><img src="m.overc2.MNI.${ID[j]}.jpg" alt="" style="width:1000px;height:800px%"/></p>
+<p>&nbsp;</p>
+<hr>
+EOF
+
+export textf
+perl -pe 'BEGIN{undef $/;} s/<!--QC6-->.*<!--QC7-->/<!--QC6-->\n $ENV{textf} \n<!--QC7-->/smg' report.${ID[j]}.html > rename.report.${ID[j]}.html
+mv rename.report.${ID[j]}.html report.${ID[j]}.html
+
+fi; qc.close
+done
+input.error
+
 [ $break -eq 4 ] && echo "Interrompendo script a pedido do usuário" && exit
 
 #: T1 SEGMENTATION ======================================================
@@ -1253,7 +1411,77 @@ done
 input.error
 echo
 
-#: QC9 ========================================================================
+#: QC7 ========================================================================
+printf "=============================QC 7==================================\n\n"
+for j in ${!ID[@]}; do
+qc.open -e "QC 7"                                    \
+        -i "${ID[j]}.WM.nii ${ID[j]}.CSF.nii SS.T1.${ID[j]}_al+orig"      \
+        -o "m.over.seg.${ID[j]}.jpg m.over2.seg.${ID[j]}.jpg"              
+if [ $? -eq 0 ]; then
+
+( over2=${ID[j]}.WM.nii
+over=${ID[j]}.CSF.nii
+under=SS.T1.${ID[j]}_al+orig
+
+ Xvfb :1 -screen 0 1200x800x24 &
+
+ export AFNI_NOSPLASH=YES
+ export AFNI_SPLASH_MELT=NO
+
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:10 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage mont=1x3:10 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage mont=1x3:10 geom=1200x800" \
+-com "SET_XHAIRS OFF" \
+-com "SWITCH_UNDERLAY $under" \
+-com "SWITCH_OVERLAY $over" \
+-com "SET_DICOM_XYZ A 10 40 45" \
+-com "SAVE_JPEG A.axialimage imx.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.sagitalimage imy.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.coronalimage imz.${ID[j]}.jpg" \
+-com "QUIT"
+
+sleep 5
+
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:10 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:10 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage opacity=6 mont=1x3:10 geom=1200x800" \
+-com "SET_XHAIRS OFF" \
+-com "SWITCH_UNDERLAY $under" \
+-com "SWITCH_OVERLAY $over2" \
+-com "SET_DICOM_XYZ A 10 40 45" \
+-com "SAVE_JPEG A.axialimage imx2.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.sagitalimage imy2.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.coronalimage imz2.${ID[j]}.jpg" \
+-com "QUIT"
+
+sleep 5
+
+killall Xvfb
+
+convert +append imx.* imy.* imz.* m.over.seg.${ID[j]}.jpg
+convert +append imx2.* imy2.* imz2.* m.over2.seg.${ID[j]}.jpg
+
+rm im*  ) &>> preproc.${ID[j]}.log
+
+read -r -d '' textf <<EOF
+<h2 id="qc7">QC7 - Checagem de segmentação</h2>
+<p>&nbsp;</p>
+<h3>Grade 3 x 3 - CSF</h3>
+<p><img src="m.over.seg.${ID[j]}.jpg" alt="" style="width:1000px;height:800px%"/></p>
+<p>&nbsp;</p>
+<h3>Grade 3 x 3 - WM</h3>
+<p><img src="m.over2.seg.${ID[j]}.jpg" alt="" style="width:1000px;height:800px%"/></p>
+<p>&nbsp;</p>
+<hr>
+EOF
+
+export textf
+perl -pe 'BEGIN{undef $/;} s/<!--QC7-->.*<!--QC8-->/<!--QC7-->\n $ENV{textf} \n<!--QC8-->/smg' report.${ID[j]}.html > rename.report.${ID[j]}.html
+mv rename.report.${ID[j]}.html report.${ID[j]}.html
+
+fi; qc.close
+done
+input.error
 
 [ $break -eq 5 ] && echo "Interrompendo script a pedido do usuário" && exit
 
@@ -1433,11 +1661,7 @@ input.error
 echo
 fi
 
-#: QC10 ========================================================================
-
-
-
-#: QC11 ========================================================================
+#: QC8 ========================================================================
 
 # # create a temporal signal to noise ratio dataset 
 # #    signal: if 'scale' block, mean should be 100
@@ -1462,23 +1686,25 @@ fi
 #: DATA OUTPUT ===================================================================
 printf "\n=======================DATA OUTPUT=====================\n\n"
 for j in ${!ID[@]}; do
-  inputs "${out[$j]}" "SS.T1.${ID[j]}+orig" "preproc.${ID[j]}.log"
+  inputs "${out[$j]}" "SS.T1.${ID[j]}+orig" "preproc.${ID[j]}.log" "report.${ID[j]}.html"
   outputs "preproc.RS.${ID[j]}.nii" "SS.T1.${ID[j]}.nii" 
   echo -n "${ID[j]}> "
   if open.node "DATA OUTPUT"; then
 ( rm -r OUTPUT/${ID[j]}/manual_skullstrip 
   3dAFNItoNIFTI -prefix ${out[j]} ${in[j]}
   3dAFNItoNIFTI -prefix ${out_2[j]} ${in_2[j]} ) &>> preproc.${ID[j]}.log
-  # incluir quality report aqui tbm
-  #file=$(find . -name "report.${ID[j]}.html")
-  #cp -n $file OUTPUT/${ID[j]}/ 
   fi; close.node
 ( file=$(find . -name "${out[j]}")
   cp -rf $file $pwd/OUTPUT/${ID[j]}/
   file=$(find . -name "${out_2[j]}")
   cp -rf $file $pwd/OUTPUT/${ID[j]}/  
   file=$(find . -name "${in_3[j]}")
-  cp -rf $file $pwd/OUTPUT/${ID[j]}/  ) &> /dev/null
+  cp -rf $file $pwd/OUTPUT/${ID[j]}/ 
+  file=$(find . -name "${in_4[j]}")
+  cp -rf $file $pwd/OUTPUT/${ID[j]}/
+  cp -rf m.* $pwd/OUTPUT/${ID[j]}/report.media
+  sed -i "s/m./report.media\/m./g" $pwd/OUTPUT/${ID[j]}/${in_4[j]}
+   ) &> /dev/null
 done 
 input.error
 echo

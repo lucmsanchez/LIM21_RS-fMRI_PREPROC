@@ -46,6 +46,7 @@ gIS=60
 template="MNI152_1mm_uni+tlrc"
 betf=0.1
 blur=6
+cost="lpc"
 ```
   
 preproc.sbj (o arquivo deve conter APENAS os códigos das imagens, um por linha)
@@ -71,13 +72,13 @@ Os arquivos serão automaticamente organizados no seguinte padrão:
 .
 ├── DATA
 │   └── C000001
-│   	├── /C000001.results
+│   	├── /preproc.results
 │   	├── RS.C000001.nii
 │   	├── T1.C000001.nii
 │   	└── RS.C000001.log
 ├── OUTPUT
 │   └── C000001
-│   	├── /report.C000001
+│   	├── /media.report
 │       ├── report.C000001.html
 │       ├── preproc.RS.C000001.nii
 │       ├── SS.T1.C000001.nii

@@ -343,7 +343,7 @@ else
   echo "O arquivo de configuração não foi especificado"
   if [ ! -f preproc.cfg ]; then
     echo "Será criado um arquivo de configuração com valores padrão: preproc.cfg"
-    printf '# Variáveis RS-fMRI Preprocessing:\n\nfsl5=fsl5.0-\nTR=2\nptn=seq+z\nmcbase=100\ngRL=90\ngAP=90\ngIS=60\ntemplate="MNI152_1mm_uni+tlrc"\nbetf=0.1\nblur=6\n' > preproc.cfg
+    printf '# Variáveis RS-fMRI Preprocessing:\n\nfsl5=fsl5.0-\nTR=2\nptn=seq+z\nmcbase=100\ngRL=90\ngAP=90\ngIS=60\ntemplate="MNI152_1mm_uni+tlrc"\nbetf=0.1\nblur=6\ncost="lpc"\n' > preproc.cfg
     exit
   else
     echo "Será usado o arquivo local preproc.cfg"
@@ -413,6 +413,7 @@ Motion correction       - valor base              => $mcbase
 Homogenize Grid         - tamanho da grade        => $gRL $gAP $gIS
 BET                     - bet f                   => $betf
 3dMerge	                - filtro gaussiano        => $blur
+Alinhamento Anat-epi    - método                  => $cost
 
 TEMPLATE: $template
 
@@ -492,7 +493,7 @@ pwd=($PWD)
 #: DATA INPUT ====================================================================
 for j in ${!ID[@]}; do
   out[$j]=RS.${ID[j]}.nii
-  steppath[$j]=DATA/${ID[j]}/${ID[j]}.results/
+  steppath[$j]=DATA/${ID[j]}/preproc.results/
   [ ! -d ${steppath[$j]} ] && mkdir -p ${steppath[$j]} 2> /dev/null
   [ ! -f ${steppath[$j]}RS.${ID[j]}.nii ] && cp DATA/${ID[j]}/RS.${ID[j]}.nii ${steppath[$j]} 2> /dev/null
   [ ! -f ${steppath[$j]}T1.${ID[j]}.nii ] && cp DATA/${ID[j]}/T1.${ID[j]}.nii ${steppath[$j]} 2> /dev/null
@@ -590,7 +591,9 @@ if [ $? -eq 0 ]; then
 
 read -r -d '' textf <<EOF
 <h2 id="qc1">QC1 - Imagem RS raw</h2>
+</center>
 $text1
+<center>
 <h3>Gráfico de outliers por TS</h3>
 <p><img src="m.outcount.${ID[j]}.jpg" alt="" style="width:716px;height:548px%";/></p>
 <p>&nbsp;</p>
@@ -658,7 +661,9 @@ if [ $? -eq 0 ]; then
 
 read -r -d '' textf <<EOF
 <h2 id="qc2">QC2 - Imagem T1 raw</h2>
+</center>
 $text1
+<center>
 <p>&nbsp;</p>
 <h3>Vídeo axial</h3>
 <p><video controls="controls" width="100%" height="100%">
@@ -1061,7 +1066,8 @@ for j in ${!ID[@]}; do
     -anat_has_skull no \
     -volreg off \
     -tshift off \
-    -deoblique off ) &>> preproc.${ID[j]}.log
+    -deoblique off \
+    -cost $cost ) &>> preproc.${ID[j]}.log
   fi; close.node
 done 
 input.error
@@ -1662,26 +1668,33 @@ echo
 fi
 
 #: QC8 ========================================================================
+printf "=============================QC 8==================================\n\n"
+for j in ${!ID[@]}; do
+qc.open -e "QC 8"                                    \
+        -i "${out[$j]}"      \
+        -o ""              
+if [ $? -eq 0 ]; then
+ text1="<pre>$(3dinfo ${out[$j]} 2> /dev/null)</pre>"
 
-# # create a temporal signal to noise ratio dataset 
-# #    signal: if 'scale' block, mean should be 100
-# #    noise : compute standard deviation of errts
-# 3dTstat -mean -prefix rm.signal.all all_runs.$subj+tlrc
-# 3dTstat -stdev -prefix rm.noise.all errts.${subj}.tproject+tlrc
-# 3dcalc -a rm.signal.all+tlrc                                               \
-#        -b rm.noise.all+tlrc                                                \
-#        -c full_mask.$subj+tlrc                                             \
-#        -expr 'c*a/b' -prefix TSNR.$subj 
+read -r -d '' textf <<EOF
+<h2 id="qc8">QC8 - Imagem RS final</h2>
+<p>&nbsp;</p>
+</center>
+$text1
+<center>
+<p>&nbsp;</p>
+<hr>
+<p>&nbsp;</p>
+EOF
 
-# # compute and store GCOR (global correlation average)
-# # (sum of squares of global mean of unit errts)
-# 3dTnorm -norm2 -prefix rm.errts.unit errts.${subj}.tproject+tlrc
-# 3dmaskave -quiet -mask full_mask.$subj+tlrc rm.errts.unit+tlrc >           \
-#     gmean.errts.unit.1D
-# 3dTstat -sos -prefix - gmean.errts.unit.1D\' > out.gcor.1D
+export textf
+perl -pe 'BEGIN{undef $/;} s/<!--QC8-->.*<!--QC9-->/<!--QC8-->\n $ENV{textf} \n<!--QC9-->/smg' report.${ID[j]}.html > rename.report.${ID[j]}.html
+mv rename.report.${ID[j]}.html report.${ID[j]}.html
 
-# 3dFWHMx -detrend -mask full_mask.$subj+tlrc                            \
-#         errts.${subj}.tproject+tlrc"[$trs]" >> blur.errts.1D
+fi; qc.close
+done
+input.error
+echo 
 
 #: DATA OUTPUT ===================================================================
 printf "\n=======================DATA OUTPUT=====================\n\n"

@@ -526,6 +526,7 @@ cat << EOF > report.${ID[j]}.html
 </ul>
 <!--index-->
 <p>&nbsp;</p>
+<center>
 <!--QC1-->
 <!--QC2-->
 <!--QC3-->
@@ -538,6 +539,7 @@ cat << EOF > report.${ID[j]}.html
 <!--QC10-->
 <!--QC11-->
 <!--QC12-->
+</center>
 </body>
 </HTML>
 EOF
@@ -1095,10 +1097,17 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:10 geom=1200x800" \
 -com "SAVE_JPEG A.axialimage imx.${ID[j]}.jpg" \
 -com "SAVE_JPEG A.sagitalimage imy.${ID[j]}.jpg" \
 -com "SAVE_JPEG A.coronalimage imz.${ID[j]}.jpg" \
+-com "QUIT"
+
+sleep 5
+
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:10 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:10 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage opacity=6 mont=1x3:10 geom=1200x800" \
+-com "SET_XHAIRS OFF" \
+-com "SWITCH_UNDERLAY $under" \
 -com "SWITCH_OVERLAY $over2" \
--com "ALTER_WINDOW A.axialimage opacity=3" 
--com "ALTER_WINDOW A.sagitalimage opacity=3" 
--com "ALTER_WINDOW A.coronalimage opacity=3" 
+-com "SET_DICOM_XYZ A 10 40 45" \
 -com "SAVE_JPEG A.axialimage imx2.${ID[j]}.jpg" \
 -com "SAVE_JPEG A.sagitalimage imy2.${ID[j]}.jpg" \
 -com "SAVE_JPEG A.coronalimage imz2.${ID[j]}.jpg" \
@@ -1463,14 +1472,13 @@ for j in ${!ID[@]}; do
   # incluir quality report aqui tbm
   #file=$(find . -name "report.${ID[j]}.html")
   #cp -n $file OUTPUT/${ID[j]}/ 
-  fi; cd $pwd
+  fi; close.node
 ( file=$(find . -name "${out[j]}")
-  cp -n $file $pwd/OUTPUT/${ID[j]}/
+  cp -rf $file $pwd/OUTPUT/${ID[j]}/
   file=$(find . -name "${out_2[j]}")
-  cp -n $file $pwd/OUTPUT/${ID[j]}/  
+  cp -rf $file $pwd/OUTPUT/${ID[j]}/  
   file=$(find . -name "${in_3[j]}")
-cp -n $file $pwd/OUTPUT/${ID[j]}/  ) &> /dev/null
-close.node
+  cp -rf $file $pwd/OUTPUT/${ID[j]}/  ) &> /dev/null
 done 
 input.error
 echo

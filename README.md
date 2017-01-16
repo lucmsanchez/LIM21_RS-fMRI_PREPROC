@@ -127,8 +127,7 @@ bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
 
 ## TO DO (Ordem de prioridade)   
   
-- Adicionar etapas de controle de qualidade (testar etapas do proprio afni tbm)
-- pesquisar outros parametros de controle de qualidade
+- Implementar medidas de controle de qualidade quantitativas (SNR e DVARS?)
 - melhorar funções open.node e close.node (variaveis externas + loop)
 - Melhorar etapas de alinhamento (epi2anat?)
 - Melhorar etapa de normalização

@@ -1415,7 +1415,7 @@ echo
 printf "=============================QC 7==================================\n\n"
 for j in ${!ID[@]}; do
 qc.open -e "QC 7"                                    \
-        -i "${ID[j]}.WM.nii ${ID[j]}.CSF.nii SS.T1.${ID[j]}_al+orig"      \
+        -i "${ID[j]}.WM+orig ${ID[j]}.CSF+orig SS.T1.${ID[j]}_al+orig"      \
         -o "m.over.seg.${ID[j]}.jpg m.over2.seg.${ID[j]}.jpg"              
 if [ $? -eq 0 ]; then
 

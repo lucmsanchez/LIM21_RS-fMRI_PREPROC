@@ -46,6 +46,7 @@ gIS=60
 template="MNI152_1mm_uni+tlrc"
 betf=0.1
 blur=6
+cost="lpc"
 ```
   
 preproc.sbj (o arquivo deve conter APENAS os códigos das imagens, um por linha)
@@ -71,13 +72,13 @@ Os arquivos serão automaticamente organizados no seguinte padrão:
 .
 ├── DATA
 │   └── C000001
-│   	├── /C000001.results
+│   	├── /preproc.results
 │   	├── RS.C000001.nii
 │   	├── T1.C000001.nii
 │   	└── RS.C000001.log
 ├── OUTPUT
 │   └── C000001
-│   	├── /report.C000001
+│   	├── /media.report
 │       ├── report.C000001.html
 │       ├── preproc.RS.C000001.nii
 │       ├── SS.T1.C000001.nii
@@ -119,15 +120,14 @@ bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
     - 1o) qual dos arquivos de log deve-se usar? 
     - 2o) Mesmo com o exemplo fornecido usado o GUI há erro. Incompatibilidade com a versão do matlab? 
     - 3o) Na tentativa de usar a função sem GUI é necessário especificar a variável highpass, que não é usado no GUI - como é possivel? que valores usar?
-- Script não checa a versão do bash - necessita de 3.7+ para rodar
+- Script não checa a versão do bash - necessita de 3.7+ para rodar (Bug #10)
 - Script não checa os pré-requisitos dentro do matlab - SPM e aztec. (Bug #8)
 - Script não checa atualizações nas variáveis definidas nas configurações. Caso mude uma das configurações deve-se apagar o output da etapa a que a configuração se refere. (Bug #6)
 - Skull strip automatizado tem resultados ruins após o co-registro com fMRI (Bug #9)
 
 ## TO DO (Ordem de prioridade)   
   
-- Adicionar etapas de controle de qualidade (testar etapas do proprio afni tbm)
-- pesquisar outros parametros de controle de qualidade
+- Implementar medidas de controle de qualidade quantitativas (SNR e DVARS?)
 - melhorar funções open.node e close.node (variaveis externas + loop)
 - Melhorar etapas de alinhamento (epi2anat?)
 - Melhorar etapa de normalização

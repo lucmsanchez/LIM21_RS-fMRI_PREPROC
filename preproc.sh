@@ -692,7 +692,7 @@ if [ $aztec -eq 1 ]; then
     inputs "${out[$j]}" "RS.${ID[j]}.log"
     outputs "aztec.RS.${ID[j]}.nii script.aztec.m"
     echo -n "${ID[j]}> "
-    if open.node "AZTEC"; the
+    if open.node "AZTEC"; then
     
 read -r -d '' textf <<EOF
 ORI=1 / 128;

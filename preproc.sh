@@ -675,7 +675,8 @@ if [ $aztec -eq 1 ]; then
     outputs "aztec.RS.${ID[j]}.nii"
     echo -n "${ID[j]}> "
     if open.node "AZTEC"; then
-      #
+  
+
    #  if [ ! -d "3d" ]; then  mkdir 3d ; fi && \
    #  fsl5.0-fslsplit ${in[$j]} 3d_"${ID[j]}"_ -t && \
    #  mv 3d_"${ID[j]}"* 3d && \

@@ -690,24 +690,42 @@ if [ $aztec -eq 1 ]; then
   printf "=============================AZTEC==================================\n\n"
   for j in ${!ID[@]}; do
     inputs "${out[$j]}" "RS.${ID[j]}.log"
-    outputs "aztec.RS.${ID[j]}.nii"
+    outputs "aztec.RS.${ID[j]}.nii script.aztec.m"
     echo -n "${ID[j]}> "
-    if open.node "AZTEC"; then
-  
+    if open.node "AZTEC"; the
+    
+read -r -d '' textf <<EOF
+ORI=1 / 128;
+logfile='${in[j]}';
+funcfiles=spm_select('FPList','3d','3d.*');
+funcfiles=cellstr(funcfiles);
+FS_Phys = 500;
+TR = $TR;
+only_retroicor=1;
+output_dir='3d';
 
-   #  if [ ! -d "3d" ]; then  mkdir 3d ; fi && \
-   #  fsl5.0-fslsplit ${in[$j]} 3d_"${ID[j]}"_ -t && \
-   #  mv 3d_"${ID[j]}"* 3d && \
-   #  gunzip 3d/3d_$i_* && \
-      echo "try aztec(); catch; end" > azt_script.m && \
-   #  echo "try aztec('${in[2]}',files ,500,$((TR * 1000)),1,$hp,'/3d') catch  quit" > azt_script.m
-      matlab -nosplash -r "run azt_script.m" \
-   #  rm 3d/3d* && \
-   #  3dTcat -prefix ${out[$j]} -TR $TR 3d/aztec* && \
-   #  rm 3d/aztec* 3d azt* && \ 
-     &>> preproc.${ID[j]}.log
-      #
-    fi; close.node
+[filenames, mean_HR, range_HR, aztecX]=aztec(logfile, funcfiles, FS_Phys, TR, only_retroicor, ORI, output_dir)
+
+dlmwrite(aztecX.1D,aztecX)
+dlmwrite(meanHR.1D,mean_HR)
+dlmwrite(rangeHR.1D,range_HR)
+EOF
+
+   echo $textf > script.aztec.m
+  
+ ( if [ ! -d "3d" ]; then mkdir 3d; fi
+   fsl5.0-fslsplit RS.${ID[j]}.nii 3d/3d.${ID[j]}- -t && \
+   gunzip -f 3d/3d.${ID[j]}-*.nii.gz
+ 
+   matlab -nosplash -r "run script.aztec.m" \
+   
+   3dTcat -prefix ${out[$j]} -TR $TR 3d/aztec*3d* 
+   
+   #rm -r 3d
+   
+   ) &>> preproc.${ID[j]}.log
+
+  fi; close.node
   done
   input.error
   echo
@@ -1726,7 +1744,7 @@ echo
 
 
 
-exit #=================================================================================
+#=================================================================================
 #======================================================================================
 #======================================================================================
 #======================================================================================

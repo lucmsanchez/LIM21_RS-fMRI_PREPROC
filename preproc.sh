@@ -497,7 +497,7 @@ for j in ${!ID[@]}; do
   [ ! -d ${steppath[$j]} ] && mkdir -p ${steppath[$j]} 2> /dev/null
   [ ! -f ${steppath[$j]}RS.${ID[j]}.nii ] && cp DATA/${ID[j]}/RS.${ID[j]}.nii ${steppath[$j]} 2> /dev/null
   [ ! -f ${steppath[$j]}T1.${ID[j]}.nii ] && cp DATA/${ID[j]}/T1.${ID[j]}.nii ${steppath[$j]} 2> /dev/null
-  [ ! -f ${steppath[$j]}T1.${ID[j]}.nii ] && cp DATA/${ID[j]}/RS.${ID[j]}.log ${steppath[$j]} 2> /dev/null
+  [ ! -f ${steppath[$j]}RS.${ID[j]}.log ] && cp DATA/${ID[j]}/RS.${ID[j]}.log ${steppath[$j]} 2> /dev/null
 done
 
 # Iniciar Relatório de qualidade
@@ -690,11 +690,12 @@ if [ $aztec -eq 1 ]; then
   printf "=============================AZTEC==================================\n\n"
   for j in ${!ID[@]}; do
     inputs "${out[$j]}" "RS.${ID[j]}.log"
-    outputs "aztec.RS.${ID[j]}.nii script.aztec.m"
+    outputs "aztec.RS.${ID[j]}.nii" "script.aztec.m"
     echo -n "${ID[j]}> "
     if open.node "AZTEC"; then
     
 read -r -d '' textf <<EOF
+try
 ORI=1 / 128;
 logfile='${in[j]}';
 funcfiles=spm_select('FPList','3d','3d.*');
@@ -706,18 +707,21 @@ output_dir='3d';
 
 [filenames, mean_HR, range_HR, aztecX]=aztec(logfile, funcfiles, FS_Phys, TR, only_retroicor, ORI, output_dir)
 
-dlmwrite(aztecX.1D,aztecX)
-dlmwrite(meanHR.1D,mean_HR)
-dlmwrite(rangeHR.1D,range_HR)
+dlmwrite(aztecX.1D,aztecX);
+dlmwrite(meanHR.1D,mean_HR);
+dlmwrite(rangeHR.1D,range_HR);
+catch
+end
+quit
 EOF
 
-   echo $textf > script.aztec.m
+   printf "$textf" > scriptaztec.m
   
  ( if [ ! -d "3d" ]; then mkdir 3d; fi
    fsl5.0-fslsplit RS.${ID[j]}.nii 3d/3d.${ID[j]}- -t && \
    gunzip -f 3d/3d.${ID[j]}-*.nii.gz
  
-   matlab -nosplash -r "run script.aztec.m" \
+   matlab -nodisplay -nodesktop -r "run scriptaztec.m" 
    
    3dTcat -prefix ${out[$j]} -TR $TR 3d/aztec*3d* 
    

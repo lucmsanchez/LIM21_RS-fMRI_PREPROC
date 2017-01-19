@@ -1,1 +1,0 @@
-bash -vx ./preproc.sh --config preproc.cfg --subjects preproc.sbj --aztec 2> log

@@ -359,6 +359,7 @@ if [ ! -z $subs ]; then
   fi
 else 
   if [ -f preproc.sbj ]; then
+    echo "O arquivo com ID dos indivíduos não foi especificado. Será usado o arquivo local preproc.sbj"
     subs=preproc.sbj
   else
     echo "O arquivo com ID dos indivíduos não foi especificado" 

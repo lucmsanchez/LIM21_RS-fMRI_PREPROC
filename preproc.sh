@@ -691,7 +691,7 @@ if [ $aztec -eq 1 ]; then
   printf "=============================AZTEC==================================\n\n"
   for j in ${!ID[@]}; do
     inputs "${out[$j]}" "RS.${ID[j]}.log"
-    outputs "aztec.RS.${ID[j]}.nii" "aztecX.1D"
+    outputs "aztec.RS.${ID[j]}+orig" "aztecX.1D"
     echo -n "${ID[j]}> "
     if open.node "AZTEC"; then
     
@@ -703,7 +703,7 @@ funcfiles=spm_select('FPList','3d','3d.*');
 funcfiles=cellstr(funcfiles);
 FS_Phys = 500;
 TR = $TR;
-only_retroicor=1;
+only_retroicor=0;
 output_dir='3d';
 
 [filenames, mean_HR, range_HR, aztecX]=aztec(logfile, funcfiles, FS_Phys, TR, only_retroicor, ORI, output_dir)
@@ -725,8 +725,8 @@ EOF
    matlab -nodisplay -nodesktop -r "run scriptaztec.m" 
    #  
    
-   3dTcat -prefix ${out[$j]} -TR $TR 3d/aztec*3d* 
-   
+   3dTcat -prefix aztec.RS.${ID[j]} -TR $TR 3d/aztec*3d* 
+   3drefit -view orig ${out[$j]}
    rm -r 3d
    rm script*
    

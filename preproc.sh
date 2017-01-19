@@ -108,7 +108,7 @@ open.node () {
   if [ $a -eq 0 ]; then
     if [ $b -eq 0 ]; then 
       if [ ! $d -eq 0 ]; then
-        printf "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. " 
+        printf "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. \n" 
         for iii in ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]} ${out_5[$j]}; do 
           rm ${iii}* 2> /dev/null; 
         done
@@ -1105,7 +1105,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:20 geom=1200x800" \
 -com "SAVE_JPEG A.coronalimage imz.${ID[j]}.jpg" \
 -com "QUIT"
 
-sleep 5
+sleep 10
 
 DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:20 geom=1200x800" \
 -com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:20 geom=1200x800" \
@@ -1119,7 +1119,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:20 geom=1200x8
 -com "SAVE_JPEG A.coronalimage imz2.${ID[j]}.jpg" \
 -com "QUIT"
 
-sleep 5
+sleep 10
 
 killall Xvfb
 
@@ -1194,7 +1194,7 @@ echo
 
 printf "=============================QC 6==================================\n\n"
 for j in ${!ID[@]}; do
-qc.open -e "QC 5"                                    \
+qc.open -e "QC 6"                                    \
         -i "MNI.RS.${ID[j]}+tlrc MNI.T1.${ID[j]}+tlrc"      \
         -o "m.overa.MNI.${ID[j]}.jpg m.overb.MNI.${ID[j]}.jpg m.overc.MNI.${ID[j]}.jpg m.overa2.MNI.${ID[j]}.jpg m.overb2.MNI.${ID[j]}.jpg m.overc2.MNI.${ID[j]}.jpg"              
 if [ $? -eq 0 ]; then
@@ -1232,7 +1232,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:25 geom=1200x800" \
 -com "SAVE_JPEG A.coronalimage imz.a.${ID[j]}.jpg" \
 -com "QUIT"
 
-sleep 5
+sleep 10
 
 DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:25 geom=1200x800" \
 -com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:25 geom=1200x800" \
@@ -1275,7 +1275,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:25 geom=1200x8
 -com "SAVE_JPEG A.coronalimage imz2.b.${ID[j]}.jpg" \
 -com "QUIT"
 
-sleep 5
+sleep 10
 
 DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:25 geom=1200x800" \
 -com "OPEN_WINDOW A.sagitalimage mont=1x3:25 geom=1200x800" \
@@ -1290,7 +1290,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:25 geom=1200x800" \
 -com "SAVE_JPEG A.coronalimage imz.c.${ID[j]}.jpg" \
 -com "QUIT"
 
-sleep 5
+sleep 10
 
 DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:25 geom=1200x800" \
 -com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:25 geom=1200x800" \
@@ -1304,7 +1304,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:25 geom=1200x8
 -com "SAVE_JPEG A.coronalimage imz2.c.${ID[j]}.jpg" \
 -com "QUIT"
 
-sleep 5
+sleep 10
 
 killall Xvfb
 
@@ -1425,8 +1425,8 @@ qc.open -e "QC 7"                                    \
         -o "m.over.seg.${ID[j]}.jpg m.over2.seg.${ID[j]}.jpg"              
 if [ $? -eq 0 ]; then
 
-( over2=${ID[j]}.WM.nii
-over=${ID[j]}.CSF.nii
+( over2=${ID[j]}.WM+orig
+over=${ID[j]}.CSF+orig
 under=SS.T1.${ID[j]}_al+orig
 
  Xvfb :1 -screen 0 1200x800x24 &
@@ -1672,10 +1672,10 @@ printf "=============================QC 8==================================\n\n"
 for j in ${!ID[@]}; do
 qc.open -e "QC 8"                                    \
         -i "${out[$j]}"      \
-        -o ""              
+        -o "m.final.txt"              
 if [ $? -eq 0 ]; then
  text1="<pre>$(3dinfo ${out[$j]} 2> /dev/null)</pre>"
-
+ echo $text1 > m.final.txt
 read -r -d '' textf <<EOF
 <h2 id="qc8">QC8 - Imagem RS final</h2>
 <p>&nbsp;</p>
@@ -1703,11 +1703,11 @@ for j in ${!ID[@]}; do
   outputs "preproc.RS.${ID[j]}.nii" "SS.T1.${ID[j]}.nii" 
   echo -n "${ID[j]}> "
   if open.node "DATA OUTPUT"; then
-( rm -r OUTPUT/${ID[j]}/manual_skullstrip 
-  3dAFNItoNIFTI -prefix ${out[j]} ${in[j]}
+( 3dAFNItoNIFTI -prefix ${out[j]} ${in[j]}
   3dAFNItoNIFTI -prefix ${out_2[j]} ${in_2[j]} ) &>> preproc.${ID[j]}.log
   fi; close.node
-( file=$(find . -name "${out[j]}")
+( rm -r OUTPUT/${ID[j]}/manual_skullstrip 
+  file=$(find . -name "${out[j]}")
   cp -rf $file $pwd/OUTPUT/${ID[j]}/
   file=$(find . -name "${out_2[j]}")
   cp -rf $file $pwd/OUTPUT/${ID[j]}/  
@@ -1715,8 +1715,10 @@ for j in ${!ID[@]}; do
   cp -rf $file $pwd/OUTPUT/${ID[j]}/ 
   file=$(find . -name "${in_4[j]}")
   cp -rf $file $pwd/OUTPUT/${ID[j]}/
-  cp -rf m.* $pwd/OUTPUT/${ID[j]}/report.media
-  sed -i "s/m./report.media\/m./g" $pwd/OUTPUT/${ID[j]}/${in_4[j]}
+  file=$(find . -name "m.*${ID[j]}*")
+  [ ! -d $pwd/OUTPUT/${ID[j]}/report.media ] && mkdir $pwd/OUTPUT/${ID[j]}/report.media
+  cp -rf ${file[@]} $pwd/OUTPUT/${ID[j]}/report.media
+  sed -i "s/m\./report.media\/m\./g" $pwd/OUTPUT/${ID[j]}/${in_4[j]}
    ) &> /dev/null
 done 
 input.error
@@ -1725,7 +1727,7 @@ echo
 
 
 
-exit #=================================================================================
+#=================================================================================
 #======================================================================================
 #======================================================================================
 #======================================================================================

@@ -726,7 +726,7 @@ EOF
    #  
    
    3dTcat -prefix aztec.RS.${ID[j]} -TR $TR 3d/aztec*3d* 
-   3drefit -view orig ${out[$j]}
+   3drefit -view orig aztec.RS.${ID[j]}+tlrc
    rm -r 3d
    rm script*
    

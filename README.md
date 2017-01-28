@@ -122,7 +122,9 @@ bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
 - Skull strip automatizado tem resultados ruins após o co-registro com fMRI (Bug #9)
 
 ## TO DO (Ordem de prioridade)   
-  
+    
+- Agrupar CQ dos individúos por etapa
+- Separar controle de qualidade de aquisição X CQ de processamento  
 - Implementar medidas de controle de qualidade quantitativas (SNR e DVARS?)
 - melhorar funções open.node e close.node (variaveis externas + loop)
 - Melhorar etapas de alinhamento (epi2anat?)

@@ -5,6 +5,7 @@ OUTPUT/
 WORK/
 .vscode/
 DATAs/
+doc/
 
 log
 run

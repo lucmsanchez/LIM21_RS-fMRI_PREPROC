@@ -145,4 +145,4 @@ bash -vx ./preproc.sh --config preproc.cfg --subs preproc.sbj &> log
   
 ![Etapas do protocolo][chart]
 
-[chart]: images/flowchart.jpg "Etapas do protocolo"
+[chart]: chart/flowchart.jpg "Etapas do protocolo"

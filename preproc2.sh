@@ -1,33 +1,18 @@
 #!/usr/bin/env bash
 
-#: PROCESSANDO OS ARGUMENTOS ====================================================
+#: PROCESS ARGUMENTS ====================================================
 usage() {
-    echo "Argumentos:"
-    echo " $0 [ Opções ] --config <txt com variáveis para análise>  --subjects <ID das imagens>" 
+    echo "ARGUMENTS:"
+    echo " $0 --subjects <Subject ID>" 
     echo 
-    echo "Opções:"
-    echo "-b | --break n interrompe o script no breakpoint de numero indicado"
-    echo
-    echo "--aztec            realiza a etapa aztec"
-    echo "--bet              realiza o skull strip automatizado (Padrão: Manual)"
-    echo "--motioncensor_no  NÃO aplica a técnica motion censor"    
-    echo
+
 }
 
-aztec=0
-bet=0
-censor=1
 break=0
-
 while [[ $# -gt 0 ]]
 do
 key="$1"
-
 case $key in
-    -c|--config)
-    config="$2"
-    shift # past argument
-    ;;
     -s|--subjects)
     subs="$2"
     shift # past argument
@@ -36,17 +21,8 @@ case $key in
     break="$2"
     shift # past argument
     ;;
-    --aztec)
-    aztec=1
-    ;;
-    --bet)
-    bet=1
-    ;;
-    --motioncensor_no)
-    censor=0
-    ;;
     *)
-     echo "Erro de sintaxe:'$1' desconhecida'" >&2
+     echo "Syntax error:'$1' unknown'" >&2
      usage
      exit       # unknown option
     ;;
@@ -54,400 +30,122 @@ esac
 shift # past argument or value
 done
 
-#: DECLARANDO VARIÁVEIS ===========================================================
-declare -a steppath
-declare -a in in_2 in_3 in_4 in_5
-declare -a out out_2 out_3 ou_4 out_5
-declare -a outrs outt1
-ex=0
+#: DECLARE VARIABLES ===========================================================
+fsl5=fsl5.0-
+TR=2
+ptn=seq+z
+mcbase=100
+gRL=90
+gAP=90
+gIS=60
+template="MNI152_1mm_uni+tlrc"
+betf=0.15
+blur=6
+cost="lpc"
 
-#: DECLARANDO FUNÇÕES ===========================================================
+
+#: DECLARE FUNCTIONS ===========================================================
 check () {
   if command -v $1 > /dev/null; then
     echo "OK"
   else
-    echo "Não encontrado em \$PATH"
+    echo "Not found on \$PATH"
 fi
 }
 
-input.error () {
-[ $ex -eq ${#ID[@]} ] && exit
-}
 
-inputs () {
-    in[$j]="$1"
-    in_2[$j]="$2"
-    in_3[$j]="$3"
-    in_4[$j]="$4"
-}
 
-outputs () {
-    out[$j]="$1"
-    out_2[$j]="$2"
-    out_3[$j]="$3"
-    out_4[$j]="$4"
-}
-
-open.node () {
-  local a=0; local b=0; local c=0; local d=0
-  go=1
-  #
-  cd ${steppath[$j]}
-  for ii in ${in[$j]} ${in_2[$j]} ${in_3[$j]} ${in_4[$j]} ${in_5[$j]}; do
-    for file in ${ii}*; do
-      [ ! -f $file ] && echo "INPUT $ii não encontrado" && a=$((a + 1))
-      for iii in ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]} ${out_5[$j]}; do
-        for file2 in ${iii}*; do
-          [ ! -f $file2 ] && b=$((b + 1)) || c=$((c + 1))
-          [ $file2 -ot $file ] && d=$((d + 1))
-        done
-      done
-    done
-  done
-  #echo $a $b $c $d
-  if [ $a -eq 0 ]; then
-    if [ $b -eq 0 ]; then 
-      if [ ! $d -eq 0 ]; then
-        printf "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. \n" 
-        for iii in ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]} ${out_5[$j]}; do 
-          rm ${iii}* 2> /dev/null; 
-        done
-        go=1
-      else
-        echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0; ex=0
-      fi
-    else
-      if [ ! $c -eq 0 ]; then
-        echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
-        for iii in ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]} ${out_5[$j]}; do 
-        rm ${iii}* 2> /dev/null; done
-        go=1
-      else
-        go=1
-      fi
-    fi
-  else
-    go=0; ex=$((ex + 1))
-  fi  
-
-  if [ $go -eq 1 ]; then
-  ( echo 
-    echo "================================================================================"
-    echo "ETAPA: $1  - RUNTIME: $(date)" 
-    echo "================================================================================"
-    echo 
-    echo "INPUTS: ${in[$j]} ${in_2[$j]} ${in_3[$j]} ${in_4[$j]}" 
-    echo "OUTPUTS: ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]}"
-    echo ) >> preproc.${ID[j]}.log
-    return 0
-  else
-    return 1
-  fi
-}
-
-close.node () {
-  local a=0
-  if [ $go -eq 1 ]; then  
-    for iii in ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]}; do
-      for file2 in ${iii}*; do
-        [ -f $file2 ] ||  a=$((a + 1)) 
-      done
-    done
-    if [ ! $a -eq 0 ]; then
-      printf "Houve um erro no processamento da imagem %s, consulte o log. \n" "${ID[j]}" && ex=$((ex + 1))
-    else
-      printf "Processamento da imagem %s realizado com sucesso! \n" "${ID[j]}"
-    fi
-  fi
-  cd $pwd
-}
-
-get.info1() {
-  local image=$1
-  space=$(3dinfo -space $image) 
-  is_oblique=$(3dinfo -is_oblique $image) 
-  afniprefix=$(3dinfo -prefix $image) 
-  tr=$(3dinfo -tr $image) 
-  smode=$(3dinfo -smode $image) 
-  orient=$(3dinfo -orient $image) 
-}
-
-get.info2 () {
-  local image1=$1
-  local image2=$2
-  #comparações
-  same_grid=$(3dinfo -same_grid $image1 $image2) 
-  same_dim=$(3dinfo -same_dim $image1 $image2) 
-  same_delta=$(3dinfo -same_delta $image1 $image2) 
-  same_orient=$(3dinfo -same_orient $image1 $image2) 
-  same_center=$(3dinfo -same_center $image1 $image2) 
-  same_obl=$(3dinfo -same_obl $image1 $image2) 
-}
-
-toRS () {
-  outrs[$j]=${out[$j]}
-  }
-
-toT1 () {
-  outt1[$j]=${out[$j]}
-}
-
-fromRS () {
-  out[$j]=${outrs[$j]}
-}
-
-fromT1 () {
-  out[$j]=${outt1[$j]}
-}
-
-cp.inputs () {
-  files=$(find . -name "$1")
-  [ ! -f "${steppath[$j]}$1" ] && cp ${files[0]} ${steppath[$j]} 2> /dev/null
-  files=$(find . -name "$2")
-  [ ! -f "${steppath[$j]}$2" ] && cp ${files[0]} ${steppath[$j]} 2> /dev/null
-  files=$(find . -name "$3")
-  [ ! -f "${steppath[$j]}$3" ] && cp ${files[0]} ${steppath[$j]} 2> /dev/null
-}
-
-qc.open () {
-  while [[ $# -gt 0 ]]
-  do
-  k="$1"
-  case $k in
-    -e)
-    e="$2"
-    shift
-    ;;
-    -i)
-    f1="$2"
-    shift
-    ;;
-    -o)
-    f2="$2"
-    shift # past argument
-    ;;
-    *)
-     echo "Erro de sintaxe" >&2
-     exit       # unknown option
-    ;;
-  esac
-  shift # past argument or value
-  done
-
-  local a=0; local b=0; local c=0; local d=0
-  go=1
-
-  cd ${steppath[$j]}
-  echo -n "${ID[j]}> "
-  for ii in $f1; do
-    for file in ${ii}*; do
-      [ ! -f $file ] && echo "INPUT $ii não encontrado" && a=$((a + 1))
-      for iii in $f2; do
-        for file2 in ${iii}*; do
-          [ ! -f $file2 ] && b=$((b + 1)) || c=$((c + 1))
-          [ $file2 -ot $file ] && d=$((d + 1))
-        done
-      done
-    done
-  done
-  #echo $a $b $c $d
-  if [ $a -eq 0 ]; then
-    if [ $b -eq 0 ]; then 
-      if [ ! $d -eq 0 ]; then
-        printf "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. " 
-        for iii in $f2; do 
-          rm ${iii}* 2> /dev/null; 
-        done
-        go=1
-      else
-        echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0; ex=0
-      fi
-    else
-      if [ ! $c -eq 0 ]; then
-        echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
-        for iii in $f2; do 
-        rm ${iii}* 2> /dev/null; done
-        go=1
-      else
-        go=1
-      fi
-    fi
-  else
-    go=0; ex=$((ex + 1))
-  fi  
-
-  if [ $go -eq 1 ]; then
-    ( echo 
-    echo "================================================================================"
-    echo "ETAPA: $e  - RUNTIME: $(date)" 
-    echo "================================================================================"
-    echo 
-    echo "INPUTS: $f1" 
-    echo "OUTPUTS: $f2"
-    echo ) >> preproc.${ID[j]}.log
-    return 0
-  else
-    return 1
-  fi
-}
-
-qc.close () {
-  local a=0
-  if [ $go -eq 1 ]; then  
-    for iii in $f2; do
-      for file2 in ${iii}*; do
-        [ -f $file2 ] ||  a=$((a + 1)) 
-      done
-    done
-    if [ ! $a -eq 0 ]; then
-      printf "Houve um erro no processamento da imagem %s, consulte o log. \n" "${ID[j]}" && ex=$((ex + 1))
-    else
-      printf "Processamento da imagem %s realizado com sucesso! \n" "${ID[j]}"
-    fi
-  fi
-  cd $pwd
-  unset e f1 f2
-}
-
-#: INÍCIO =======================================================================
+#: START =======================================================================
 fold -s <<-EOF
 
-Protocolo de pré-processamento de RS-fMRI
+RS-fMRI Preprocessing pipeline
 --------------------------------------
 
 RUNTIME: $(date)
 
 EOF
 
-# checando arquivo indicado pelo argumento --config
-if [ ! -z $config ]; then  
-  if [ -f $config ]; then
-    source $config
-    a=0
-    for var in ptn mcbase gRL gAP gIS TR template blur fsl5; do
-      if [[ -z "${!var:-}" ]]; then
-      echo "Variável $var não encontrada"
-      a=$(($a + 1))
-      fi
-    done
-    if [ ! $a -eq 0 ]; then
-      echo "Erro: Não é possível executar o script sem as variáveis acima estarem definidas no arquivo de configuração. Encerrando"
-      exit
-    fi
-    unset a
-  else
-  echo "Arquivo de configuração especificado não encontrado"
-  exit
-  fi
-else 
-  echo "O arquivo de configuração não foi especificado"
-  if [ ! -f preproc.cfg ]; then
-    echo "Será criado um arquivo de configuração com valores padrão: preproc.cfg"
-    printf '# Variáveis RS-fMRI Preprocessing:\n\nfsl5=fsl5.0-\nTR=2\nptn=seq+z\nmcbase=100\ngRL=90\ngAP=90\ngIS=60\ntemplate="MNI152_1mm_uni+tlrc"\nbetf=0.1\nblur=6\ncost="lpc"\n' > preproc.cfg
-    exit
-  else
-    echo "Será usado o arquivo local preproc.cfg"
-    source preproc.cfg
-  fi
-fi  
 
-# Checando arquivo com nome dos indivíduos indicado no arg --subs
+# Check existence of the --subjects argument
+# Next step: check for consistency
 if [ ! -z $subs ]; then  
   if [ ! -f $subs ]; then
-    echo "Arquivo com ID dos indivíduos especificado não encontrado"
+    echo "Subjects ID file not found"
     exit
   fi
 else 
   if [ -f preproc.sbj ]; then
-    echo "O arquivo com ID dos indivíduos não foi especificado. Será usado o arquivo local preproc.sbj"
+    echo "Subjects ID file not specified. Local file preproc.sbj will be used."
     subs=preproc.sbj
   else
-    echo "O arquivo com ID dos indivíduos não foi especificado" 
+    echo "Subjects ID file not specified" 
+	usage
     exit
   fi
 fi  
 
+# Create the variables ID and index using Subjects ID file
 oldIFS="$IFS"
 IFS=$'\n' ID=($(<${subs}))
 IFS="$oldIFS"
 index=${!ID[@]}
 
 
-# checando se todos os programas necessários estão instalados
+# Check if all required softwares are installed on $PATH
 fold -s <<-EOF
 
-Programas necessários:
+Required Software and Packages:
 GNU bash           ...$(check bash)
 AFNI               ...$(check 3dTshift)
 FSL                ...$(check "$fsl5"fast)
 Python             ...$(check python)
 ImageMagick        ...$(check convert)
-Libav(avconv)      ...$(check avconv)
 Xvfb               ...$(check Xvfb)
-perl               ...$(check perl)
-sed                ...$(check sed)
 MATLAB             ...$(check matlab)
   SPM5
   aztec
 
+WARNING: There will be a problem during the execution of the script if any of the previus software are missing 
 EOF
 
-co=0
-for c in bash 3dTshift "$fsl5"fast python convert avconv Xvfb perl sed; do
-[ ! $(command -v $c) ] && co=$((co + 1))
-done
-if [ ! $co -eq 0 ];then
-	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
-	exit
-fi
-
-[ $aztec -eq 1 ] && [ ! $(command -v matlab) ] && echo "o Matlab e os plugins SPM5 e aztec são necessários para a análise e não foram encontrados. Certifique-se que eles estão instalados e configurados na variável de ambiente $PATH" | fold -s && exit 
-
-
-
-# informando os usuários das variáveis definidas ou defaults
-fold -s <<-EOF
-As variáveis que serão usadas como parametros para as análises são:
-Aztec                   - Tempo de repetição(s)   => $TR
-Slice timing correction - sequência de aquisição  => $ptn
-Motion correction       - valor base              => $mcbase
-Homogenize Grid         - tamanho da grade        => $gRL $gAP $gIS
-BET                     - bet f                   => $betf
-3dMerge	                - filtro gaussiano        => $blur
-Alinhamento Anat-epi    - método                  => $cost
-
-TEMPLATE: $template
-
-EOF
-
-
-
-# Checando imagens com os nomes fornecidos
-echo "Lista de indivíduos para análise:"
+# Check of nifti files of the indicated Subjects
+echo "Searching for neuroimaging files:"
 a=0
 for j in ${!ID[@]}; do 
-  echo -n "${ID[j]}  ... " 
-  file=$(find . -name "T1.${ID[j]}.nii")
-  if [ ! -z "$file"  ]; then
-    printf "T1" 
-    else
-    printf "(T1 não encontrado)"; a=$((a + 1))
-  fi
-  file=$(find . -name "RS.${ID[j]}.nii")
-  if [ ! -z "$file" ]; then 
-    printf " RS" 
-  else
-  printf " (RS não encontrado)"; a=$((a + 1))
-  fi
-  printf "\n"
+	echo -n "${ID[j]}  ... " 
+	file=$(find . -name "*_${ID[j]}_*_1.nii")
+	if [ ! -z "$file"  ]; then
+		printf "T1" 
+	else
+		printf "(T1 not found)"; a=$((a + 1))
+	fi
+	file=$(find . -name "*_${ID[j]}_*_2.nii")
+	if [ ! -z "$file" ]; then 
+		printf " RS" 
+	else
+		printf " (RS not found)"; a=$((a + 1))
+	fi
+	file=$(find . -name "*_${ID[j]}_*_2.log")
+	if [ ! -z "$file" ]; then 
+		printf " log" 
+	else
+		printf " (log not found)"; a=$((a + 1))
+	fi
+	file=$(find . -name "*_${ID[j]}_*_1.nii")
+	if [ ! -z "$file"  ]; then
+		printf "mask" 
+	else
+		printf "(mask not found)"; a=$((a + 1))
+	fi
+	printf "\n"
 done
 echo
 if [ ! $a -eq 0 ]; then
-    echo "Imagens não foram encontradas ou não estão nomeadas conforme o padrão: RS.<ID>.nii e T1.<ID>.nii" | fold -s ; echo
+    echo "Some images were not found or are not named following our standard: <site>_<project>_<ID>_<visit>_<type>.nii. Type: 1 = T1, 2 = RS" | fold -s ; echo
     exit
 fi
 
-# BUSCANDO O TEMPLATE
+# Search for the template in local folder
 temp=$(find . -name "$template*")
 if [ ! -z "$temp" ];then
   [ ! -d template ] && mkdir template 
@@ -456,8 +154,8 @@ if [ ! -z "$temp" ];then
     mv $tp template 2> /dev/null
   done
   fi
-else
-  echo "Template $template não encontrado. Buscando no afni.."
+else 
+  echo "Template $template not found. Searching on afni folder"
   cp /usr/share/afni/atlases/"$template"* . 2> /dev/null
   temp=$(find . -name "$template*")
   if [ ! -z "$temp" ];then
@@ -466,20 +164,17 @@ else
       mv $tp template 2> /dev/null
     done
   else
-    echo "Não encontrado"
+    echo "Template not found"
     exit
   fi
 fi
 
-# Preparando para iniciar a análise
-[ -d DATA ] || mkdir DATA
-[ -d OUTPUT ] || mkdir OUTPUT
-
+# Create folder for the processing steps
+[ -d PREPROC ] || mkdir PREPROC
 unset a; a=0
 for j in ${!ID[@]}; do
-  [ -d DATA/${ID[j]} ] || mkdir DATA/${ID[j]} 
-  [ -d OUTPUT/${ID[j]} ] || mkdir OUTPUT/${ID[j]} 
-  for ii in T1.${ID[j]}.nii RS.${ID[j]}.nii RS.${ID[j]}.log; do
+  [ -d PREPROC/${ID[j]} ] || mkdir PREPROC/${ID[j]} 
+  for ii in *_${ID[j]}_*_1.nii RS.${ID[j]}.nii RS.${ID[j]}.log; do
     [ ! -f DATA/${ID[j]}/$ii ] && wp=$(find . -name $ii) && rp=DATA/${ID[j]}/$ii && mv $wp $rp 2> /dev/null && a=$((a + 1))
   done
 done

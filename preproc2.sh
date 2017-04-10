@@ -314,12 +314,13 @@ for v in ${VID[@]}; do
 	file_rs=$(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null)
 	file_log=$(grep "${v}" $subs | cut -d ";" -f 5 2>  /dev/null)
 	file_mask=$(grep "${v}" $subs | cut -d ";" -f 6 2> /dev/null)
+	log=preproc_${id}_${vis}.log
 
 	# Create folders
   	[ -d $ppath ] || mkdir $ppath
 
 	# Copy input files to processing folder
-	echo
+	(echo
 	echo "==================================================================="
 	echo SUBJECT $id
 	echo VISIT $vis
@@ -327,7 +328,7 @@ for v in ${VID[@]}; do
 	echo 
 	echo "Copying input files to $ppath"
 	for ii in $file_t1 $file_rs $file_log $file_mask; do
-		echo "		$ii"
+		echo "		$ii" ) | tee &> $log
 		[ ! -f $ppath/$ii ] && \
 		wp=$(find . -name $ii 2> /dev/null) && \
 		rp=$ppath/$ii && \
@@ -350,7 +351,7 @@ for v in ${VID[@]}; do
 				open.node; 
 				#echo $? 
 				if [ $? -eq 0 ]; then
-		  			../../bin/aztec.sh ${in[@]} ${out[@]}
+		  			../../bin/aztec.sh ${in[@]} ${out[@]} &> $log
 					close.node && S=12 || continue 2
 				elif [ $? -eq 1 ]; then
 					S=12

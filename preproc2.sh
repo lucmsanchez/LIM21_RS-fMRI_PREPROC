@@ -1,5 +1,56 @@
 #!/usr/bin/env bash
 
+#: OLD CODE =============================================================
+
+## Iniciar Relatório de qualidade
+#for j in ${!ID[@]}; do
+#cd ${steppath[$j]}
+#if [ ! -f "report.${ID[j]}.html" ]; then
+#cat << EOF > report.${ID[j]}.html
+#<HTML>
+#<HEAD>
+#<TITLE>Relatório de Qualidade de ${ID[j]}</TITLE>
+#<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+#</HEAD> 
+#<body>
+#<h1>Relatório de Controle de Qualidade -- ${ID[j]}</h1>
+#<p>&nbsp;</p>
+#<!--index-->
+#<h3>Conteúdo:</h3>
+#<ul>
+#<li><h3><a href="#qc1">QC1 - Imagem RS raw</a></h3></li>
+#<li><h3><a href="#qc2">QC2 - Imagem T1 raw</a></h3></li>
+#<li><h3><a href="#qc3">QC3 - RS Motion Correction</a></h3></li>
+#<li><h3><a href="#qc4">QC4 - T1 vc. SS mask</a></h3></li>
+#<li><h3><a href="#qc5">QC5 - Checagem de alinhamento T1 vs. RS</a></h3></li>
+#<li><h3><a href="#qc6">QC6 - Checagem de normalização T1 e RS vs. MNI</a></h3></li>
+#<li><h3><a href="#qc7">QC7 - Checagem de segmentação</a></h3></li>
+#<li><h3><a href="#qc8">QC8 - Imagem RS final</a></h3></li>
+#</ul>
+#<!--index-->
+#<p>&nbsp;</p>
+#<center>
+#<!--QC1-->
+#<!--QC2-->
+#<!--QC3-->
+#<!--QC4-->
+#<!--QC5-->
+#<!--QC6-->
+#<!--QC7-->
+#<!--QC8-->
+#<!--QC9-->
+#<!--QC10-->
+#<!--QC11-->
+#<!--QC12-->
+#</center>
+#</body>
+#</HTML>
+#EOF
+#fi
+#cd $pwd
+#done
+
+
 #: PROCESS ARGUMENTS ====================================================
 usage() {
     echo "ARGUMENTS:"
@@ -8,7 +59,8 @@ usage() {
 
 }
 
-break=0
+#startS=1
+#stopS=12
 while [[ $# -gt 0 ]]
 do
 key="$1"
@@ -17,8 +69,13 @@ case $key in
     subs="$2"
     shift # past argument
     ;;
-    -b|--break)
-    break="$2"
+    -a|--start)
+    startS="$2"
+    shift # past argument
+    ;;
+	-o|--stop)
+    arg="$2"
+	stopS=$((arg + 1))
     shift # past argument
     ;;
     *)
@@ -53,7 +110,70 @@ check () {
 fi
 }
 
+open.node () {
+  local a=0; local b=0; local c=0; local d=0
+  local go=1; local ex=0
+  #
+  cd ${ppath}
+  for i in ${in[@]}; do
+      [ ! -f $i ] && echo "INPUT $i not found" && a=$((a + 1))
+	for o in ${out[@]}; do
+    	[ ! -f $o ] && b=$((b + 1)) || c=$((c + 1))
+        [ $o -ot $i ] && d=$((d + 1))
+   	done
+  done
+  #echo $a $b $c $d
+  if [ $a -eq 0 ]; then
+    if [ $b -eq 0 ]; then 
+      if [ ! $d -eq 0 ]; then
+        printf "INPUT $i MODIFIED. DELETING OUTPUT AND RUNING SCRIPT AGAIN. \n" 
+        for o in ${out[@]}; do 
+          rm ${o}* 2> /dev/null; 
+        done
+        go=1
+      else
+        echo "OUTPUT ALREADY EXISTS. MOVING TO NEXT STEP."; go=0; ex=0
+      fi
+    else
+      if [ ! $c -eq 0 ]; then
+        echo "OUTPUT CORRUPTED. DELETING OUTPUT AND RUNING SCRIPT AGAIN. \n"
+        for o in ${out[@]}; do 
+        rm ${o}* 2> /dev/null; done
+        go=1
+      else
+        go=1
+      fi
+    fi
+  else
+    go=0; ex=1
+  fi  
 
+  if [ $go -eq 1 ]; then
+    return 0 # run script
+  else
+	cd $path
+	if [ $ex -eq 0 ]; then
+    	return 1 # skip step
+	else
+		return 2 # skip subject
+	fi
+  fi
+}
+
+close.node () {
+  local a=0
+    for o in ${out[@]}; do
+    	[ -f $o ] ||  a=$((a + 1)) 
+	done
+    if [ ! $a -eq 0 ]; then
+      	printf "Error: Could not process subject %s, consult the log. \n" "${id}"
+		return 1
+    else
+      	printf "Processing of subject %s realized with success! \n" "${id}"
+		return 0
+    fi
+  cd $pwd
+}
 
 #: START =======================================================================
 fold -s <<-EOF
@@ -85,11 +205,15 @@ else
 fi  
 
 # Create the variables ID and index using Subjects ID file
+# ID;visit;t1_file;rs_file;log_file;mask_file
+subs=preproc.sbj
 oldIFS="$IFS"
-IFS=$'\n' ID=($(<${subs}))
+IFS=$'\n' pID=($(<${subs}))
 IFS="$oldIFS"
-index=${!ID[@]}
-
+for j in ${!pID[@]}; do
+	VID[$j]=$(echo ${pID[$j]} | cut -d ";" -f-2)
+done
+#echo ${VID[@]}
 
 # Check if all required softwares are installed on $PATH
 fold -s <<-EOF
@@ -109,39 +233,41 @@ WARNING: There will be a problem during the execution of the script if any of th
 EOF
 
 # Check of nifti files of the indicated Subjects
+echo
 echo "Searching for neuroimaging files:"
 a=0
-for j in ${!ID[@]}; do 
-	echo -n "${ID[j]}  ... " 
-	file=$(find . -name "*_${ID[j]}_*_1.nii")
+for v in ${VID[@]}; do 
+	echo -n "${v%%;*} V${v##*;}  ... " 
+	file=$(grep "${v}" $subs | cut -d ";" -f 3 | xargs find . -name)
 	if [ ! -z "$file"  ]; then
 		printf "T1" 
 	else
 		printf "(T1 not found)"; a=$((a + 1))
 	fi
-	file=$(find . -name "*_${ID[j]}_*_2.nii")
+	file=$(grep "${v}" $subs | cut -d ";" -f 4 | xargs find . -name)
 	if [ ! -z "$file" ]; then 
 		printf " RS" 
 	else
 		printf " (RS not found)"; a=$((a + 1))
 	fi
-	file=$(find . -name "*_${ID[j]}_*_2.log")
+	file=$(grep "${v}" $subs | cut -d ";" -f 5 | xargs find . -name)
 	if [ ! -z "$file" ]; then 
 		printf " log" 
 	else
 		printf " (log not found)"; a=$((a + 1))
 	fi
-	file=$(find . -name "*_${ID[j]}_*_1.nii")
+	file=$(grep "${v}" $subs | cut -d ";" -f 6 | xargs find . -name)
 	if [ ! -z "$file"  ]; then
-		printf "mask" 
+		printf " mask" 
 	else
-		printf "(mask not found)"; a=$((a + 1))
+		printf " (mask not found)"; a=$((a + 1))
 	fi
 	printf "\n"
 done
 echo
+
 if [ ! $a -eq 0 ]; then
-    echo "Some images were not found or are not named following our standard: <site>_<project>_<ID>_<visit>_<type>.nii. Type: 1 = T1, 2 = RS" | fold -s ; echo
+    echo "Some images were not found. Aborting..." | fold -s ; echo
     exit
 fi
 
@@ -169,128 +295,70 @@ else
   fi
 fi
 
+path=($PWD)
+
 # Create folder for the processing steps
 [ -d PREPROC ] || mkdir PREPROC
-unset a; a=0
-for j in ${!ID[@]}; do
-  [ -d PREPROC/${ID[j]} ] || mkdir PREPROC/${ID[j]} 
-  for ii in *_${ID[j]}_*_1.nii RS.${ID[j]}.nii RS.${ID[j]}.log; do
-    [ ! -f DATA/${ID[j]}/$ii ] && wp=$(find . -name $ii) && rp=DATA/${ID[j]}/$ii && mv $wp $rp 2> /dev/null && a=$((a + 1))
-  done
-done
-if [ ! $a -eq 0 ]; then 
-  echo "O caminho das imagens não está conformado com o padrâo: DATA/<ID>/T1.<ID>.nii"
-  echo "Conformando..."
-  echo
-fi
 
-pwd=($PWD)
 
 #: DATA INPUT ====================================================================
-for j in ${!ID[@]}; do
-  out[$j]=RS.${ID[j]}.nii
-  steppath[$j]=DATA/${ID[j]}/preproc.results/
-  [ ! -d ${steppath[$j]} ] && mkdir -p ${steppath[$j]} 2> /dev/null
-  [ ! -f ${steppath[$j]}RS.${ID[j]}.nii ] && cp DATA/${ID[j]}/RS.${ID[j]}.nii ${steppath[$j]} 2> /dev/null
-  [ ! -f ${steppath[$j]}T1.${ID[j]}.nii ] && cp DATA/${ID[j]}/T1.${ID[j]}.nii ${steppath[$j]} 2> /dev/null
-  [ ! -f ${steppath[$j]}RS.${ID[j]}.log ] && cp DATA/${ID[j]}/RS.${ID[j]}.log ${steppath[$j]} 2> /dev/null
-done
 
-# Iniciar Relatório de qualidade
-for j in ${!ID[@]}; do
-cd ${steppath[$j]}
-if [ ! -f "report.${ID[j]}.html" ]; then
-cat << EOF > report.${ID[j]}.html
-<HTML>
-<HEAD>
-<TITLE>Relatório de Qualidade de ${ID[j]}</TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</HEAD> 
-<body>
-<h1>Relatório de Controle de Qualidade -- ${ID[j]}</h1>
-<p>&nbsp;</p>
-<!--index-->
-<h3>Conteúdo:</h3>
-<ul>
-<li><h3><a href="#qc1">QC1 - Imagem RS raw</a></h3></li>
-<li><h3><a href="#qc2">QC2 - Imagem T1 raw</a></h3></li>
-<li><h3><a href="#qc3">QC3 - RS Motion Correction</a></h3></li>
-<li><h3><a href="#qc4">QC4 - T1 vc. SS mask</a></h3></li>
-<li><h3><a href="#qc5">QC5 - Checagem de alinhamento T1 vs. RS</a></h3></li>
-<li><h3><a href="#qc6">QC6 - Checagem de normalização T1 e RS vs. MNI</a></h3></li>
-<li><h3><a href="#qc7">QC7 - Checagem de segmentação</a></h3></li>
-<li><h3><a href="#qc8">QC8 - Imagem RS final</a></h3></li>
-</ul>
-<!--index-->
-<p>&nbsp;</p>
-<center>
-<!--QC1-->
-<!--QC2-->
-<!--QC3-->
-<!--QC4-->
-<!--QC5-->
-<!--QC6-->
-<!--QC7-->
-<!--QC8-->
-<!--QC9-->
-<!--QC10-->
-<!--QC11-->
-<!--QC12-->
-</center>
-</body>
-</HTML>
-EOF
-fi
-cd $pwd
-done
+# Start big loop
+for v in ${VID[@]}; do
+	# Create loop variables
+	cd $path
+	id=${v%%;*}
+	vis=V${v##*;}
+	ppath=$path/PREPROC/$id
+	file_t1=$(grep "${v}" $subs | cut -d ";" -f 3 2> /dev/null)
+	file_rs=$(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null)
+	file_log=$(grep "${v}" $subs | cut -d ";" -f 5 2>  /dev/null)
+	file_mask=$(grep "${v}" $subs | cut -d ";" -f 6 2> /dev/null)
 
+	# Create folders
+  	[ -d $ppath ] || mkdir $ppath
 
-#: QC1 ========================================================================
-printf "=============================QC 1==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 1"                                    \
-        -i "${out[$j]}"      \
-        -o "m.outcount.${ID[j]}.jpg outcount.${ID[j]}.1D m.axial.RS.${ID[j]}.png m.slices.RS.${ID[j]}.png m.3d.${ID[j]}.mp4"              
-if [ $? -eq 0 ]; then
+	# Copy input files to processing folder
+	echo
+	echo "==================================================================="
+	echo SUBJECT $id
+	echo VISIT $vis
+	echo "==================================================================="
+	echo 
+	echo "Copying input files to $ppath"
+	for ii in $file_t1 $file_rs $file_log $file_mask; do
+		echo "		$ii"
+		[ ! -f $ppath/$ii ] && \
+		wp=$(find . -name $ii 2> /dev/null) && \
+		rp=$ppath/$ii && \
+		cp $wp $rp 2> /dev/null
+ 	done
+	echo
 
-./bin/qc1.sh
+	S=${startS:-1}
+	until [ "$S" = "${stopS:-12}" ]; do
+		case $S in
+			1 ) #: S1 - AZTEC ==========================================
+				# Declare inputs (array "in") and outputs (arry "out")
+				unset in out
+				in=$file_rs
+				in[1]=$file_log
+				out=aztec_${file_rs}
+				out[1]=aztecX.1D
 
-fi; qc.close
-done
-input.error
-echo
-
-#: QC2 ========================================================================
-printf "=============================QC 2==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 2"                                    \
-        -i "T1.${ID[j]}.nii"      \
-        -o "m.slices.T1.${ID[j]}.mp4  m.slices.T1.${ID[j]}.png"              
-if [ $? -eq 0 ]; then
-
-./bin/qc2.sh
- 
-fi; qc.close
-done
-input.error
-echo 
-
-#: AZTEC ========================================================================
-if [ $aztec -eq 1 ]; then
-  printf "=============================AZTEC==================================\n\n"
-  for j in ${!ID[@]}; do
-    inputs "${out[$j]}" "RS.${ID[j]}.log"
-    outputs "aztec.RS.${ID[j]}+orig" "aztecX.1D"
-    echo -n "${ID[j]}> "
-    if open.node "AZTEC"; then
-  
-./bin/aztec.sh
-
-  fi; close.node
-  done
-  input.error
-  echo
-fi
+				echo -n "S1 - AZTEC> "
+				open.node; 
+				#echo $? 
+				if [ $? -eq 0 ]; then
+		  			../../bin/aztec.sh ${in[@]} ${out[@]}
+					close.node && S=12 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=12
+				else
+					continue 2
+				fi
+				;;
+esac;done;done;exit
 
 #: SLICE TIMING CORRECTION =======================================================
 printf "=======================SLICE TIMING CORRECTION====================\n\n"

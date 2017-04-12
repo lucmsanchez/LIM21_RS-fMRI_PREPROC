@@ -9,9 +9,7 @@ in[1]=$2 	# image BRIK
 out=$3 		# image HEAD
 out[1]=$4	# image BRIK
 
-3dZeropad \
-    -RL 90 \
-    -AP 90 \
-    -IS 60 \
-    -prefix ${out%%.*} \
-    ${in%%.*}
+3dWarp \
+    -deoblique \
+    -prefix  ${out%%.*} \
+    ${in%%.*} 

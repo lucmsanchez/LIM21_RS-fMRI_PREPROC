@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
+set -x
+printf "\n\n==============================================\n\n"
+echo $0
 
 # Inputs and outputs
 in=$1  		# RS image
 in[1]=$2 	# Log file
-out=$3  	# aztec_RS image
-out[1]=$4	# Matlab data
+out=$3  	# aztec_RS image HEAD
+out[1]=$4	# aztec_RS image BRIK
+out[2]=$5	# Matlab data
 
+  
 # create temporary matlab script
 read -r -d '' textf <<EOF
 try
@@ -20,7 +25,7 @@ output_dir='3d';
 
 [filenames, mean_HR, range_HR, aztecX]=aztec(logfile, funcfiles, FS_Phys, TR, only_retroicor, ORI, output_dir)
 
-dlmwrite('${out[1]}',aztecX);
+dlmwrite('${out[2]}',aztecX);
 dlmwrite('meanHR.1D',mean_HR);
 dlmwrite('rangeHR.1D',range_HR);
 catch
@@ -40,10 +45,10 @@ gunzip -f 3d/3d_${in}-*.nii.gz
 matlab -nodisplay -nodesktop -r "run scriptaztec.m"  
 
 # Compact 3d images to 4d image
-3dTcat -prefix ${out} -TR 2 3d/aztec*3d*
+3dTcat -prefix ${out%%.*} -TR 2 3d/aztec*3d*
 
 # Adjust cordinate system 
-3drefit -view orig ${out}
+3drefit -view orig ${out%%+*}+tlrc
 
 # Delete intemediate files
 rm -r 3d

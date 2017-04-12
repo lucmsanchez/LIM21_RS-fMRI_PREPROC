@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
+set -x
+printf "\n\n==============================================\n\n"
+echo $0
 
-    3dcalc \
-    -a        ${in_2[$j]} \
-    -b        ${in[$j]} \
+# Inputs and outputs
+in=$1 		# t1
+in[1]=$2	# mask
+out=$3		# image HEAD 
+out[1]=$4   # image BRIK 
+
+
+3dcalc \
+	-verbose \
+    -a        ${in} \
+    -b        ${in[1]} \
     -expr     'a*abs(b-1)' \
-    -prefix   ${out[$j]} &>> preproc.${ID[j]}.log 
+    -prefix   ${out%%.*}

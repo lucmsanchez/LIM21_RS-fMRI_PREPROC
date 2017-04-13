@@ -18,12 +18,12 @@ over2=${in%%.*}
 over=e_${in%%.*}
 under=${in[2]%%.*}
 
- Xvfb :1 -screen 0 1200x800x24 &
+ Xvfb :9 -screen 0 1200x800x24 &
 
  export AFNI_NOSPLASH=YES
  export AFNI_SPLASH_MELT=NO
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:20 geom=1200x800" \
+DISPLAY=:9 afni -com "OPEN_WINDOW A.axialimage mont=1x3:20 geom=1200x800" \
 -com "OPEN_WINDOW A.sagitalimage mont=1x3:20 geom=1200x800" \
 -com "OPEN_WINDOW A.coronalimage mont=1x3:20 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
@@ -36,9 +36,9 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:20 geom=1200x800" \
 -com "SAVE_JPEG A.coronalimage imz.${in%%.*}.jpg" \
 -com "QUIT"
 
-sleep 10
+sleep 20
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:20 geom=1200x800" \
+DISPLAY=:9 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:20 geom=1200x800" \
 -com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:20 geom=1200x800" \
 -com "OPEN_WINDOW A.coronalimage opacity=6 mont=1x3:20 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
@@ -50,7 +50,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:20 geom=1200x8
 -com "SAVE_JPEG A.coronalimage imz2.${in%%.*}.jpg" \
 -com "QUIT"
 
-sleep 10
+sleep 20
 
 killall Xvfb
 

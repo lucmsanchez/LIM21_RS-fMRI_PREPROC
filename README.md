@@ -1,12 +1,10 @@
-# Protocolo Semi-automatizado de pré-processamento de RS-fMRI  
-  
-Essa é a pagina inicial do repositório de scripts do protocolo Pré-processamento de RS-fMRI do LIM 21. Esse repositório contém scripts escritos em BASH para serem rodados em LINUX (escritos no NeuroDebian 8.0.0), que tem por objetivo rodar um protocolo semi-automatizado de pré-processamento de imagens de Ressonância Magnética Funcional Cerebral, modalidade Resting-state, de humanos adultos. 
+# RS-fMRI automated preprocessing pipeline
 
-Esse protocolo ainda está em desenvolvimento.
+This is the initial page of the repository of scripts for RS-fMRI automated preprocessing pipeline of the LIM 21. We designed scripts in BASH SHELL to run a preprocessing pipeline of functional Magnetic Ressonance Imaging (Resting State Modality) for adult humans and specialy for group analysis. 
 
-## Arquivos principais: [preproc.sh](preproc.sh), [preproc.cfg](preproc.cfg) e [preproc.sbj](preproc.sbj)
+This pipeline is still under development
 
-## Pré-requisitos  
+## Required Software
   
 - GNU Bash v3.7+ (http://www.gnu.org/software/bash/)
 - AFNI v16.3.12 (https://afni.nimh.nih.gov/afni/)
@@ -15,21 +13,18 @@ Esse protocolo ainda está em desenvolvimento.
 - ImageMagick  v7.0.4-3 (https://www.imagemagick.org/)
 - Libav(avconv) v12 (https://libav.org/)
 - Xvfb
-- Perl
-- Sed
 - Matlab (https://www.mathworks.com/)  
     - SPM5 (http://wwww.fil.ion.ucl.ac.uk/spm/software/spm5/)  
     - aztec v2.0 (http://www.ni-utrecht.nl/downloads/aztec)  
    
-## Uso  
-Em primeiro lugar, crie uma nova pasta em que ocorrerá toda a análise dos dados. Em seguida, baixe o repositório ou apenas os arquivos indicados acima como principais e salve na pasta criada. Altere as permissões do arquivo preproc.sh para executável:
+## Usage
+xxxx....
   
 ```bash
 mkdir PREPROC 
 cd PREPROC
-# Faça o download do repositório no formato .zip para a pasta recém criada PREPROC
-gzip -d <nome do arquivo baixado>
-sudo chmod a+x preproc.sh
+chmod a+x preproc.sh
+chmod
 ```
 Faça alterações ou crie os aquivos preproc.cfg e preproc.sbj (pode usar outros nomes, apenas mantenha a extensão) conforme sua necessidade. Exemplos de default abaixo:  
   

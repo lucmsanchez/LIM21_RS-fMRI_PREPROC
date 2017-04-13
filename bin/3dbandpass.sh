@@ -3,13 +3,13 @@ set -x
 printf "\n\n==============================================\n\n"
 echo $0
 
-in=MNI_${file_rs2}+tlrc.HEAD
-in[1]=MNI_${file_rs2}+tlrc.BRIK
-in[2]=volreg_${file_rs2}.1D
-in[3]=CSF_${file_t12}.signal.1D
-in[4]=WM_${file_t12}.signal.1D
-out=bandpass_${file_rs2}+tlrc.HEAD
-out[1]=bandpass_${file_rs2}+tlrc.BRIK
+in=$1
+in[1]=$2
+in[2]=$3
+in[3]=$4
+in[4]=$5
+out=$6
+out[1]=$7
 
 3dBandpass \
   -band 0.01 0.08 \

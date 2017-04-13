@@ -4,14 +4,14 @@ printf "\n\n==============================================\n\n"
 echo $0
 
 # Inputs and outputs
-in=unifize_${file_t12}_al+orig.HEAD
-in[1]=unifize_${file_t12}_al+orig.BRIK
-in[2]= CSF_${file_t12}+orig.HEAD
-in[3]= CSF_${file_t12}+orig.BRIK
-in[4]= WM_${file_t12}+orig.HEAD
-in[5]= WM_${file_t12}+orig.BRIK
-out=m1_qc4_${file_t12}.jpg
-out[1]=m2_qc4_${file_t12}.jpg
+in=$1
+in[1]=$2
+in[2]=$3
+in[3]=$4
+in[4]=$5
+in[5]=$6
+out=$7
+out[1]=$8
 
 
 over2=${in[4]%%.*}
@@ -23,7 +23,7 @@ under=${in%%.*}
  export AFNI_NOSPLASH=YES
  export AFNI_SPLASH_MELT=NO
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:10 geom=1200x800" \
+DISPLAY=:9 afni -com "OPEN_WINDOW A.axialimage mont=1x3:10 geom=1200x800" \
 -com "OPEN_WINDOW A.sagitalimage mont=1x3:10 geom=1200x800" \
 -com "OPEN_WINDOW A.coronalimage mont=1x3:10 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
@@ -35,9 +35,9 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:10 geom=1200x800" \
 -com "SAVE_JPEG A.coronalimage imz.${in%%.*}.jpg" \
 -com "QUIT"
 
-sleep 5
+sleep 20
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:10 geom=1200x800" \
+DISPLAY=:9 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:10 geom=1200x800" \
 -com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:10 geom=1200x800" \
 -com "OPEN_WINDOW A.coronalimage opacity=6 mont=1x3:10 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
@@ -49,11 +49,11 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:10 geom=1200x8
 -com "SAVE_JPEG A.coronalimage imz2.${in%%.*}.jpg" \
 -com "QUIT"
 
-sleep 5
+sleep 20
 
 killall Xvfb
 
 convert +append imx.* imy.* imz.* ${out}
-convert +append imx2.* imy2.* imz2.* ${out}
+convert +append imx2.* imy2.* imz2.* ${out[1]}
 
 rm im*  

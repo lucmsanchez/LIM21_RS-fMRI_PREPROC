@@ -19,25 +19,25 @@ out[1]=$8	# WM 1D
 3dresample \
     -master ${in%%.*} \
     -inset ${in[2]%%.*} \
-    -prefix ${in%%.*}_CSF_resampled+orig 
+    -prefix ${in%%+*}_CSF_resampled+orig 
 
 ### resample WM mask
 3dresample \
     -master ${in%%.*} \
     -inset ${in[4]%%.*} \
-    -prefix ${in%%.*}_WM_resampled+orig 
+    -prefix ${in%%+*}_WM_resampled+orig 
 
 ### first, mean CSF signal
 3dmaskave \
     -quiet \
-    -mask ${in%%.*}_CSF_resampled+orig \
+    -mask ${in%%+*}_CSF_resampled+orig \
     ${in%%.*} \
     > ${out} 
 
 ### now, mean WM signal
 3dmaskave \
     -quiet \
-    -mask ${in%%.*}_WM_resampled+orig \
+    -mask ${in%%+*}_WM_resampled+orig \
     ${in%%.*} \
     > ${out[1]} 
    

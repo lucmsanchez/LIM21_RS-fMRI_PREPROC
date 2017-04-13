@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
+set -x
+printf "\n\n==============================================\n\n"
+echo $0
 
- 3dmerge \
-    -1blur_fwhm "$blur" \
+in=$1
+in[1]=$2
+out=$3
+out[1]=$4
+
+3dmerge \
+    -1blur_fwhm 6 \
     -doall \
-    -prefix ${out[$j]} \
-    ${in[$j]} &>> preproc.${ID[j]}.log 
+    -prefix ${out%%.*} \
+    ${in%%.*}

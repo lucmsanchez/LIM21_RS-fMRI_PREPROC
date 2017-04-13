@@ -1,8 +1,22 @@
 #!/usr/bin/env bash
+set -x
+printf "\n\n==============================================\n\n"
+echo $0
 
-( over2=${ID[j]}.WM+orig
-over=${ID[j]}.CSF+orig
-under=SS.T1.${ID[j]}_al+orig
+# Inputs and outputs
+in=unifize_${file_t12}_al+orig.HEAD
+in[1]=unifize_${file_t12}_al+orig.BRIK
+in[2]= CSF_${file_t12}+orig.HEAD
+in[3]= CSF_${file_t12}+orig.BRIK
+in[4]= WM_${file_t12}+orig.HEAD
+in[5]= WM_${file_t12}+orig.BRIK
+out=m1_qc4_${file_t12}.jpg
+out[1]=m2_qc4_${file_t12}.jpg
+
+
+over2=${in[4]%%.*}
+over=${in[2]%%.*}
+under=${in%%.*}
 
  Xvfb :1 -screen 0 1200x800x24 &
 
@@ -16,9 +30,9 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:10 geom=1200x800" \
 -com "SWITCH_UNDERLAY $under" \
 -com "SWITCH_OVERLAY $over" \
 -com "SET_DICOM_XYZ A 10 40 45" \
--com "SAVE_JPEG A.axialimage imx.${ID[j]}.jpg" \
--com "SAVE_JPEG A.sagitalimage imy.${ID[j]}.jpg" \
--com "SAVE_JPEG A.coronalimage imz.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.axialimage imx.${in%%.*}.jpg" \
+-com "SAVE_JPEG A.sagitalimage imy.${in%%.*}.jpg" \
+-com "SAVE_JPEG A.coronalimage imz.${in%%.*}.jpg" \
 -com "QUIT"
 
 sleep 5
@@ -30,33 +44,16 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:10 geom=1200x8
 -com "SWITCH_UNDERLAY $under" \
 -com "SWITCH_OVERLAY $over2" \
 -com "SET_DICOM_XYZ A 10 40 45" \
--com "SAVE_JPEG A.axialimage imx2.${ID[j]}.jpg" \
--com "SAVE_JPEG A.sagitalimage imy2.${ID[j]}.jpg" \
--com "SAVE_JPEG A.coronalimage imz2.${ID[j]}.jpg" \
+-com "SAVE_JPEG A.axialimage imx2.${in%%.*}.jpg" \
+-com "SAVE_JPEG A.sagitalimage imy2.${in%%.*}.jpg" \
+-com "SAVE_JPEG A.coronalimage imz2.${in%%.*}.jpg" \
 -com "QUIT"
 
 sleep 5
 
 killall Xvfb
 
-convert +append imx.* imy.* imz.* m.over.seg.${ID[j]}.jpg
-convert +append imx2.* imy2.* imz2.* m.over2.seg.${ID[j]}.jpg
+convert +append imx.* imy.* imz.* ${out}
+convert +append imx2.* imy2.* imz2.* ${out}
 
-rm im*  ) &>> preproc.${ID[j]}.log
-
-read -r -d '' textf <<EOF
-<h2 id="qc7">QC7 - Checagem de segmentação</h2>
-<p>&nbsp;</p>
-<h3>Grade 3 x 3 - CSF</h3>
-<p><img src="m.over.seg.${ID[j]}.jpg" alt="" style="width:1000px;height:800px%"/></p>
-<p>&nbsp;</p>
-<h3>Grade 3 x 3 - WM</h3>
-<p><img src="m.over2.seg.${ID[j]}.jpg" alt="" style="width:1000px;height:800px%"/></p>
-<p>&nbsp;</p>
-<hr>
-EOF
-
-export textf
-perl -pe 'BEGIN{undef $/;} s/<!--QC7-->.*<!--QC8-->/<!--QC7-->\n $ENV{textf} \n<!--QC8-->/smg' report.${ID[j]}.html > rename.report.${ID[j]}.html
-mv rename.report.${ID[j]}.html report.${ID[j]}.html
-
+rm im*  

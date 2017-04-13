@@ -88,11 +88,8 @@ shift # past argument or value
 done
 
 #: DECLARE VARIABLES ===========================================================
-fsl5=fsl5.0-
-TR=2
+export fsl5=fsl5.0-
 template="MNI152_1mm_uni+tlrc"
-blur=6
-cost="lpc"
 
 
 #: DECLARE FUNCTIONS ===========================================================
@@ -223,8 +220,16 @@ MATLAB             ...$(check matlab)
   SPM5
   aztec
 
-WARNING: Any missing required software will cause the script to stop
+WARNING: Any missing required software will cause the script to stop!
 EOF
+
+co=0
+for c in bash 3dTshift "$fsl5"fast python convert avconv Xvfb perl sed; do
+[ ! $(command -v $c) ] && co=$((co + 1))
+done
+if [ ! $co -eq 0 ];then
+	exit
+fi
 
 # Check of nifti files of the indicated Subjects
 echo
@@ -559,6 +564,186 @@ for v in ${VID[@]}; do
 				open.node;
 				if [ $? -eq 0 ]; then
 		  			../../bin/3dunifize.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=12 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=12
+				else
+					continue 2
+				fi
+				;;
+			12 ) #: S12 - ALIGN CENTER fMRI-T1 =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=unifize_${file_t12}+orig.HEAD
+				in[1]=unifize_${file_t12}+orig.BRIK
+				in[2]=resample_${file_rs2}+orig.HEAD
+				in[3]=resample_${file_rs2}+orig.BRIK
+				out=resample_${file_rs2}_shft+orig.HEAD
+				out[1]=resample_${file_rs2}_shft+orig.HEAD
+				# Run modular script
+				echo -n "S12 - ALRST1> "
+				open.node;
+				if [ $? -eq 0 ]; then
+		  			../../bin/align-rst1.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=13 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=13
+				else
+					continue 2
+				fi
+				;;
+			13 ) #: S13 - COREGISTER fMRI-T1 =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=resample_${file_rs2}_shft+orig.HEAD
+				in[1]=resample_${file_rs2}_shft+orig.HEAD
+				in[2]=unifize_${file_t12}+orig.HEAD
+				in[3]=unifize_${file_t12}+orig.BRIK
+				out=unifize_${file_t12}_al+orig.HEAD
+				out[1]=unifize_${file_t12}_al+orig.BRIK
+				out[2]=unifize_${file_t12}_al_mat.aff12.1D
+				# Run modular script
+				echo -n "S13 - COREG> "
+				open.node;
+				if [ $? -eq 0 ]; then
+		  			../../bin/coreg.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=QC2 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=QC2
+				else
+					continue 2
+				fi
+				;;
+			QC2 ) #: QC2 - COREG QC  =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=resample_${file_rs2}_shft+orig.HEAD
+				in[1]=resample_${file_rs2}_shft+orig.BRIK
+				in[2]=unifize_${file_t12}_al+orig.HEAD
+				in[3]=unifize_${file_t12}_al+orig.BRIK
+				out=m1_qc2_${file_t12}.jpg
+				out[1]=m2_qc2_${file_t12}.jpg
+				# Run modular script
+				echo -n "QC2 - COREG> "
+				open.node;
+				if [ $? -eq 0 ]; then
+		  			../../bin/qc-coreg.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=14 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=14
+				else
+					continue 2
+				fi
+				;;
+			14 ) #: S14 - NORMALIZE T1 to TEMP =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=unifize_${file_t12}_al+orig.HEAD
+				in[1]=unifize_${file_t12}_al+orig.BRIK
+				in[2]=../../template/$template.BRIK.gz
+				out=MNI_${file_t12}+tlrc.HEAD
+				out[1]=MNI_${file_t12}+tlrc.BRIK
+				out[2]=MNI_${file_t12}_WARP*
+				out[3]=MNI_${file_t12}_Allin.aff12.1D
+				out[4]=MNI_${file_t12}_Allin.nii
+				# Run modular script
+				echo -n "S14 - NORMT1> "
+				open.node;
+				if [ $? -eq 0 ]; then
+		  			../../bin/norm-t1.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=15 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=15
+				else
+					continue 2
+				fi
+				;;
+			15 ) #: S15 - NORMALIZE fMRI to T1 WARP =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=resample_${file_rs2}_shft+orig.HEAD
+				in[1]=resample_${file_rs2}_shft+orig.BRIK
+				in[2]=MNI_${file_t12}_WARP*
+				in[3]=MNI_${file_t12}_WARP*
+				in[4]=../../template/$template.BRIK.gz
+				out=MNI_${file_rs2}+tlrc.HEAD
+				out[1]=MNI_${file_rs2}+tlrc.BRIK
+				# Run modular script
+				echo -n "S15 - NORMRS> "
+				open.node;
+				if [ $? -eq 0 ]; then
+		  			../../bin/norm-rs.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=QC3 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=QC3
+				else
+					continue 2
+				fi
+				;;
+			QC3 ) #: QC3 - NORMALIZATION =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=MNI_${file_rs2}+tlrc.HEAD
+				in[1]=MNI_${file_rs2}+tlrc.BRIK
+				in[2]=MNI_${file_t12}+tlrc.HEAD
+				in[3]=MNI_${file_t12}+tlrc.BRIK
+				in[4]=../../template/$template.BRIK.gz
+				out=m1_qc3_MNI_${file_t12}.jpg
+				out[1]=m2_qc3_MNI_${file_t12}.jpg
+				out[2]=m3_qc3_MNI_${file_t12}.jpg
+				out[3]=m4_qc3_MNI_${file_t12}.jpg
+				out[4]=m5_qc3_MNI_${file_t12}.jpg
+				out[5]=m6_qc3_MNI_${file_t12}.jpg
+				out[6]=m7_qc3_MNI_${file_t12}.jpg
+				# Run modular script
+				echo -n "S15 - NORMRS> "
+				open.node;
+				if [ $? -eq 0 ]; then
+		  			../../bin/qc-norm.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=16 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=16
+				else
+					continue 2
+				fi
+				;;
+			16 ) #: S16 - T1 SEGMENTATION =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+ 				in=unifize_${file_t12}_al+orig.HEAD
+				in[1]=unifize_${file_t12}_al+orig.BRIK
+				out=CSF_${file_t12}+orig.HEAD
+				out[1]=CSF_${file_t12}+orig.BRIK
+				out[2]=WM_${file_t12}+orig.HEAD
+				out[3]=WM_${file_t12}+orig.BRIK
+				# Run modular script
+				echo -n "S16 - T1SEG> "
+				open.node;
+				if [ $? -eq 0 ]; then
+		  			../../bin/seg-t1.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=17 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=17
+				else
+					continue 2
+				fi
+				;;
+			17 ) #: S17 - RS SEGMENTATION  =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=resample_${file_rs2}_shft+orig.HEAD
+				in[1]=resample_${file_rs2}_shft+orig.BRIK
+				in[2]= CSF_${file_t12}+orig.HEAD
+				in[3]= CSF_${file_t12}+orig.BRIK
+				in[4]= WM_${file_t12}+orig.HEAD
+				in[5]= WM_${file_t12}+orig.BRIK
+				out=CSF_${file_t12}.signal.1D
+				out[1]=WM_${file_t12}.signal.1D
+				# Run modular script
+				echo -n "S17 - RSSEG> "
+				open.node;
+				if [ $? -eq 0 ]; then
+		  			../../bin/seg-rs.sh ${in[@]} ${out[@]} &>> $log
 					close.node && S=21 || continue 2
 				elif [ $? -eq 1 ]; then
 					S=21
@@ -566,257 +751,94 @@ for v in ${VID[@]}; do
 					continue 2
 				fi
 				;;
-esac;done;done;exit
-
-
-
-#: QC4 ========================================================================
-printf "=============================QC 4==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 4"                                    \
-        -i "unifize.T1.${ID[j]}.nii"      \
-        -o "m.over.SS.T1.${ID[j]}.png m.overz.T1.${ID[j]}.mp4 m.overy.T1.${ID[j]}.mp4 m.overx.T1.${ID[j]}.mp4"              
-if [ $? -eq 0 ]; then
-./bin/qc-bet.sh
-fi; qc.close
-done
-input.error
-
-
-#: ALIGN CENTER fMRI-T1 ======================================================
-printf "\n=======================ALIGN CENTER fMRI-T1=====================\n\n"
-for j in ${!ID[@]}; do
-  fromRS
-  inputs "${out[$j]}" "SS.T1.${ID[j]}+orig"
-  outputs "resample.RS.${ID[j]}_shft+orig" "resample.RS.${ID[j]}_shft.1D"
-  echo -n "${ID[j]}> "
-  if open.node "ALIGN CENTER fMRI-T1"; then
-  ./bin/align-rst1.sh
-  fi; close.node
-  toRS
-done 
-input.error
-echo
-
-#: COREGISTER fMRI-T1 ======================================================
-printf "\n=======================COREGISTER fMRI-T1=====================\n\n"
-for j in ${!ID[@]}; do
-  inputs "${out[$j]}" "SS.T1.${ID[j]}+orig"
-  outputs "SS.T1.${ID[j]}_al+orig" "SS.T1.${ID[j]}_al_mat.aff12.1D"
-  echo -n "${ID[j]}> "
-  if open.node "COREGISTER fMRI-T1"; then
-./bin/coreg.sh
-  fi; close.node
-done 
-input.error
-echo
-
-#: QC5 ========================================================================
-printf "=============================QC 5==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 5"                                    \
-        -i "resample.RS.${ID[j]}_shft+orig SS.T1.${ID[j]}_al+orig"      \
-        -o "m.over.SS.T1.${ID[j]}_al.jpg m.over2.SS.T1.${ID[j]}_al.jpg"              
-if [ $? -eq 0 ]; then
-
-./bin/qc-coreg.sh
-
-fi; qc.close
-done
-input.error
-
-[ $break -eq 3 ] && echo "Interrompendo script a pedido do usuário" && exit
-
-#: NORMALIZE T1 TO TEMPLATE ======================================================
-printf "\n=======================NORMALIZE T1 TO TEMPLATE=====================\n\n"
-for j in ${!ID[@]}; do 
-  inputs "${out[$j]}"
-  outputs "MNI.T1.${ID[j]}" "MNI.T1.${ID[j]}_WARP" 
-  cp.inputs "${template}.HEAD" "${template}.BRIK.gz"
-  echo -n "${ID[j]}> "
-  if open.node "NORMALIZE T1 TO TEMPLATE"; then
-
-./bin/norm-t1.sh
-
-   fi; close.node
-  toT1
-done 
-input.error
-echo
-
-#: fMRI SPATIAL NORMALIZATION ======================================================
-printf "\n=======================fMRI SPATIAL NORMALIZATION=====================\n\n"
-for j in ${!ID[@]}; do
-  fromRS
-  inputs "${out[$j]}" "${out_2[$j]}+tlrc"
-  outputs "MNI.RS.${ID[j]}+tlrc"
-  echo -n "${ID[j]}> "
-  if open.node "fMRI SPATIAL NORMALIZATION"; then
-
-./bin/norm-rs.sh
-
-  fi; close.node
-  toRS
-done 
-input.error
-echo
-
-#: QC6 ========================================================================
-
-printf "=============================QC 6==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 6"                                    \
-        -i "MNI.RS.${ID[j]}+tlrc MNI.T1.${ID[j]}+tlrc"      \
-        -o "m.overa.MNI.${ID[j]}.jpg m.overb.MNI.${ID[j]}.jpg m.overc.MNI.${ID[j]}.jpg m.overa2.MNI.${ID[j]}.jpg m.overb2.MNI.${ID[j]}.jpg m.overc2.MNI.${ID[j]}.jpg"              
-if [ $? -eq 0 ]; then
-
-./bin/qc-norm.sh
-
-fi; qc.close
-done
-input.error
-
-[ $break -eq 4 ] && echo "Interrompendo script a pedido do usuário" && exit
-
-#: T1 SEGMENTATION ======================================================
-printf "\n=======================T1 SEGMENTATION=====================\n\n"
-for j in ${!ID[@]}; do
-  fromT1
-  inputs "SS.T1.${ID[j]}_al+orig"
-  outputs "${ID[j]}.CSF+orig" "${ID[j]}.WM+orig"
-  echo -n "${ID[j]}> "
-  if open.node "T1 SEGMENTATION"; then
- 
-./bin/seg-t1.sh
-
-  fi; close.node
-done 
-input.error
-echo
-
-# RS SEGMENTATION ======================================================
-printf "\n=======================RS SEGMENTATION=====================\n\n"
-for j in ${!ID[@]}; do
-  inputs "resample.RS.${ID[j]}_shft+orig" "${out[$j]}" "${out_2[$j]}"
-  outputs "${ID[j]}.CSF.signal.1d" "${ID[j]}.WM.signal.1d"
-  echo -n "${ID[j]}> "
-  if open.node "RS SEGMENTATION"; then
- 
-./bin/seg-rs.sh
-
-  fi; close.node
-done 
-input.error
-echo
-
-#: QC7 ========================================================================
-printf "=============================QC 7==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 7"                                    \
-        -i "${ID[j]}.WM+orig ${ID[j]}.CSF+orig SS.T1.${ID[j]}_al+orig"      \
-        -o "m.over.seg.${ID[j]}.jpg m.over2.seg.${ID[j]}.jpg"              
-if [ $? -eq 0 ]; then
-
-./bin/qc-seg.sh
-
-fi; qc.close
-done
-input.error
-
-[ $break -eq 5 ] && echo "Interrompendo script a pedido do usuário" && exit
-
-#: RS FILTERING ======================================================
-printf "\n=======================RS FILTERING=====================\n\n"
-for j in ${!ID[@]}; do
-  fromRS
-  inputs "${out[$j]}" "mc.${ID[j]}.1d" "${ID[j]}.CSF.signal.1d" "${ID[j]}.WM.signal.1d"
-  outputs "bandpass.RS.${ID[j]}+tlrc" 
-  echo -n "${ID[j]}> "
-  if open.node "RS FILTERING"; then
-
-./bin/3dbandpass.sh
-
-  fi; close.node
-done 
-input.error
-echo
-
-#: RS SMOOTHING ======================================================
-printf "\n=======================RS SMOOTHING=====================\n\n"
-for j in ${!ID[@]}; do
-  inputs "${out[$j]}" 
-  outputs "merge.RS.${ID[j]}+tlrc"
-  echo -n "${ID[j]}> "
-  if open.node "RS SMOOTHING"; then
-
-./bin/3dmerge.sh
-
-  fi; close.node
-done 
-input.error
-echo
-
-if [ $censor -eq 1 ]; then
-#: RS MOTIONCENSOR ======================================================
-printf "\n=======================RS MOTIONCENSOR=====================\n\n"
-for j in ${!ID[@]}; do
-  inputs "${out[$j]}" "mc.${ID[j]}.1d" "RS.${ID[j]}.nii"
-  outputs "censor.RS.${ID[j]}+tlrc"
-  echo -n "${ID[j]}> "
-  if open.node "RS MOTIONCENSOR"; then
-
-./bin/motioncensor.sh
-
-  fi; close.node
-done 
-input.error
-echo
-fi
-
-#: QC8 ========================================================================
-printf "=============================QC 8==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 8"                                    \
-        -i "${out[$j]}"      \
-        -o "m.final.txt"              
-if [ $? -eq 0 ]; then
-
-./bin/qc-mc.sh
-
-fi; qc.close
-done
-input.error
-echo 
-
-#: DATA OUTPUT ===================================================================
-printf "\n=======================DATA OUTPUT=====================\n\n"
-for j in ${!ID[@]}; do
-  inputs "${out[$j]}" "SS.T1.${ID[j]}+orig" "preproc.${ID[j]}.log" "report.${ID[j]}.html"
-  outputs "preproc.RS.${ID[j]}.nii" "SS.T1.${ID[j]}.nii" 
-  echo -n "${ID[j]}> "
-  if open.node "DATA OUTPUT"; then
-( 3dAFNItoNIFTI -prefix ${out[j]} ${in[j]}
-  3dAFNItoNIFTI -prefix ${out_2[j]} ${in_2[j]} ) &>> preproc.${ID[j]}.log
-  fi; close.node
-( rm -r OUTPUT/${ID[j]}/manual_skullstrip 
-  file=$(find . -name "${out[j]}")
-  cp -rf $file $pwd/OUTPUT/${ID[j]}/
-  file=$(find . -name "${out_2[j]}")
-  cp -rf $file $pwd/OUTPUT/${ID[j]}/  
-  file=$(find . -name "${in_3[j]}")
-  cp -rf $file $pwd/OUTPUT/${ID[j]}/ 
-  file=$(find . -name "${in_4[j]}")
-  cp -rf $file $pwd/OUTPUT/${ID[j]}/
-  file=$(find . -name "m.*${ID[j]}*")
-  [ ! -d $pwd/OUTPUT/${ID[j]}/report.media ] && mkdir $pwd/OUTPUT/${ID[j]}/report.media
-  cp -rf ${file[@]} $pwd/OUTPUT/${ID[j]}/report.media
-  sed -i "s/m\./report.media\/m\./g" $pwd/OUTPUT/${ID[j]}/${in_4[j]}
-   ) &> /dev/null
-done 
-input.error
-echo
-
-
+			QC4 ) #: QC4 - SEGMENTATION  =============================
+				unset in out
+				in=unifize_${file_t12}_al+orig.HEAD
+				in[1]=unifize_${file_t12}_al+orig.BRIK
+				in[2]= CSF_${file_t12}+orig.HEAD
+				in[3]= CSF_${file_t12}+orig.BRIK
+				in[4]= WM_${file_t12}+orig.HEAD
+				in[5]= WM_${file_t12}+orig.BRIK
+				out=m1_qc4_${file_t12}.jpg
+				out[1]=m2_qc4_${file_t12}.jpg
+				# Run modular script
+				echo -n "QC4 - SEG> "
+				open.node;
+				if [ $? -eq 0 ]; then
+		  			../../bin/qc-seg.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=18 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=18
+				else
+					continue 2
+				fi
+				;;
+			18 ) #: S18 - RS FILTERING  =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=MNI_${file_rs2}+tlrc.HEAD
+				in[1]=MNI_${file_rs2}+tlrc.BRIK
+				in[2]=volreg_${file_rs2}.1D
+				in[3]=CSF_${file_t12}.signal.1D
+				in[4]=WM_${file_t12}.signal.1D
+				out=bandpass_${file_rs2}+tlrc.HEAD
+				out[1]=bandpass_${file_rs2}+tlrc.BRIK
+				# Run modular script
+				echo -n "S18 - BPASS> "
+				open.node;
+				if [ $? -eq 0 ]; then
+		  			../../bin/3dbandpass.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=19 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=19
+				else
+					continue 2
+				fi
+				;;
+			19 ) #: S19 - RS SMOOTHING =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=bandpass_${file_rs2}+tlrc.HEAD
+				in[1]=bandpass_${file_rs2}+tlrc.BRIK
+				out=merge_${file_rs2}+tlrc.HEAD
+				out[1]=merge_${file_rs2}+tlrc.BRIK
+				# Run modular script
+				echo -n "S19 - MERGE> "
+				open.node;
+				if [ $? -eq 0 ]; then
+		  			../../bin/3dmerge.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=20 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=20
+				else
+					continue 2
+				fi
+				;;
+			20 ) #: S20 - RS MOTIONCENSOR  =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=merge_${file_rs2}+tlrc.HEAD
+				in[1]=merge_${file_rs2}+tlrc.BRIK
+				in[2]=volreg_${file_rs2}.1D
+				in[3]=${file_rs}
+				out=censor_${file_rs2}+tlrc.HEAD
+				out[1]=censor_${file_rs2}+tlrc.HEAD
+				# Run modular script
+				echo -n "S20 - CENSOR> "
+				open.node;
+				if [ $? -eq 0 ]; then
+		  			../../bin/motioncensor.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=21 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=21
+				else
+					continue 2
+				fi
+				;;
+			esac
+		done
+	done
+exit
 
 
 #=================================================================================

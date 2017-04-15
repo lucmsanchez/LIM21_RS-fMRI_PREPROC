@@ -1,10 +1,13 @@
 #Folders
+originais/
+PREPROC/
 DATA/
 old_files/
 OUTPUT/
 WORK/
 .vscode/
 DATAs/
+doc/
 
 log
 run

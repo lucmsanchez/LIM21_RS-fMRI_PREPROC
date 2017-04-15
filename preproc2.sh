@@ -184,10 +184,12 @@ qcnode () {
 	#echo $? 
 	if [ $? -eq 0 ]; then
 		"$1" ${in[@]} ${out[@]} &>> $log
-		close.node && S=${2} || continue 1
+		S=${2}
+		close.node || continue 1
 	elif [ $? -eq 1 ]; then
 		S=${2}
 	else
+		S=${2}
 		continue 1
 	fi
 }
@@ -404,7 +406,7 @@ for v in ${VID[@]}; do
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
 				in=volreg_${file_rs2}.1D
-				out=m_qc1_${file_rs2}.jpg
+				out=qc1_m1_${file_rs2}.jpg
 				# Run modular script
 				echo -n "QC1 - MC> "
 				qcnode "../../bin/qc-volreg.sh" "4"
@@ -533,8 +535,8 @@ for v in ${VID[@]}; do
 				in[1]=resample_${file_rs2}_shft+orig.BRIK
 				in[2]=unifize_${file_t12}_al+orig.HEAD
 				in[3]=unifize_${file_t12}_al+orig.BRIK
-				out=m1_qc2_${file_t12}.jpg
-				out[1]=m2_qc2_${file_t12}.jpg
+				out=qc2_m1_${file_t12}.jpg
+				out[1]=qc2_m2_${file_t12}.jpg
 				# Run modular script
 				echo -n "QC2 - COREG> "
 	  			qcnode "../../bin/qc-coreg.sh" "14"
@@ -577,12 +579,12 @@ for v in ${VID[@]}; do
 				in[2]=MNI_${file_t12}+tlrc.HEAD
 				in[3]=MNI_${file_t12}+tlrc.BRIK
 				in[4]=../../template/$template.BRIK.gz
-				out=m1_qc3_MNI_${file_t12}.jpg
-				out[1]=m2_qc3_MNI_${file_t12}.jpg
-				out[2]=m3_qc3_MNI_${file_t12}.jpg
-				out[3]=m4_qc3_MNI_${file_t12}.jpg
-				out[4]=m5_qc3_MNI_${file_t12}.jpg
-				out[5]=m6_qc3_MNI_${file_t12}.jpg
+				out=qc3_m1_MNI_${file_t12}.jpg
+				out[1]=qc3_m2_MNI_${file_t12}.jpg
+				out[2]=qc3_m3_MNI_${file_t12}.jpg
+				out[3]=qc3_m4_MNI_${file_t12}.jpg
+				out[4]=qc3_m5_MNI_${file_t12}.jpg
+				out[5]=qc3_m6_MNI_${file_t12}.jpg
 				# Run modular script
 				echo -n "QC3 - NORM> "
 				qcnode "../../bin/qc-norm.sh" "16"
@@ -623,8 +625,8 @@ for v in ${VID[@]}; do
 				in[3]=CSF_${file_t12}+orig.BRIK
 				in[4]=WM_${file_t12}+orig.HEAD
 				in[5]=WM_${file_t12}+orig.BRIK
-				out=m1_qc4_${file_t12}.jpg
-				out[1]=m2_qc4_${file_t12}.jpg
+				out=mqc4_m1_${file_t12}.jpg
+				out[1]=qc4_m2_${file_t12}.jpg
 				# Run modular script
 				echo -n "QC4 - SEG> "
 				qcnode "../../bin/qc-seg.sh" "18"

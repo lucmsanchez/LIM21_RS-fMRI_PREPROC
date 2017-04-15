@@ -629,7 +629,7 @@ for v in ${VID[@]}; do
 				in[3]=CSF_${file_t12}+orig.BRIK
 				in[4]=WM_${file_t12}+orig.HEAD
 				in[5]=WM_${file_t12}+orig.BRIK
-				out=mqc4_m1_${file_t12}.jpg
+				out=qc4_m1_${file_t12}.jpg
 				out[1]=qc4_m2_${file_t12}.jpg
 				# Run modular script
 				echo -n "QC4 - SEG> "

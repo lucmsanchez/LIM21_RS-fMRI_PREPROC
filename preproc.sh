@@ -1,52 +1,85 @@
 #!/usr/bin/env bash
 
-#: PROCESSANDO OS ARGUMENTOS ====================================================
+#: OLD CODE =============================================================
+
+## Iniciar Relatório de qualidade
+#for j in ${!ID[@]}; do
+#cd ${steppath[$j]}
+#if [ ! -f "report.${ID[j]}.html" ]; then
+#cat << EOF > report.${ID[j]}.html
+#<HTML>
+#<HEAD>
+#<TITLE>Relatório de Qualidade de ${ID[j]}</TITLE>
+#<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+#</HEAD> 
+#<body>
+#<h1>Relatório de Controle de Qualidade -- ${ID[j]}</h1>
+#<p>&nbsp;</p>
+#<!--index-->
+#<h3>Conteúdo:</h3>
+#<ul>
+#<li><h3><a href="#qc1">QC1 - Imagem RS raw</a></h3></li>
+#<li><h3><a href="#qc2">QC2 - Imagem T1 raw</a></h3></li>
+#<li><h3><a href="#qc3">QC3 - RS Motion Correction</a></h3></li>
+#<li><h3><a href="#qc4">QC4 - T1 vc. SS mask</a></h3></li>
+#<li><h3><a href="#qc5">QC5 - Checagem de alinhamento T1 vs. RS</a></h3></li>
+#<li><h3><a href="#qc6">QC6 - Checagem de normalização T1 e RS vs. MNI</a></h3></li>
+#<li><h3><a href="#qc7">QC7 - Checagem de segmentação</a></h3></li>
+#<li><h3><a href="#qc8">QC8 - Imagem RS final</a></h3></li>
+#</ul>
+#<!--index-->
+#<p>&nbsp;</p>
+#<center>
+#<!--QC1-->
+#<!--QC2-->
+#<!--QC3-->
+#<!--QC4-->
+#<!--QC5-->
+#<!--QC6-->
+#<!--QC7-->
+#<!--QC8-->
+#<!--QC9-->
+#<!--QC10-->
+#<!--QC11-->
+#<!--QC12-->
+#</center>
+#</body>
+#</HTML>
+#EOF
+#fi
+#cd $pwd
+#done
+
+
+#: PROCESS ARGUMENTS ====================================================
 usage() {
-    echo "Argumentos:"
-    echo " $0 [ Opções ] --config <txt com variáveis para análise>  --subjects <ID das imagens>" 
+    echo "ARGUMENTS:"
+    echo " $0 --subjects <Subject ID>" 
     echo 
-    echo "Opções:"
-    echo "-b | --break n interrompe o script no breakpoint de numero indicado"
-    echo
-    echo "--aztec            realiza a etapa aztec"
-    echo "--bet              realiza o skull strip automatizado (Padrão: Manual)"
-    echo "--motioncensor_no  NÃO aplica a técnica motion censor"    
-    echo
+
 }
 
-aztec=0
-bet=0
-censor=1
-break=0
-
+#startS=1
+#stopS=12
 while [[ $# -gt 0 ]]
 do
 key="$1"
-
 case $key in
-    -c|--config)
-    config="$2"
-    shift # past argument
-    ;;
     -s|--subjects)
     subs="$2"
     shift # past argument
     ;;
-    -b|--break)
-    break="$2"
+    -a|--start)
+    startS="$2"
     shift # past argument
     ;;
-    --aztec)
-    aztec=1
-    ;;
-    --bet)
-    bet=1
-    ;;
-    --motioncensor_no)
-    censor=0
+	-o|--stop)
+    arg="$2"
+	stopS=$((arg + 1))
+    shift # past argument
     ;;
     *)
-     echo "Erro de sintaxe:'$1' desconhecida'" >&2
+     echo "Syntax error:'$1' unknown'" >&2
      usage
      exit       # unknown option
     ;;
@@ -54,342 +87,167 @@ esac
 shift # past argument or value
 done
 
-#: DECLARANDO VARIÁVEIS ===========================================================
-declare -a steppath
-declare -a in in_2 in_3 in_4 in_5
-declare -a out out_2 out_3 ou_4 out_5
-declare -a outrs outt1
-ex=0
+#: DECLARE VARIABLES ===========================================================
+export fsl5=fsl5.0-
+template="MNI152_1mm_uni+tlrc"
 
-#: DECLARANDO FUNÇÕES ===========================================================
+
+#: DECLARE FUNCTIONS ===========================================================
 check () {
   if command -v $1 > /dev/null; then
     echo "OK"
   else
-    echo "Não encontrado em \$PATH"
+    echo "Not found on \$PATH"
 fi
-}
-
-input.error () {
-[ $ex -eq ${#ID[@]} ] && exit
-}
-
-inputs () {
-    in[$j]="$1"
-    in_2[$j]="$2"
-    in_3[$j]="$3"
-    in_4[$j]="$4"
-}
-
-outputs () {
-    out[$j]="$1"
-    out_2[$j]="$2"
-    out_3[$j]="$3"
-    out_4[$j]="$4"
 }
 
 open.node () {
   local a=0; local b=0; local c=0; local d=0
-  go=1
+  local go=1; local ex=0
   #
-  cd ${steppath[$j]}
-  for ii in ${in[$j]} ${in_2[$j]} ${in_3[$j]} ${in_4[$j]} ${in_5[$j]}; do
-    for file in ${ii}*; do
-      [ ! -f $file ] && echo "INPUT $ii não encontrado" && a=$((a + 1))
-      for iii in ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]} ${out_5[$j]}; do
-        for file2 in ${iii}*; do
-          [ ! -f $file2 ] && b=$((b + 1)) || c=$((c + 1))
-          [ $file2 -ot $file ] && d=$((d + 1))
-        done
-      done
-    done
+  cd ${ppath}
+  for i in ${in[@]}; do
+      [ ! -f $i ] && echo "INPUT $i not found" && a=$((a + 1))
+	for o in ${out[@]}; do
+    	[ ! -f $o ] && b=$((b + 1)) || c=$((c + 1))
+        [ $o -ot $i ] && d=$((d + 1))
+   	done
   done
   #echo $a $b $c $d
   if [ $a -eq 0 ]; then
     if [ $b -eq 0 ]; then 
       if [ ! $d -eq 0 ]; then
-        printf "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. \n" 
-        for iii in ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]} ${out_5[$j]}; do 
-          rm ${iii}* 2> /dev/null; 
+        printf "INPUT MODIFIED. DELETING OUTPUT AND RUNING SCRIPT AGAIN.\n             " 
+        for o in ${out[@]}; do 
+          rm ${o} 2> /dev/null; 
         done
         go=1
       else
-        echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0; ex=0
+        echo "OUTPUT ALREADY EXISTS. MOVING TO NEXT STEP."; go=0; ex=0
       fi
     else
       if [ ! $c -eq 0 ]; then
-        echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
-        for iii in ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]} ${out_5[$j]}; do 
-        rm ${iii}* 2> /dev/null; done
+        printf "OUTPUT CORRUPTED. DELETING OUTPUT AND RUNING SCRIPT AGAIN. \n             "
+        for o in ${out[@]}; do 
+        rm ${o}* 2> /dev/null; done
         go=1
       else
         go=1
       fi
     fi
   else
-    go=0; ex=$((ex + 1))
+    go=0; ex=1
   fi  
 
   if [ $go -eq 1 ]; then
-  ( echo 
-    echo "================================================================================"
-    echo "ETAPA: $1  - RUNTIME: $(date)" 
-    echo "================================================================================"
-    echo 
-    echo "INPUTS: ${in[$j]} ${in_2[$j]} ${in_3[$j]} ${in_4[$j]}" 
-    echo "OUTPUTS: ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]}"
-    echo ) >> preproc.${ID[j]}.log
-    return 0
+    return 0 # run script
   else
-    return 1
+	cd $path
+	if [ $ex -eq 0 ]; then
+    	return 1 # skip step
+	else
+		return 2 # skip subject
+	fi
   fi
 }
 
 close.node () {
   local a=0
-  if [ $go -eq 1 ]; then  
-    for iii in ${out[$j]} ${out_2[$j]} ${out_3[$j]} ${out_4[$j]}; do
-      for file2 in ${iii}*; do
-        [ -f $file2 ] ||  a=$((a + 1)) 
-      done
-    done
+    for o in ${out[@]}; do
+    	[ -f $o ] ||  a=$((a + 1)) 
+	done
     if [ ! $a -eq 0 ]; then
-      printf "Houve um erro no processamento da imagem %s, consulte o log. \n" "${ID[j]}" && ex=$((ex + 1))
+      	printf "Error: Could not process subject %s, consult the log. \n" "${id}"
+		return 1
     else
-      printf "Processamento da imagem %s realizado com sucesso! \n" "${ID[j]}"
+      	printf "Processing of subject %s realized with success! \n" "${id}"
+		return 0
     fi
-  fi
   cd $pwd
 }
 
-get.info1() {
-  local image=$1
-  space=$(3dinfo -space $image) 
-  is_oblique=$(3dinfo -is_oblique $image) 
-  afniprefix=$(3dinfo -prefix $image) 
-  tr=$(3dinfo -tr $image) 
-  smode=$(3dinfo -smode $image) 
-  orient=$(3dinfo -orient $image) 
+node () {
+	open.node; 
+	#echo $? 
+	if [ $? -eq 0 ]; then
+		"$1" ${in[@]} ${out[@]} &>> $log
+		close.node && S=${2} || continue 2
+	elif [ $? -eq 1 ]; then
+		S=${2}
+	else
+		continue 2
+	fi
 }
 
-get.info2 () {
-  local image1=$1
-  local image2=$2
-  #comparações
-  same_grid=$(3dinfo -same_grid $image1 $image2) 
-  same_dim=$(3dinfo -same_dim $image1 $image2) 
-  same_delta=$(3dinfo -same_delta $image1 $image2) 
-  same_orient=$(3dinfo -same_orient $image1 $image2) 
-  same_center=$(3dinfo -same_center $image1 $image2) 
-  same_obl=$(3dinfo -same_obl $image1 $image2) 
+qcnode () {
+	open.node; 
+	#echo $? 
+	if [ $? -eq 0 ]; then
+		"$1" ${in[@]} ${out[@]} &>> $log
+		S=${2}
+		close.node || continue 1
+	elif [ $? -eq 1 ]; then
+		S=${2}
+	else
+		S=${2}
+		continue 1
+	fi
 }
-
-toRS () {
-  outrs[$j]=${out[$j]}
-  }
-
-toT1 () {
-  outt1[$j]=${out[$j]}
-}
-
-fromRS () {
-  out[$j]=${outrs[$j]}
-}
-
-fromT1 () {
-  out[$j]=${outt1[$j]}
-}
-
-cp.inputs () {
-  files=$(find . -name "$1")
-  [ ! -f "${steppath[$j]}$1" ] && cp ${files[0]} ${steppath[$j]} 2> /dev/null
-  files=$(find . -name "$2")
-  [ ! -f "${steppath[$j]}$2" ] && cp ${files[0]} ${steppath[$j]} 2> /dev/null
-  files=$(find . -name "$3")
-  [ ! -f "${steppath[$j]}$3" ] && cp ${files[0]} ${steppath[$j]} 2> /dev/null
-}
-
-qc.open () {
-  while [[ $# -gt 0 ]]
-  do
-  k="$1"
-  case $k in
-    -e)
-    e="$2"
-    shift
-    ;;
-    -i)
-    f1="$2"
-    shift
-    ;;
-    -o)
-    f2="$2"
-    shift # past argument
-    ;;
-    *)
-     echo "Erro de sintaxe" >&2
-     exit       # unknown option
-    ;;
-  esac
-  shift # past argument or value
-  done
-
-  local a=0; local b=0; local c=0; local d=0
-  go=1
-
-  cd ${steppath[$j]}
-  echo -n "${ID[j]}> "
-  for ii in $f1; do
-    for file in ${ii}*; do
-      [ ! -f $file ] && echo "INPUT $ii não encontrado" && a=$((a + 1))
-      for iii in $f2; do
-        for file2 in ${iii}*; do
-          [ ! -f $file2 ] && b=$((b + 1)) || c=$((c + 1))
-          [ $file2 -ot $file ] && d=$((d + 1))
-        done
-      done
-    done
-  done
-  #echo $a $b $c $d
-  if [ $a -eq 0 ]; then
-    if [ $b -eq 0 ]; then 
-      if [ ! $d -eq 0 ]; then
-        printf "INPUT $ii MODIFICADO. REFAZENDO ANÁLISE. " 
-        for iii in $f2; do 
-          rm ${iii}* 2> /dev/null; 
-        done
-        go=1
-      else
-        echo "OUTPUT JÁ EXISTE. PROSSEGUINDO."; go=0; ex=0
-      fi
-    else
-      if [ ! $c -eq 0 ]; then
-        echo "OUTPUT CORROMPIDO. REFAZENDO ANÁLISE."
-        for iii in $f2; do 
-        rm ${iii}* 2> /dev/null; done
-        go=1
-      else
-        go=1
-      fi
-    fi
-  else
-    go=0; ex=$((ex + 1))
-  fi  
-
-  if [ $go -eq 1 ]; then
-    ( echo 
-    echo "================================================================================"
-    echo "ETAPA: $e  - RUNTIME: $(date)" 
-    echo "================================================================================"
-    echo 
-    echo "INPUTS: $f1" 
-    echo "OUTPUTS: $f2"
-    echo ) >> preproc.${ID[j]}.log
-    return 0
-  else
-    return 1
-  fi
-}
-
-qc.close () {
-  local a=0
-  if [ $go -eq 1 ]; then  
-    for iii in $f2; do
-      for file2 in ${iii}*; do
-        [ -f $file2 ] ||  a=$((a + 1)) 
-      done
-    done
-    if [ ! $a -eq 0 ]; then
-      printf "Houve um erro no processamento da imagem %s, consulte o log. \n" "${ID[j]}" && ex=$((ex + 1))
-    else
-      printf "Processamento da imagem %s realizado com sucesso! \n" "${ID[j]}"
-    fi
-  fi
-  cd $pwd
-  unset e f1 f2
-}
-
-#: INÍCIO =======================================================================
+#: START =======================================================================
 fold -s <<-EOF
 
-Protocolo de pré-processamento de RS-fMRI
+RS-fMRI Preprocessing pipeline
 --------------------------------------
 
 RUNTIME: $(date)
 
 EOF
 
-# checando arquivo indicado pelo argumento --config
-if [ ! -z $config ]; then  
-  if [ -f $config ]; then
-    source $config
-    a=0
-    for var in ptn mcbase gRL gAP gIS TR template blur fsl5; do
-      if [[ -z "${!var:-}" ]]; then
-      echo "Variável $var não encontrada"
-      a=$(($a + 1))
-      fi
-    done
-    if [ ! $a -eq 0 ]; then
-      echo "Erro: Não é possível executar o script sem as variáveis acima estarem definidas no arquivo de configuração. Encerrando"
-      exit
-    fi
-    unset a
-  else
-  echo "Arquivo de configuração especificado não encontrado"
-  exit
-  fi
-else 
-  echo "O arquivo de configuração não foi especificado"
-  if [ ! -f preproc.cfg ]; then
-    echo "Será criado um arquivo de configuração com valores padrão: preproc.cfg"
-    printf '# Variáveis RS-fMRI Preprocessing:\n\nfsl5=fsl5.0-\nTR=2\nptn=seq+z\nmcbase=100\ngRL=90\ngAP=90\ngIS=60\ntemplate="MNI152_1mm_uni+tlrc"\nbetf=0.1\nblur=6\ncost="lpc"\n' > preproc.cfg
-    exit
-  else
-    echo "Será usado o arquivo local preproc.cfg"
-    source preproc.cfg
-  fi
-fi  
 
-# Checando arquivo com nome dos indivíduos indicado no arg --subs
+# Check existence of the --subjects argument
+# Next step: check for consistency
 if [ ! -z $subs ]; then  
   if [ ! -f $subs ]; then
-    echo "Arquivo com ID dos indivíduos especificado não encontrado"
+    echo "Subjects ID file not found"
     exit
   fi
 else 
   if [ -f preproc.sbj ]; then
-    echo "O arquivo com ID dos indivíduos não foi especificado. Será usado o arquivo local preproc.sbj"
+    echo "Subjects ID file not specified. Local file preproc.sbj will be used."
     subs=preproc.sbj
   else
-    echo "O arquivo com ID dos indivíduos não foi especificado" 
+    echo "Subjects ID file not specified" 
+	usage
     exit
   fi
 fi  
 
+# Create the variables ID and index using Subjects ID file
+# ID;visit;t1_file;rs_file;log_file;mask_file
+subs=preproc.sbj
 oldIFS="$IFS"
-IFS=$'\n' ID=($(<${subs}))
+IFS=$'\n' pID=($(<${subs}))
 IFS="$oldIFS"
-index=${!ID[@]}
+for j in ${!pID[@]}; do
+	VID[$j]=$(echo ${pID[$j]} | cut -d ";" -f-2)
+done
+#echo ${VID[@]}
 
-
-# checando se todos os programas necessários estão instalados
+# Check if all required softwares are installed on $PATH
 fold -s <<-EOF
 
-Programas necessários:
+Required Software and Packages:
 GNU bash           ...$(check bash)
 AFNI               ...$(check 3dTshift)
 FSL                ...$(check "$fsl5"fast)
 Python             ...$(check python)
 ImageMagick        ...$(check convert)
-Libav(avconv)      ...$(check avconv)
 Xvfb               ...$(check Xvfb)
-perl               ...$(check perl)
-sed                ...$(check sed)
 MATLAB             ...$(check matlab)
   SPM5
   aztec
 
+WARNING: Any missing required software will cause the script to stop!
 EOF
 
 co=0
@@ -397,57 +255,49 @@ for c in bash 3dTshift "$fsl5"fast python convert avconv Xvfb perl sed; do
 [ ! $(command -v $c) ] && co=$((co + 1))
 done
 if [ ! $co -eq 0 ];then
-	printf "\nUm ou mais programas necessários para o pré-processamento não estão instalados (acima). Por favor instale o(s) programa(s) faltante(s) ou então verifique se estão configurados na variável de ambiente \$PATH\n\n" | fold -s
 	exit
 fi
 
-[ $aztec -eq 1 ] && [ ! $(command -v matlab) ] && echo "o Matlab e os plugins SPM5 e aztec são necessários para a análise e não foram encontrados. Certifique-se que eles estão instalados e configurados na variável de ambiente $PATH" | fold -s && exit 
-
-
-
-# informando os usuários das variáveis definidas ou defaults
-fold -s <<-EOF
-As variáveis que serão usadas como parametros para as análises são:
-Aztec                   - Tempo de repetição(s)   => $TR
-Slice timing correction - sequência de aquisição  => $ptn
-Motion correction       - valor base              => $mcbase
-Homogenize Grid         - tamanho da grade        => $gRL $gAP $gIS
-BET                     - bet f                   => $betf
-3dMerge	                - filtro gaussiano        => $blur
-Alinhamento Anat-epi    - método                  => $cost
-
-TEMPLATE: $template
-
-EOF
-
-
-
-# Checando imagens com os nomes fornecidos
-echo "Lista de indivíduos para análise:"
+# Check of nifti files of the indicated Subjects
+echo
+echo "Searching for neuroimaging files:"
 a=0
-for j in ${!ID[@]}; do 
-  echo -n "${ID[j]}  ... " 
-  file=$(find . -name "T1.${ID[j]}.nii")
-  if [ ! -z "$file"  ]; then
-    printf "T1" 
-    else
-    printf "(T1 não encontrado)"; a=$((a + 1))
-  fi
-  file=$(find . -name "RS.${ID[j]}.nii")
-  if [ ! -z "$file" ]; then 
-    printf " RS" 
-  else
-  printf " (RS não encontrado)"; a=$((a + 1))
-  fi
-  printf "\n"
+for v in ${VID[@]}; do 
+	echo -n "${v%%;*} V${v##*;}  ... " 
+	file=$(grep "${v}" $subs | cut -d ";" -f 3 | xargs find . -name)
+	if [ ! -z "$file"  ]; then
+		printf "T1" 
+	else
+		printf "(T1 not found)"; a=$((a + 1))
+	fi
+	file=$(grep "${v}" $subs | cut -d ";" -f 4 | xargs find . -name)
+	if [ ! -z "$file" ]; then 
+		printf " RS" 
+	else
+		printf " (RS not found)"; a=$((a + 1))
+	fi
+	file=$(grep "${v}" $subs | cut -d ";" -f 5 | xargs find . -name)
+	if [ ! -z "$file" ]; then 
+		printf " log" 
+	else
+		printf " (log not found)"; a=$((a + 1))
+	fi
+	file=$(grep "${v}" $subs | cut -d ";" -f 6 | xargs find . -name)
+	if [ ! -z "$file"  ]; then
+		printf " mask" 
+	else
+		printf " (mask not found)"; a=$((a + 1))
+	fi
+	printf "\n"
 done
 echo
+
 if [ ! $a -eq 0 ]; then
-    echo "Imagens não foram encontradas ou não estão nomeadas conforme o padrão: RS.<ID>.nii e T1.<ID>.nii" | fold -s ; echo
+    echo "Some images were not found. Aborting..." | fold -s ; echo
     exit
 fi
 
-# BUSCANDO O TEMPLATE
+# Search for the template in local folder
 temp=$(find . -name "$template*")
 if [ ! -z "$temp" ];then
   [ ! -d template ] && mkdir template 
@@ -456,8 +306,8 @@ if [ ! -z "$temp" ];then
     mv $tp template 2> /dev/null
   done
   fi
-else
-  echo "Template $template não encontrado. Buscando no afni.."
+else 
+  echo "Template $template not found. Searching on afni folder"
   cp /usr/share/afni/atlases/"$template"* . 2> /dev/null
   temp=$(find . -name "$template*")
   if [ ! -z "$temp" ];then
@@ -466,585 +316,367 @@ else
       mv $tp template 2> /dev/null
     done
   else
-    echo "Não encontrado"
+    echo "Template not found"
     exit
   fi
 fi
 
-# Preparando para iniciar a análise
-[ -d DATA ] || mkdir DATA
-[ -d OUTPUT ] || mkdir OUTPUT
+path=($PWD)
 
-unset a; a=0
-for j in ${!ID[@]}; do
-  [ -d DATA/${ID[j]} ] || mkdir DATA/${ID[j]} 
-  [ -d OUTPUT/${ID[j]} ] || mkdir OUTPUT/${ID[j]} 
-  for ii in T1.${ID[j]}.nii RS.${ID[j]}.nii RS.${ID[j]}.log; do
-    [ ! -f DATA/${ID[j]}/$ii ] && wp=$(find . -name $ii) && rp=DATA/${ID[j]}/$ii && mv $wp $rp 2> /dev/null && a=$((a + 1))
-  done
-done
-if [ ! $a -eq 0 ]; then 
-  echo "O caminho das imagens não está conformado com o padrâo: DATA/<ID>/T1.<ID>.nii"
-  echo "Conformando..."
-  echo
-fi
+# Create folder for the processing steps
+[ -d PREPROC ] || mkdir PREPROC
 
-pwd=($PWD)
 
 #: DATA INPUT ====================================================================
-for j in ${!ID[@]}; do
-  out[$j]=RS.${ID[j]}.nii
-  steppath[$j]=DATA/${ID[j]}/preproc.results/
-  [ ! -d ${steppath[$j]} ] && mkdir -p ${steppath[$j]} 2> /dev/null
-  [ ! -f ${steppath[$j]}RS.${ID[j]}.nii ] && cp DATA/${ID[j]}/RS.${ID[j]}.nii ${steppath[$j]} 2> /dev/null
-  [ ! -f ${steppath[$j]}T1.${ID[j]}.nii ] && cp DATA/${ID[j]}/T1.${ID[j]}.nii ${steppath[$j]} 2> /dev/null
-  [ ! -f ${steppath[$j]}RS.${ID[j]}.log ] && cp DATA/${ID[j]}/RS.${ID[j]}.log ${steppath[$j]} 2> /dev/null
-done
 
-# Iniciar Relatório de qualidade
-for j in ${!ID[@]}; do
-cd ${steppath[$j]}
-if [ ! -f "report.${ID[j]}.html" ]; then
-cat << EOF > report.${ID[j]}.html
-<HTML>
-<HEAD>
-<TITLE>Relatório de Qualidade de ${ID[j]}</TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</HEAD> 
-<body>
-<h1>Relatório de Controle de Qualidade -- ${ID[j]}</h1>
-<p>&nbsp;</p>
-<!--index-->
-<h3>Conteúdo:</h3>
-<ul>
-<li><h3><a href="#qc1">QC1 - Imagem RS raw</a></h3></li>
-<li><h3><a href="#qc2">QC2 - Imagem T1 raw</a></h3></li>
-<li><h3><a href="#qc3">QC3 - RS Motion Correction</a></h3></li>
-<li><h3><a href="#qc4">QC4 - T1 vc. SS mask</a></h3></li>
-<li><h3><a href="#qc5">QC5 - Checagem de alinhamento T1 vs. RS</a></h3></li>
-<li><h3><a href="#qc6">QC6 - Checagem de normalização T1 e RS vs. MNI</a></h3></li>
-<li><h3><a href="#qc7">QC7 - Checagem de segmentação</a></h3></li>
-<li><h3><a href="#qc8">QC8 - Imagem RS final</a></h3></li>
-</ul>
-<!--index-->
-<p>&nbsp;</p>
-<center>
-<!--QC1-->
-<!--QC2-->
-<!--QC3-->
-<!--QC4-->
-<!--QC5-->
-<!--QC6-->
-<!--QC7-->
-<!--QC8-->
-<!--QC9-->
-<!--QC10-->
-<!--QC11-->
-<!--QC12-->
-</center>
-</body>
-</HTML>
-EOF
-fi
-cd $pwd
-done
-
-
-#: QC1 ========================================================================
-printf "=============================QC 1==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 1"                                    \
-        -i "${out[$j]}"      \
-        -o "m.outcount.${ID[j]}.jpg outcount.${ID[j]}.1D m.axial.RS.${ID[j]}.png m.slices.RS.${ID[j]}.png m.3d.${ID[j]}.mp4"              
-if [ $? -eq 0 ]; then
-
-./bin/qc1.sh
-
-fi; qc.close
-done
-input.error
-echo
-
-#: QC2 ========================================================================
-printf "=============================QC 2==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 2"                                    \
-        -i "T1.${ID[j]}.nii"      \
-        -o "m.slices.T1.${ID[j]}.mp4  m.slices.T1.${ID[j]}.png"              
-if [ $? -eq 0 ]; then
-
-./bin/qc2.sh
- 
-fi; qc.close
-done
-input.error
-echo 
-
-#: AZTEC ========================================================================
-if [ $aztec -eq 1 ]; then
-  printf "=============================AZTEC==================================\n\n"
-  for j in ${!ID[@]}; do
-    inputs "${out[$j]}" "RS.${ID[j]}.log"
-    outputs "aztec.RS.${ID[j]}+orig" "aztecX.1D"
-    echo -n "${ID[j]}> "
-    if open.node "AZTEC"; then
-  
-./bin/aztec.sh
-
-  fi; close.node
-  done
-  input.error
-  echo
-fi
-
-#: SLICE TIMING CORRECTION =======================================================
-printf "=======================SLICE TIMING CORRECTION====================\n\n"
-for j in ${!ID[@]}; do
-  inputs "${out[$j]}"
-  outputs "tshift.RS.${ID[j]}+orig"
-  echo -n "${ID[j]}> "
-  if open.node "SLICE TIMING CORRECTION"; then
-   ./bin/tshift.sh
-  fi; close.node
-done
-input.error
-echo
-
-#: MOTION CORRECTION ============================================================
-printf "\n=========================MOTION CORRECTION=======================\n\n"
-for j in ${!ID[@]}; do
-  inputs "${out[$j]}"
-  outputs "volreg.RS.${ID[j]}+orig" "mc.${ID[j]}.1d"
-  echo -n "${ID[j]}> "
-  if open.node "MOTION CORRECTION"; then
-   
-./bin/volreg.sh
-
-  fi; close.node
-done
-input.error
-echo
-
-#: QC3 ========================================================================
-printf "=============================QC 3==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 3"                                    \
-        -i "T1.${ID[j]}.nii"      \
-        -o "m.mcplot.${ID[j]}.jpg"              
-if [ $? -eq 0 ]; then
-
-./bin/qc-volreg.sh
-
-fi; qc.close
-done
-input.error
-echo
-
-[ $break -eq 1 ] && echo "Interrompendo script a pedido do usuário" && exit
-
-#: DEOBLIQUE RS ============================================================
-printf "\n=========================DEOBLIQUE RS=======================\n\n"
-for j in ${!ID[@]}; do
-  inputs "${out[$j]}"
-  outputs "warp.RS.${ID[j]}+orig"
-  echo -n "${ID[j]}> "
-  if open.node "DEOBLIQUE RS"; then
-
-./bin/3dwarp-rs.sh
-
-  fi; close.node
-  toRS
-done
-input.error
-echo
-
-#: DEOBLIQUE T1 ============================================================
-printf "\n=========================DEOBLIQUE T1=======================\n\n"
-pwd=($PWD)
-for j in ${!ID[@]}; do
-  inputs "T1.${ID[j]}.nii"
-  outputs "warp.T1.${ID[j]}+orig"
-  echo -n "${ID[j]}> "
-  if open.node "DEOBLIQUE T1"; then
-
-./bin/3dwarp-t1.sh
-
-  fi; close.node
-  toT1
-done 
-input.error
-echo
-
-#: HOMOGENIZE RS ============================================================
-printf "\n=========================HOMOGENIZE RS=======================\n\n"
-for j in ${!ID[@]}; do 
-  fromRS
-  inputs "${out[$j]}"
-  outputs "zeropad.RS.${ID[j]}+orig"
-  echo -n "${ID[j]}> "
-  if open.node "HOMOGENIZE RS"; then
-./bin/3dzeropad.sh
-  fi; close.node
-  toRS
-done
-input.error
-echo
-
-#: REORIENT T1 TO TEMPLATE ================================================
-printf "\n====================REORIENT T1 TO TEMPLATE===================\n\n"
-for j in ${!ID[@]}; do
-  fromT1
-  get.info1 "template/$template"
-  inputs "${out[$j]}"
-  outputs "resample.T1.${ID[j]}+orig"
-  echo -n "${ID[j]}> "
-  if open.node "REORIENT T1 TO TEMPLATE"; then
-    3dresample \
-./bin/3dresample.sh
-  fi; close.node
-  toT1
-done 
-input.error
-echo
-
-#: REORIENT RS TO TEMPLATE ================================================
-printf "\n====================REORIENT RS TO TEMPLATE===================\n\n"
-for j in ${!ID[@]}; do
-  fromRS
-  get.info1 "template/$template"
-  inputs "${out[$j]}"
-  outputs "resample.RS.${ID[j]}+orig"
-  echo -n "${ID[j]}> "
-  if open.node "REORIENT RS TO TEMPLATE"; then
-./bin/3dresample.sh
-  fi; close.node
-  toRS
-done 
-input.error
-echo
-
-#: Align center T1 TO TEMPLATE ================================================
-printf "\n====================Align center T1 TO TEMPLATE===================\n\n"
-for j in ${!ID[@]}; do
-  fromT1
-  inputs "${out[$j]}"
-  outputs "resample.T1.${ID[j]}_shft+orig" "resample.T1.${ID[j]}_shft.1D"
-  echo -n "${ID[j]}> "
-  if open.node "Align center T1 TO TEMPLATE"; then
-./bin/align-t1temp.sh
-  fi; close.node
-done 
-input.error
-echo
-
-#: Unifize T1 ===========================================================
-printf "\n=========================Unifize T1========================\n\n"
-for j in ${!ID[@]}; do
-  inputs "${out[$j]}"
-  outputs "unifize.T1.${ID[j]}+orig"
-  echo -n "${ID[j]}> "
-  if open.node "Unifize T1"; then
-./bin/3dunifize.sh
-  fi; close.node
-done 
-input.error
-echo
-
-#: SKULLSTRIP ===============================================================
-if [ $bet -eq 0 ]; then
-  echo "O SKULL STRIP DEVE SER FEITO MANUALMENTE. USE COMO BASE O ARQUIVO QUE ESTÁ NA PASTA OUTPUT/${ID[j]}/manual_skullstrip. NOMEIE O ARQUIVO mask.T1.<SUBID>.nii.gz e salve no diretório base." | fold -s
-  for j in ${!ID[@]}; do
-    inputs "${out[$j]}"
-    outputs "mask.T1.${ID[j]}.nii.gz"
-    3dAFNItoNIFTI ${in[$j]} unifize.T1.${ID[j]}.nii
-    [ ! -d "$pwd/OUTPUT/${ID[j]}/manual_skullstrip" ] && mkdir -p $pwd/OUTPUT/${ID[j]}/manual_skullstrip
-    cp DATA/${ID[j]}/${ID[j]}.results/unifize.T1.${ID[j]}.nii OUTPUT/${ID[j]}/manual_skullstrip 2> /dev/null
-    ss=$(find . -name "mask.T1.${ID[j]}*")
-    mv $ss ./DATA/${ID[j]}/${ID[j]}.results 2> /dev/null
-  done
-else
-  FSLDIR=/usr/share/fsl
-  #: BET ============================================================
-  printf "\n============================BET============================\n\n"
-  pwd=($PWD)
-  for j in ${!ID[@]}; do
-    inputs "${out[$j]}"
-    outputs "mask.T1.${ID[j]}.nii.gz"
-    echo -n "${ID[j]}> "
-    if open.node "BET"; then
-
-./bin/optibet.sh
-
-    fi; close.node
-  done 
-  input.error
-  echo
-fi 
-
-#: QC4 ========================================================================
-printf "=============================QC 4==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 4"                                    \
-        -i "unifize.T1.${ID[j]}.nii"      \
-        -o "m.over.SS.T1.${ID[j]}.png m.overz.T1.${ID[j]}.mp4 m.overy.T1.${ID[j]}.mp4 m.overx.T1.${ID[j]}.mp4"              
-if [ $? -eq 0 ]; then
-./bin/qc-bet.sh
-fi; qc.close
-done
-input.error
-
-
-
-[ $break -eq 2 ] && echo "Interrompendo script a pedido do usuário" && exit
-
-#: APPLY MASK TO T1 ===========================================================
-printf "\n=========================APPLY MASK T1========================\n\n"
-for j in ${!ID[@]}; do
-  inputs "${out[$j]}" "unifize.T1.${ID[j]}+orig"
-  outputs "SS.T1.${ID[j]}+orig"
-  echo -n "${ID[j]}> "
-  if open.node "APPLY MASK T1"; then
-./bin/ssmask.sh
-  fi; close.node
-  toT1
-done 
-input.error
-echo
-
-#: ALIGN CENTER fMRI-T1 ======================================================
-printf "\n=======================ALIGN CENTER fMRI-T1=====================\n\n"
-for j in ${!ID[@]}; do
-  fromRS
-  inputs "${out[$j]}" "SS.T1.${ID[j]}+orig"
-  outputs "resample.RS.${ID[j]}_shft+orig" "resample.RS.${ID[j]}_shft.1D"
-  echo -n "${ID[j]}> "
-  if open.node "ALIGN CENTER fMRI-T1"; then
-  ./bin/align-rst1.sh
-  fi; close.node
-  toRS
-done 
-input.error
-echo
-
-#: COREGISTER fMRI-T1 ======================================================
-printf "\n=======================COREGISTER fMRI-T1=====================\n\n"
-for j in ${!ID[@]}; do
-  inputs "${out[$j]}" "SS.T1.${ID[j]}+orig"
-  outputs "SS.T1.${ID[j]}_al+orig" "SS.T1.${ID[j]}_al_mat.aff12.1D"
-  echo -n "${ID[j]}> "
-  if open.node "COREGISTER fMRI-T1"; then
-./bin/coreg.sh
-  fi; close.node
-done 
-input.error
-echo
-
-#: QC5 ========================================================================
-printf "=============================QC 5==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 5"                                    \
-        -i "resample.RS.${ID[j]}_shft+orig SS.T1.${ID[j]}_al+orig"      \
-        -o "m.over.SS.T1.${ID[j]}_al.jpg m.over2.SS.T1.${ID[j]}_al.jpg"              
-if [ $? -eq 0 ]; then
-
-./bin/qc-coreg.sh
-
-fi; qc.close
-done
-input.error
-
-[ $break -eq 3 ] && echo "Interrompendo script a pedido do usuário" && exit
-
-#: NORMALIZE T1 TO TEMPLATE ======================================================
-printf "\n=======================NORMALIZE T1 TO TEMPLATE=====================\n\n"
-for j in ${!ID[@]}; do 
-  inputs "${out[$j]}"
-  outputs "MNI.T1.${ID[j]}" "MNI.T1.${ID[j]}_WARP" 
-  cp.inputs "${template}.HEAD" "${template}.BRIK.gz"
-  echo -n "${ID[j]}> "
-  if open.node "NORMALIZE T1 TO TEMPLATE"; then
-
-./bin/norm-t1.sh
-
-   fi; close.node
-  toT1
-done 
-input.error
-echo
-
-#: fMRI SPATIAL NORMALIZATION ======================================================
-printf "\n=======================fMRI SPATIAL NORMALIZATION=====================\n\n"
-for j in ${!ID[@]}; do
-  fromRS
-  inputs "${out[$j]}" "${out_2[$j]}+tlrc"
-  outputs "MNI.RS.${ID[j]}+tlrc"
-  echo -n "${ID[j]}> "
-  if open.node "fMRI SPATIAL NORMALIZATION"; then
-
-./bin/norm-rs.sh
-
-  fi; close.node
-  toRS
-done 
-input.error
-echo
-
-#: QC6 ========================================================================
-
-printf "=============================QC 6==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 6"                                    \
-        -i "MNI.RS.${ID[j]}+tlrc MNI.T1.${ID[j]}+tlrc"      \
-        -o "m.overa.MNI.${ID[j]}.jpg m.overb.MNI.${ID[j]}.jpg m.overc.MNI.${ID[j]}.jpg m.overa2.MNI.${ID[j]}.jpg m.overb2.MNI.${ID[j]}.jpg m.overc2.MNI.${ID[j]}.jpg"              
-if [ $? -eq 0 ]; then
-
-./bin/qc-norm.sh
-
-fi; qc.close
-done
-input.error
-
-[ $break -eq 4 ] && echo "Interrompendo script a pedido do usuário" && exit
-
-#: T1 SEGMENTATION ======================================================
-printf "\n=======================T1 SEGMENTATION=====================\n\n"
-for j in ${!ID[@]}; do
-  fromT1
-  inputs "SS.T1.${ID[j]}_al+orig"
-  outputs "${ID[j]}.CSF+orig" "${ID[j]}.WM+orig"
-  echo -n "${ID[j]}> "
-  if open.node "T1 SEGMENTATION"; then
- 
-./bin/seg-t1.sh
-
-  fi; close.node
-done 
-input.error
-echo
-
-# RS SEGMENTATION ======================================================
-printf "\n=======================RS SEGMENTATION=====================\n\n"
-for j in ${!ID[@]}; do
-  inputs "resample.RS.${ID[j]}_shft+orig" "${out[$j]}" "${out_2[$j]}"
-  outputs "${ID[j]}.CSF.signal.1d" "${ID[j]}.WM.signal.1d"
-  echo -n "${ID[j]}> "
-  if open.node "RS SEGMENTATION"; then
- 
-./bin/seg-rs.sh
-
-  fi; close.node
-done 
-input.error
-echo
-
-#: QC7 ========================================================================
-printf "=============================QC 7==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 7"                                    \
-        -i "${ID[j]}.WM+orig ${ID[j]}.CSF+orig SS.T1.${ID[j]}_al+orig"      \
-        -o "m.over.seg.${ID[j]}.jpg m.over2.seg.${ID[j]}.jpg"              
-if [ $? -eq 0 ]; then
-
-./bin/qc-seg.sh
-
-fi; qc.close
-done
-input.error
-
-[ $break -eq 5 ] && echo "Interrompendo script a pedido do usuário" && exit
-
-#: RS FILTERING ======================================================
-printf "\n=======================RS FILTERING=====================\n\n"
-for j in ${!ID[@]}; do
-  fromRS
-  inputs "${out[$j]}" "mc.${ID[j]}.1d" "${ID[j]}.CSF.signal.1d" "${ID[j]}.WM.signal.1d"
-  outputs "bandpass.RS.${ID[j]}+tlrc" 
-  echo -n "${ID[j]}> "
-  if open.node "RS FILTERING"; then
-
-./bin/3dbandpass.sh
-
-  fi; close.node
-done 
-input.error
-echo
-
-#: RS SMOOTHING ======================================================
-printf "\n=======================RS SMOOTHING=====================\n\n"
-for j in ${!ID[@]}; do
-  inputs "${out[$j]}" 
-  outputs "merge.RS.${ID[j]}+tlrc"
-  echo -n "${ID[j]}> "
-  if open.node "RS SMOOTHING"; then
-
-./bin/3dmerge.sh
-
-  fi; close.node
-done 
-input.error
-echo
-
-if [ $censor -eq 1 ]; then
-#: RS MOTIONCENSOR ======================================================
-printf "\n=======================RS MOTIONCENSOR=====================\n\n"
-for j in ${!ID[@]}; do
-  inputs "${out[$j]}" "mc.${ID[j]}.1d" "RS.${ID[j]}.nii"
-  outputs "censor.RS.${ID[j]}+tlrc"
-  echo -n "${ID[j]}> "
-  if open.node "RS MOTIONCENSOR"; then
-
-./bin/motioncensor.sh
-
-  fi; close.node
-done 
-input.error
-echo
-fi
-
-#: QC8 ========================================================================
-printf "=============================QC 8==================================\n\n"
-for j in ${!ID[@]}; do
-qc.open -e "QC 8"                                    \
-        -i "${out[$j]}"      \
-        -o "m.final.txt"              
-if [ $? -eq 0 ]; then
-
-./bin/qc-mc.sh
-
-fi; qc.close
-done
-input.error
-echo 
-
-#: DATA OUTPUT ===================================================================
-printf "\n=======================DATA OUTPUT=====================\n\n"
-for j in ${!ID[@]}; do
-  inputs "${out[$j]}" "SS.T1.${ID[j]}+orig" "preproc.${ID[j]}.log" "report.${ID[j]}.html"
-  outputs "preproc.RS.${ID[j]}.nii" "SS.T1.${ID[j]}.nii" 
-  echo -n "${ID[j]}> "
-  if open.node "DATA OUTPUT"; then
-( 3dAFNItoNIFTI -prefix ${out[j]} ${in[j]}
-  3dAFNItoNIFTI -prefix ${out_2[j]} ${in_2[j]} ) &>> preproc.${ID[j]}.log
-  fi; close.node
-( rm -r OUTPUT/${ID[j]}/manual_skullstrip 
-  file=$(find . -name "${out[j]}")
-  cp -rf $file $pwd/OUTPUT/${ID[j]}/
-  file=$(find . -name "${out_2[j]}")
-  cp -rf $file $pwd/OUTPUT/${ID[j]}/  
-  file=$(find . -name "${in_3[j]}")
-  cp -rf $file $pwd/OUTPUT/${ID[j]}/ 
-  file=$(find . -name "${in_4[j]}")
-  cp -rf $file $pwd/OUTPUT/${ID[j]}/
-  file=$(find . -name "m.*${ID[j]}*")
-  [ ! -d $pwd/OUTPUT/${ID[j]}/report.media ] && mkdir $pwd/OUTPUT/${ID[j]}/report.media
-  cp -rf ${file[@]} $pwd/OUTPUT/${ID[j]}/report.media
-  sed -i "s/m\./report.media\/m\./g" $pwd/OUTPUT/${ID[j]}/${in_4[j]}
-   ) &> /dev/null
-done 
-input.error
-echo
-
-
+# Start big loop
+for v in ${VID[@]}; do
+	# Create loop variables
+	cd $path
+	id=${v%%;*}
+	vis=V${v##*;}
+	ppath=$path/PREPROC/$id
+	file_t1=$(grep "${v}" $subs | cut -d ";" -f 3 2> /dev/null)
+	file_t12=${file_t1%%.nii}
+	file_rs=$(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null)
+	file_rs2=${file_rs%%.nii}
+	file_log=$(grep "${v}" $subs | cut -d ";" -f 5 2>  /dev/null)
+	file_mask=$(grep "${v}" $subs | cut -d ";" -f 6 2> /dev/null)
+	log=preproc_${id}_${vis}.log
+
+	# Create folders
+  	[ -d $ppath ] || mkdir $ppath
+
+	
+	echo
+	echo "==================================================================="
+	echo SUBJECT $id
+	echo VISIT $vis
+	echo "==================================================================="
+	echo 
+	
+	S=${startS:-0}
+	until [ "$S" = "${stopS:-21}" ]; do
+		case $S in
+			0 ) #: S0 - PREPARE ==========================================
+				# Copy input files to processing folder
+				echo "Copying input files to $ppath"
+				for ii in $file_t1 $file_rs $file_log $file_mask; do
+					echo "		$ii" # | tee &> $log
+					[ ! -f $ppath/$ii ] && \
+					wp=$(find . -name $ii 2> /dev/null) && \
+					rp=$ppath/$ii && \
+					cp $wp $rp 2> /dev/null
+			 	done
+				echo
+				S=1
+				;;
+			1 ) #: S1 - AZTEC ==========================================
+				# Declare inputs (array "in") and outputs (array "out")
+				unset in out
+				in=$file_rs
+				in[1]=$file_log
+				out=aztec_${file_rs2}+orig.HEAD
+				out[1]=aztec_${file_rs2}+orig.BRIK
+				out[2]=aztecX.1D
+				# Run modular script
+				echo -n "S1 - AZTEC> "
+				node "../../bin/aztec.sh" "2"
+				;;
+			2 ) #: SLICE TIMING CORRECTION =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=aztec_${file_rs2}+orig.HEAD
+				in[1]=aztec_${file_rs2}+orig.BRIK
+				out=tshift_${file_rs2}+orig.HEAD
+				out[1]=tshift_${file_rs2}+orig.BRIK
+				# Run modular script
+				echo -n "S2 - STC> "
+				node "../../bin/tshift.sh" "3" 
+				;;
+			3 ) #: MOTION CORRECTION =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=tshift_${file_rs2}+orig.HEAD
+				in[1]=tshift_${file_rs2}+orig.BRIK
+				out=volreg_${file_rs2}+orig.HEAD
+				out[1]=volreg_${file_rs2}+orig.BRIK
+				out[2]=volreg_${file_rs2}.1D
+				# Run modular script on
+				echo -n "S3 - MC> "
+	  			node "../../bin/volreg.sh" "QC1"
+				;;
+			QC1 ) #: QC1 - MOTION CORRECTION =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=volreg_${file_rs2}.1D
+				out=qc1_m1_${file_rs2}.jpg
+				# Run modular script
+				echo -n "QC1 - MC> "
+				qcnode "../../bin/qc-volreg.sh" "4"
+				;;
+		  	4 ) #: S4 - DEOBLIQUE =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=volreg_${file_rs2}+orig.HEAD
+				in[1]=volreg_${file_rs2}+orig.BRIK
+				out=warp_${file_rs2}+orig.HEAD
+				out[1]=warp_${file_rs2}+orig.BRIK
+				# Run modular script
+				echo -n "S4 - DEOB> "
+				node "../../bin/3dwarp.sh" "5"
+				;;
+			5 ) #: S4 - HOMOGENIZE RS =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=warp_${file_rs2}+orig.HEAD
+				in[1]=warp_${file_rs2}+orig.BRIK		
+				out=zeropad_${file_rs2}+orig.HEAD
+				out[1]=zeropad_${file_rs2}+orig.BRIK
+				# Run modular script
+				echo -n "S5 - ZPAD> "
+				node "../../bin/3dzeropad.sh" "6"
+				;;
+			6 ) #: S6 - REORIENT RS TO TEMPLATE =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=zeropad_${file_rs2}+orig.HEAD
+				in[1]=zeropad_${file_rs2}+orig.BRIK		
+				out=resample_${file_rs2}+orig.HEAD
+				out[1]=resample_${file_rs2}+orig.BRIK
+				# Run modular script
+				echo -n "S6 - RESAM> "
+	  			node "../../bin/3dresample.sh" "7"
+				;;
+			7 ) #: S7 - SSMASK =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=${file_t1}
+				in[1]=${file_mask}
+				out=SS_${file_t12}+orig.HEAD
+				out[1]=SS_${file_t12}+orig.BRIK
+				# Run modular script
+				echo -n "S7 - SSMASK> "
+				node "../../bin/ssmask.sh" "8"
+				;;
+			8 ) #: S8 - DEOBLIQUE T1 =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=SS_${file_t12}+orig.HEAD
+				in[1]=SS_${file_t12}+orig.BRIK
+				out=warp_${file_t12}+orig.HEAD
+				out[1]=warp_${file_t12}+orig.BRIK
+				# Run modular script
+				echo -n "S8 - DEOB> "
+				node "../../bin/3dwarp.sh" "9"
+				;;
+			9 ) #: S9 - REORIENT T1 TO TEMPLATE =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=warp_${file_t12}+orig.HEAD
+				in[1]=warp_${file_t12}+orig.BRIK
+				out=resample_${file_t12}+orig.HEAD
+				out[1]=resample_${file_t12}+orig.BRIK
+				# Run modular script
+				echo -n "S9 - RESAM> "
+	  			node "../../bin/3dresample.sh" "10"
+				;;
+			10 ) #: S10 - Align center T1 TO TEMPLATE =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=resample_${file_t12}+orig.HEAD
+				in[1]=resample_${file_t12}+orig.BRIK
+				in[3]=../../template/$template.BRIK.gz
+				out=resample_${file_t12}_shft+orig.HEAD
+				out[1]=resample_${file_t12}_shft+orig.BRIK
+				out[2]=resample_${file_t12}_shft.1D
+				# Run modular script
+				echo -n "S10 - ALT1TEMP> "
+				node "../../bin/align-t1temp.sh" "11"
+				;;
+			11 ) #: S11 - Unifize T1 =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=resample_${file_t12}_shft+orig.HEAD
+				in[1]=resample_${file_t12}_shft+orig.BRIK
+				out=unifize_${file_t12}+orig.HEAD
+				out[1]=unifize_${file_t12}+orig.BRIK
+				# Run modular script
+				echo -n "S11 - UNIFIZE> "
+	  			node "../../bin/3dunifize.sh" "12"
+				;;
+			12 ) #: S12 - ALIGN CENTER fMRI-T1 =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=unifize_${file_t12}+orig.HEAD
+				in[1]=unifize_${file_t12}+orig.BRIK
+				in[2]=resample_${file_rs2}+orig.HEAD
+				in[3]=resample_${file_rs2}+orig.BRIK
+				out=resample_${file_rs2}_shft+orig.HEAD
+				out[1]=resample_${file_rs2}_shft+orig.HEAD
+				# Run modular script
+				echo -n "S12 - ALRST1> "
+				node "../../bin/align-rst1.sh" "13"
+				;;
+			13 ) #: S13 - COREGISTER fMRI-T1 =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=resample_${file_rs2}_shft+orig.HEAD
+				in[1]=resample_${file_rs2}_shft+orig.HEAD
+				in[2]=unifize_${file_t12}+orig.HEAD
+				in[3]=unifize_${file_t12}+orig.BRIK
+				out=unifize_${file_t12}_al+orig.HEAD
+				out[1]=unifize_${file_t12}_al+orig.BRIK
+				out[2]=unifize_${file_t12}_al_mat.aff12.1D
+				# Run modular script
+				echo -n "S13 - COREG> "
+	  			node "../../bin/coreg.sh" "QC2"
+				;;
+			QC2 ) #: QC2 - COREG QC  =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=resample_${file_rs2}_shft+orig.HEAD
+				in[1]=resample_${file_rs2}_shft+orig.BRIK
+				in[2]=unifize_${file_t12}_al+orig.HEAD
+				in[3]=unifize_${file_t12}_al+orig.BRIK
+				out=qc2_m1_${file_t12}.jpg
+				out[1]=qc2_m2_${file_t12}.jpg
+				# Run modular script
+				echo -n "QC2 - COREG> "
+	  			qcnode "../../bin/qc-coreg.sh" "14"
+				;;
+			14 ) #: S14 - NORMALIZE T1 to TEMP =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=unifize_${file_t12}_al+orig.HEAD
+				in[1]=unifize_${file_t12}_al+orig.BRIK
+				in[2]=../../template/$template.BRIK.gz
+				out=MNI_${file_t12}+tlrc.HEAD
+				out[1]=MNI_${file_t12}+tlrc.BRIK
+				out[2]=MNI_${file_t12}_WARP+tlrc.HEAD
+				out[3]=MNI_${file_t12}_WARP+tlrc.BRIK
+				out[4]=MNI_${file_t12}_Allin.aff12.1D
+				out[5]=MNI_${file_t12}_Allin.nii
+				# Run modular script
+				echo -n "S14 - NORMT1> "
+	  			node "../../bin/norm-t1.sh" "15"
+				;;
+			15 ) #: S15 - NORMALIZE fMRI to T1 WARP =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=resample_${file_rs2}_shft+orig.HEAD
+				in[1]=resample_${file_rs2}_shft+orig.BRIK
+				in[2]=MNI_${file_t12}_WARP+tlrc.HEAD
+				in[3]=MNI_${file_t12}_WARP+tlrc.BRIK
+				in[4]=../../template/$template.BRIK.gz
+				out=MNI_${file_rs2}+tlrc.HEAD
+				out[1]=MNI_${file_rs2}+tlrc.BRIK
+				# Run modular script
+				echo -n "S15 - NORMRS> "
+				node "../../bin/norm-rs.sh" "QC3"
+				;;
+			QC3 ) #: QC3 - NORMALIZATION =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=MNI_${file_rs2}+tlrc.HEAD
+				in[1]=MNI_${file_rs2}+tlrc.BRIK
+				in[2]=MNI_${file_t12}+tlrc.HEAD
+				in[3]=MNI_${file_t12}+tlrc.BRIK
+				in[4]=../../template/$template.BRIK.gz
+				out=qc3_m1_MNI_${file_t12}.jpg
+				out[1]=qc3_m2_MNI_${file_t12}.jpg
+				out[2]=qc3_m3_MNI_${file_t12}.jpg
+				out[3]=qc3_m4_MNI_${file_t12}.jpg
+				out[4]=qc3_m5_MNI_${file_t12}.jpg
+				out[5]=qc3_m6_MNI_${file_t12}.jpg
+				# Run modular script
+				echo -n "QC3 - NORM> "
+				qcnode "../../bin/qc-norm.sh" "16"
+				;;
+			16 ) #: S16 - T1 SEGMENTATION =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+ 				in=unifize_${file_t12}_al+orig.HEAD
+				in[1]=unifize_${file_t12}_al+orig.BRIK
+				out=CSF_${file_t12}+orig.HEAD
+				out[1]=CSF_${file_t12}+orig.BRIK
+				out[2]=WM_${file_t12}+orig.HEAD
+				out[3]=WM_${file_t12}+orig.BRIK
+				# Run modular script
+				echo -n "S16 - T1SEG> "
+				node "../../bin/seg-t1.sh" "17"
+				;;
+			17 ) #: S17 - RS SEGMENTATION  =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=resample_${file_rs2}_shft+orig.HEAD
+				in[1]=resample_${file_rs2}_shft+orig.BRIK
+				in[2]=CSF_${file_t12}+orig.HEAD
+				in[3]=CSF_${file_t12}+orig.BRIK
+				in[4]=WM_${file_t12}+orig.HEAD
+				in[5]=WM_${file_t12}+orig.BRIK
+				out=CSF_${file_t12}.signal.1D
+				out[1]=WM_${file_t12}.signal.1D
+				# Run modular script
+				echo -n "S17 - RSSEG> "
+				node "../../bin/seg-rs.sh" "QC4"
+				;;
+			QC4 ) #: QC4 - SEGMENTATION  =============================
+				unset in out
+				in=unifize_${file_t12}_al+orig.HEAD
+				in[1]=unifize_${file_t12}_al+orig.BRIK
+				in[2]=CSF_${file_t12}+orig.HEAD
+				in[3]=CSF_${file_t12}+orig.BRIK
+				in[4]=WM_${file_t12}+orig.HEAD
+				in[5]=WM_${file_t12}+orig.BRIK
+				out=mqc4_m1_${file_t12}.jpg
+				out[1]=qc4_m2_${file_t12}.jpg
+				# Run modular script
+				echo -n "QC4 - SEG> "
+				qcnode "../../bin/qc-seg.sh" "18"
+				;;
+			18 ) #: S18 - RS FILTERING  =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=MNI_${file_rs2}+tlrc.HEAD
+				in[1]=MNI_${file_rs2}+tlrc.BRIK
+				in[2]=volreg_${file_rs2}.1D
+				in[3]=CSF_${file_t12}.signal.1D
+				in[4]=WM_${file_t12}.signal.1D
+				out=bandpass_${file_rs2}+tlrc.HEAD
+				out[1]=bandpass_${file_rs2}+tlrc.BRIK
+				# Run modular script
+				echo -n "S18 - BPASS> "
+				node "../../bin/3dbandpass.sh" "19"
+				;;
+			19 ) #: S19 - RS SMOOTHING =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=bandpass_${file_rs2}+tlrc.HEAD
+				in[1]=bandpass_${file_rs2}+tlrc.BRIK
+				out=merge_${file_rs2}+tlrc.HEAD
+				out[1]=merge_${file_rs2}+tlrc.BRIK
+				# Run modular script
+				echo -n "S19 - MERGE> "
+				node "../../bin/3dmerge.sh" "20"
+				;;
+			20 ) #: S20 - RS MOTIONCENSOR  =============================
+				# Declare inputs (array "in") and outputs (array "out")				
+				unset in out
+				in=merge_${file_rs2}+tlrc.HEAD
+				in[1]=merge_${file_rs2}+tlrc.BRIK
+				in[2]=volreg_${file_rs2}.1D
+				in[3]=${file_rs}
+				out=censor_${file_rs2}+tlrc.HEAD
+				out[1]=censor_${file_rs2}+tlrc.HEAD
+				# Run modular script
+				echo -n "S20 - CENSOR> "
+				node "../../bin/motioncensor.sh" "21"
+				;;
+			esac
+		done
+	done
+exit
 
 
 #=================================================================================

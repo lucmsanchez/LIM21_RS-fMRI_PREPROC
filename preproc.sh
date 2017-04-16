@@ -941,8 +941,8 @@ for t in ${atlas[@]}; do
 			-inset ${in[2]} &>> $log
 		close.node
 	fi
-	[ ! -f "$PWD/template/$out" ] && cp $ppath/$out $PWD/template/$out  #&>> $log
-	[ ! -f "$PWD/template/${out[1]}" ] && cp $ppath/${out[1]} $PWD/template/${out[1]}  #&>> $log
+	[ ! -f "$PWD/template/$out" ] && cp $ppath/$out $PWD/template/$out  2>  /dev/null
+	[ ! -f "$PWD/template/${out[1]}" ] && cp $ppath/${out[1]} $PWD/template/${out[1]}  2>  /dev/null
 	echo
 
 # Start big loop

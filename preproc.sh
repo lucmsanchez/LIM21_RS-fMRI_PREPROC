@@ -1,57 +1,6 @@
 #!/usr/bin/env bash
 
-#: OLD CODE =============================================================
-
-## Iniciar Relatório de qualidade
-#for j in ${!ID[@]}; do
-#cd ${steppath[$j]}
-#if [ ! -f "report.${ID[j]}.html" ]; then
-#cat << EOF > report.${ID[j]}.html
-#<HTML>
-#<HEAD>
-#<TITLE>Relatório de Qualidade de ${ID[j]}</TITLE>
-#<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-#</HEAD> 
-#<body>
-#<h1>Relatório de Controle de Qualidade -- ${ID[j]}</h1>
-#<p>&nbsp;</p>
-#<!--index-->
-#<h3>Conteúdo:</h3>
-#<ul>
-#<li><h3><a href="#qc1">QC1 - Imagem RS raw</a></h3></li>
-#<li><h3><a href="#qc2">QC2 - Imagem T1 raw</a></h3></li>
-#<li><h3><a href="#qc3">QC3 - RS Motion Correction</a></h3></li>
-#<li><h3><a href="#qc4">QC4 - T1 vc. SS mask</a></h3></li>
-#<li><h3><a href="#qc5">QC5 - Checagem de alinhamento T1 vs. RS</a></h3></li>
-#<li><h3><a href="#qc6">QC6 - Checagem de normalização T1 e RS vs. MNI</a></h3></li>
-#<li><h3><a href="#qc7">QC7 - Checagem de segmentação</a></h3></li>
-#<li><h3><a href="#qc8">QC8 - Imagem RS final</a></h3></li>
-#</ul>
-#<!--index-->
-#<p>&nbsp;</p>
-#<center>
-#<!--QC1-->
-#<!--QC2-->
-#<!--QC3-->
-#<!--QC4-->
-#<!--QC5-->
-#<!--QC6-->
-#<!--QC7-->
-#<!--QC8-->
-#<!--QC9-->
-#<!--QC10-->
-#<!--QC11-->
-#<!--QC12-->
-#</center>
-#</body>
-#</HTML>
-#EOF
-#fi
-#cd $pwd
-#done
-
-
-#: PROCESS ARGUMENTS ====================================================
+#: PARSE ARGUMENTS ====================================================
 usage() {
     echo "ARGUMENTS:"
     echo " $0 --subjects <Subject ID>" 
@@ -74,8 +23,7 @@ case $key in
     shift # past argument
     ;;
 	-o|--stop)
-    arg="$2"
-	stopS=$((arg + 1))
+    stopS="$2"
     shift # past argument
     ;;
     *)
@@ -381,7 +329,15 @@ for v in ${VID[@]}; do
 				out[2]=aztecX.1D
 				# Run modular script
 				echo -n "S1 - AZTEC> "
-				node "../../bin/aztec.sh" "2"
+				open.node; 
+				if [ $? -eq 0 ]; then
+					../../lib/aztec.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=2 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=2
+				else
+					continue 2
+				fi
 				;;
 			2 ) #: SLICE TIMING CORRECTION =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -392,7 +348,19 @@ for v in ${VID[@]}; do
 				out[1]=tshift_${file_rs2}+orig.BRIK
 				# Run modular script
 				echo -n "S2 - STC> "
-				node "../../bin/tshift.sh" "3" 
+				open.node; 
+				if [ $? -eq 0 ]; then
+					3dTshift \
+						-tpattern seq+z \
+					  	-prefix ${out%%.*} \
+					  	-Fourier \
+					  	${in%%.*} &>> $log
+					close.node && S=3 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=3
+				else
+					continue 2
+				fi
 				;;
 			3 ) #: MOTION CORRECTION =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -404,7 +372,22 @@ for v in ${VID[@]}; do
 				out[2]=volreg_${file_rs2}.1D
 				# Run modular script on
 				echo -n "S3 - MC> "
-	  			node "../../bin/volreg.sh" "QC1"
+				open.node;
+				if [ $? -eq 0 ]; then
+					3dvolreg \
+						-prefix ${out%%.*} \
+						-base 100 \
+						-zpad 2 \
+						-twopass \
+						-Fourier \
+						-1Dfile ${out[2]} \
+						${in%%.*}   &>> $log
+					close.node && S=QC1 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=QC1
+				else
+					continue 2
+				fi
 				;;
 			QC1 ) #: QC1 - MOTION CORRECTION =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -413,7 +396,17 @@ for v in ${VID[@]}; do
 				out=qc1_m1_${file_rs2}.jpg
 				# Run modular script
 				echo -n "QC1 - MC> "
-				qcnode "../../bin/qc-volreg.sh" "4"
+				open.node; 
+				if [ $? -eq 0 ]; then
+					../../lib/qc-volreg.sh ${in[@]} ${out[@]} &>> $log
+					S=4
+					close.node || continue 1
+				elif [ $? -eq 1 ]; then
+					S=4
+				else
+					S=4
+					continue 1
+				fi
 				;;
 		  	4 ) #: S4 - DEOBLIQUE =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -424,7 +417,18 @@ for v in ${VID[@]}; do
 				out[1]=warp_${file_rs2}+orig.BRIK
 				# Run modular script
 				echo -n "S4 - DEOB> "
-				node "../../bin/3dwarp.sh" "5"
+				open.node;
+				if [ $? -eq 0 ]; then
+					3dWarp \
+						-deoblique \
+						-prefix  ${out%%.*} \
+						${in%%.*}  &>> $log
+					close.node && S=5 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=5
+				else
+					continue 2
+				fi
 				;;
 			5 ) #: S4 - HOMOGENIZE RS =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -435,7 +439,20 @@ for v in ${VID[@]}; do
 				out[1]=zeropad_${file_rs2}+orig.BRIK
 				# Run modular script
 				echo -n "S5 - ZPAD> "
-				node "../../bin/3dzeropad.sh" "6"
+				open.node;
+				if [ $? -eq 0 ]; then
+					3dZeropad \
+						-RL 90 \
+						-AP 90 \
+						-IS 60 \
+						-prefix ${out%%.*} \
+						${in%%.*} &>> $log
+					close.node && S=6 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=6
+				else
+					continue 2
+				fi
 				;;
 			6 ) #: S6 - REORIENT RS TO TEMPLATE =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -446,7 +463,18 @@ for v in ${VID[@]}; do
 				out[1]=resample_${file_rs2}+orig.BRIK
 				# Run modular script
 				echo -n "S6 - RESAM> "
-	  			node "../../bin/3dresample.sh" "7"
+				open.node;
+				if [ $? -eq 0 ]; then
+					3dresample \
+						-orient "RPI" \
+						-prefix ${out%%.*} \
+						-inset ${in%%.*} &>> $log
+					close.node && S=7 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=7
+				else
+					continue 2
+				fi
 				;;
 			7 ) #: S7 - SSMASK =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -457,7 +485,20 @@ for v in ${VID[@]}; do
 				out[1]=SS_${file_t12}+orig.BRIK
 				# Run modular script
 				echo -n "S7 - SSMASK> "
-				node "../../bin/ssmask.sh" "8"
+				open.node;
+				if [ $? -eq 0 ]; then
+					3dcalc \
+						-verbose \
+						-a        ${in} \
+						-b        ${in[1]} \
+						-expr     'a*abs(b-1)' \
+						-prefix   ${out%%.*} &>> $log
+					close.node && S=8 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=8
+				else
+					continue 2
+				fi
 				;;
 			8 ) #: S8 - DEOBLIQUE T1 =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -468,7 +509,18 @@ for v in ${VID[@]}; do
 				out[1]=warp_${file_t12}+orig.BRIK
 				# Run modular script
 				echo -n "S8 - DEOB> "
-				node "../../bin/3dwarp.sh" "9"
+				open.node;
+				if [ $? -eq 0 ]; then
+					3dWarp \
+						-deoblique \
+						-prefix  ${out%%.*} \
+						${in%%.*}  &>> $log
+					close.node && S=9 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=9
+				else
+					continue 2
+				fi
 				;;
 			9 ) #: S9 - REORIENT T1 TO TEMPLATE =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -479,20 +531,41 @@ for v in ${VID[@]}; do
 				out[1]=resample_${file_t12}+orig.BRIK
 				# Run modular script
 				echo -n "S9 - RESAM> "
-	  			node "../../bin/3dresample.sh" "10"
+				open.node;
+				if [ $? -eq 0 ]; then
+					3dresample \
+						-orient "RPI" \
+						-prefix ${out%%.*} \
+						-inset ${in%%.*} &>> $log
+					close.node && S=10 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=10
+				else
+					continue 2
+				fi
 				;;
 			10 ) #: S10 - Align center T1 TO TEMPLATE =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
 				in=resample_${file_t12}+orig.HEAD
 				in[1]=resample_${file_t12}+orig.BRIK
-				in[3]=../../template/$template.BRIK.gz
+				in[2]=../../template/$template.BRIK.gz
 				out=resample_${file_t12}_shft+orig.HEAD
 				out[1]=resample_${file_t12}_shft+orig.BRIK
 				out[2]=resample_${file_t12}_shft.1D
 				# Run modular script
 				echo -n "S10 - ALT1TEMP> "
-				node "../../bin/align-t1temp.sh" "11"
+				open.node;
+				if [ $? -eq 0 ]; then
+					   @Align_Centers \
+							-base ${in[2]} \
+							-dset ${in%%.*} &>> $log
+					close.node && S=11 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=11
+				else
+					continue 2
+				fi
 				;;
 			11 ) #: S11 - Unifize T1 =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -503,7 +576,17 @@ for v in ${VID[@]}; do
 				out[1]=unifize_${file_t12}+orig.BRIK
 				# Run modular script
 				echo -n "S11 - UNIFIZE> "
-	  			node "../../bin/3dunifize.sh" "12"
+				open.node;
+				if [ $? -eq 0 ]; then
+					   3dUnifize \
+							-prefix ${out%%.*} \
+							-input ${in%%.*}  &>> $log
+					close.node && S=12 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=12
+				else
+					continue 2
+				fi
 				;;
 			12 ) #: S12 - ALIGN CENTER fMRI-T1 =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -516,7 +599,18 @@ for v in ${VID[@]}; do
 				out[1]=resample_${file_rs2}_shft+orig.HEAD
 				# Run modular script
 				echo -n "S12 - ALRST1> "
-				node "../../bin/align-rst1.sh" "13"
+				open.node;
+				if [ $? -eq 0 ]; then
+					     @Align_Centers \
+							-cm \
+							-base ${in%%.*} \
+							-dset ${in[2]%%.*}  &>> $log
+					close.node && S=13 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=13
+				else
+					continue 2
+				fi
 				;;
 			13 ) #: S13 - COREGISTER fMRI-T1 =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -530,7 +624,22 @@ for v in ${VID[@]}; do
 				out[2]=unifize_${file_t12}_al_mat.aff12.1D
 				# Run modular script
 				echo -n "S13 - COREG> "
-	  			node "../../bin/coreg.sh" "QC2"
+				open.node;
+				if [ $? -eq 0 ]; then
+				     align_epi_anat.py \
+						-anat ${in[2]%%.*} \
+						-epi  ${in%%.*} \
+						-epi_base 100 \
+						-anat_has_skull no \
+						-volreg off \
+						-tshift off \
+						-deoblique off   &>> $log
+					close.node && S=QC2 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=QC2
+				else
+					continue 2
+				fi
 				;;
 			QC2 ) #: QC2 - COREG QC  =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -543,7 +652,17 @@ for v in ${VID[@]}; do
 				out[1]=qc2_m2_${file_t12}.jpg
 				# Run modular script
 				echo -n "QC2 - COREG> "
-	  			qcnode "../../bin/qc-coreg.sh" "14"
+				open.node; 
+				if [ $? -eq 0 ]; then
+					../../lib/qc-coreg.sh ${in[@]} ${out[@]} &>> $log
+					S=14
+					close.node || continue 1
+				elif [ $? -eq 1 ]; then
+					S=14
+				else
+					S=14
+					continue 1
+				fi
 				;;
 			14 ) #: S14 - NORMALIZE T1 to TEMP =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -559,7 +678,20 @@ for v in ${VID[@]}; do
 				out[5]=MNI_${file_t12}_Allin.nii
 				# Run modular script
 				echo -n "S14 - NORMT1> "
-	  			node "../../bin/norm-t1.sh" "15"
+				open.node;
+				if [ $? -eq 0 ]; then
+				     3dQwarp \
+					  -prefix ${out%%+*} \
+					  -blur 0 3 \
+					  -base ${in[2]} \
+					  -allineate \
+					  -source ${in%%.*}  &>> $log
+					close.node && S=15 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=15
+				else
+					continue 2
+				fi
 				;;
 			15 ) #: S15 - NORMALIZE fMRI to T1 WARP =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -573,7 +705,20 @@ for v in ${VID[@]}; do
 				out[1]=MNI_${file_rs2}+tlrc.BRIK
 				# Run modular script
 				echo -n "S15 - NORMRS> "
-				node "../../bin/norm-rs.sh" "QC3"
+				open.node;
+				if [ $? -eq 0 ]; then
+				     3dNwarpApply \
+						-source ${in%%.*} \
+						-nwarp ${in[2]%%.*} \
+						-master ${in[4]} \
+						-newgrid 3 \
+						-prefix ${out%%.*} &>> $log
+					close.node && S=QC3 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=QC3
+				else
+					continue 2
+				fi
 				;;
 			QC3 ) #: QC3 - NORMALIZATION =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -591,7 +736,17 @@ for v in ${VID[@]}; do
 				out[5]=qc3_m6_MNI_${file_t12}.jpg
 				# Run modular script
 				echo -n "QC3 - NORM> "
-				qcnode "../../bin/qc-norm.sh" "16"
+				open.node; 
+				if [ $? -eq 0 ]; then
+					../../lib/qc-norm.sh ${in[@]} ${out[@]} &>> $log
+					S=16
+					close.node || continue 1
+				elif [ $? -eq 1 ]; then
+					S=16
+				else
+					S=16
+					continue 1
+				fi
 				;;
 			16 ) #: S16 - T1 SEGMENTATION =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -604,7 +759,15 @@ for v in ${VID[@]}; do
 				out[3]=WM_${file_t12}+orig.BRIK
 				# Run modular script
 				echo -n "S16 - T1SEG> "
-				node "../../bin/seg-t1.sh" "17"
+				open.node; 
+				if [ $? -eq 0 ]; then
+					../../lib/seg-t1.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=17 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=17
+				else
+					continue 2
+				fi
 				;;
 			17 ) #: S17 - RS SEGMENTATION  =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -619,7 +782,15 @@ for v in ${VID[@]}; do
 				out[1]=WM_${file_t12}.signal.1D
 				# Run modular script
 				echo -n "S17 - RSSEG> "
-				node "../../bin/seg-rs.sh" "QC4"
+				open.node; 
+				if [ $? -eq 0 ]; then
+					../../lib/seg-rs.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=QC4 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=QC4
+				else
+					continue 2
+				fi
 				;;
 			QC4 ) #: QC4 - SEGMENTATION  =============================
 				unset in out
@@ -633,7 +804,17 @@ for v in ${VID[@]}; do
 				out[1]=qc4_m2_${file_t12}.jpg
 				# Run modular script
 				echo -n "QC4 - SEG> "
-				qcnode "../../bin/qc-seg.sh" "18"
+				open.node; 
+				if [ $? -eq 0 ]; then
+					../../lib/qc-seg.sh ${in[@]} ${out[@]} &>> $log
+					S=18
+					close.node || continue 1
+				elif [ $? -eq 1 ]; then
+					S=18
+				else
+					S=18
+					continue 1
+				fi
 				;;
 			18 ) #: S18 - RS FILTERING  =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -647,7 +828,22 @@ for v in ${VID[@]}; do
 				out[1]=bandpass_${file_rs2}+tlrc.BRIK
 				# Run modular script
 				echo -n "S18 - BPASS> "
-				node "../../bin/3dbandpass.sh" "19"
+				open.node;
+				if [ $? -eq 0 ]; then
+				    3dBandpass \
+					  -band 0.01 0.08 \
+					  -despike \
+					  -ort ${in[2]} \
+					  -ort ${in[3]} \
+					  -ort ${in[4]} \
+					  -prefix ${out%%.*} \
+					  -input ${in%%.*}  &>> $log
+					close.node && S=19 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=19
+				else
+					continue 2
+				fi
 				;;
 			19 ) #: S19 - RS SMOOTHING =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -658,7 +854,19 @@ for v in ${VID[@]}; do
 				out[1]=merge_${file_rs2}+tlrc.BRIK
 				# Run modular script
 				echo -n "S19 - MERGE> "
-				node "../../bin/3dmerge.sh" "20"
+				open.node;
+				if [ $? -eq 0 ]; then
+				     3dmerge \
+						-1blur_fwhm 6 \
+						-doall \
+						-prefix ${out%%.*} \
+						${in%%.*} &>> $log
+					close.node && S=20 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=20
+				else
+					continue 2
+				fi
 				;;
 			20 ) #: S20 - RS MOTIONCENSOR  =============================
 				# Declare inputs (array "in") and outputs (array "out")				
@@ -671,7 +879,15 @@ for v in ${VID[@]}; do
 				out[1]=censor_${file_rs2}+tlrc.HEAD
 				# Run modular script
 				echo -n "S20 - CENSOR> "
-				node "../../bin/motioncensor.sh" "21"
+				open.node; 
+				if [ $? -eq 0 ]; then
+					../../lib/motioncensor.sh ${in[@]} ${out[@]} &>> $log
+					close.node && S=21 || continue 2
+				elif [ $? -eq 1 ]; then
+					S=21
+				else
+					continue 2
+				fi
 				;;
 			esac
 		done

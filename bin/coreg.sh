@@ -20,5 +20,5 @@ align_epi_anat.py \
     -anat_has_skull no \
     -volreg off \
     -tshift off \
-    -deoblique off \
+    -deoblique off 
 

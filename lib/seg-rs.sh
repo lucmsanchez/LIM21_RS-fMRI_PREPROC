@@ -41,4 +41,4 @@ out[1]=$8	# WM 1D
     ${in%%.*} \
     > ${out[1]} 
    
-rm ${in%%.*}_CSF_resampled* ${in%%.*}_WM_resampled*
+rm ${in%%+*}_CSF_resampled* ${in%%+*}_WM_resampled*

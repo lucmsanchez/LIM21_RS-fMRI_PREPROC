@@ -38,6 +38,7 @@ done
 #: DECLARE VARIABLES ===========================================================
 export fsl5=fsl5.0-
 template="MNI152_1mm_uni+tlrc"
+atlas="ROI_MNI_V4.nii"
 
 
 #: DECLARE FUNCTIONS ===========================================================
@@ -876,7 +877,7 @@ for v in ${VID[@]}; do
 				in[2]=volreg_${file_rs2}.1D
 				in[3]=${file_rs}
 				out=censor_${file_rs2}+tlrc.HEAD
-				out[1]=censor_${file_rs2}+tlrc.HEAD
+				out[1]=censor_${file_rs2}+tlrc.BRIK
 				# Run modular script
 				echo -n "S20 - CENSOR> "
 				open.node; 
@@ -889,9 +890,95 @@ for v in ${VID[@]}; do
 					continue 2
 				fi
 				;;
-			esac
-		done
+		esac
 	done
+done
+
+
+# Search for the Atlas
+echo
+echo
+for t in ${atlas[@]}; do
+	temp=$(find . -name $t)
+	if [ ! -z "$temp" ];then
+	  	if [ ! -f "template/${temp}" ]; then
+		mv $tp template 2> /dev/null
+  		fi
+	else 
+    	echo "Atlas $t not found"
+    	exit
+	fi
+
+	
+	echo 
+	echo Atlas $t
+	echo
+
+	# Resample the atlas to preproc images
+	v=${VID[0]}
+	# Create loop variables
+	cd $path
+	id=${v%%;*}
+	vis=V${v##*;}
+	ppath=$path/PREPROC/$id
+	file_rs=$(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null)
+	file_rs2=${file_rs%%.nii}
+	log=preproc_${id}_${vis}.log
+
+	unset in out
+	in=censor_${file_rs2}+tlrc.HEAD
+	in[1]=censor_${file_rs2}+tlrc.BRIK
+	in[2]=../../template/${t}
+	out=resampled_${t%%.*}+tlrc.HEAD
+	out[1]=resampled_${t%%.*}+tlrc.BRIK
+	# Run modular script
+	echo -n "RESAMPLE>  "
+	open.node; 
+	if [ $? -eq 0 ]; then
+		3dresample \
+			-master ${in%%.*} \
+			-prefix ${out%%.*} \
+			-inset ${in[2]} &>> $log
+		close.node
+	fi
+	[ ! -f "$PWD/template/$out" ] && cp $ppath/$out $PWD/template/$out  #&>> $log
+	[ ! -f "$PWD/template/${out[1]}" ] && cp $ppath/${out[1]} $PWD/template/${out[1]}  #&>> $log
+	echo
+
+# Start big loop
+for v in ${VID[@]}; do
+	# Create loop variables
+	cd $path
+	id=${v%%;*}
+	vis=V${v##*;}
+	ppath=$path/PREPROC/$id
+	file_t1=$(grep "${v}" $subs | cut -d ";" -f 3 2> /dev/null)
+	file_t12=${file_t1%%.nii}
+	file_rs=$(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null)
+	file_rs2=${file_rs%%.nii}
+	file_log=$(grep "${v}" $subs | cut -d ";" -f 5 2>  /dev/null)
+	file_mask=$(grep "${v}" $subs | cut -d ";" -f 6 2> /dev/null)
+	log=preproc_${id}_${vis}.log
+	
+	unset in out
+	in=censor_${file_rs2}+tlrc.HEAD
+	in[1]=censor_${file_rs2}+tlrc.BRIK
+	in[2]=../../template/resampled_${t%%.*}+tlrc.HEAD
+	in[3]=../../template/resampled_${t%%.*}+tlrc.BRIK
+	out=TS_${file_rs2}.txt
+	# Run modular script
+	echo -n "$id - $vis> "
+	open.node; 
+	if [ $? -eq 0 ]; then
+		(3dROIstats \
+			-quiet \
+			-mask ${in[2]%.*} \
+			${in%%.*} > ${out}) &>> $log
+		close.node 
+	fi
+	done
+done
+
 exit
 
 

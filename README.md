@@ -28,18 +28,18 @@ chmod a+x preproc.sh
 chmod a+x -r /lib
 ```
 The main script "preproc.sh" requires:
-- All input files saved on local folder
+- All input files saved inside local folder (T1, RS, Physlog and Skull-Strip mask)
 - txt file with input files filenames, Subject ID and Visit ID (named preproc.sbj, example below)
 
-preproc.sbj - File must be organizef in the following way:
-Each row refers to one subject and one visit
-All columns divided by ";"
-1st Column - Subject ID (6 digits)
-2nd Column - Visit ID (1 digit)
-3rd Column - T1 filename
-4th Column - RS filename
-5th Column - Physlog File filename
-6th Column - Skull Strip Mask filename
+preproc.sbj - File must be organized in the following way:  
+Each row refers to one subject and one visit  
+All columns divided by ";"  
+1st Column - Subject ID (6 digits)  
+2nd Column - Visit ID (1 digit)  
+3rd Column - T1 filename  
+4th Column - RS filename  
+5th Column - Physlog File filename  
+6th Column - Skull Strip Mask filename  
 
 ```
 000917;1;rd3_CRACK_000917_1_1.nii;rd3_CRACK_000917_1_2.nii;rd3_CRACK_000917_1_2.log;mask_rd3_CRACK_000917_1_1.nii.gz
@@ -53,7 +53,7 @@ Also on the folder named Template, if no template were found by the script, save
 ```bash
 ./preproc.sh [ Options ] --subjects <sbj txt file>
 
-opções:
+Options:
 -a or --start   # Specify an STEP to begin
 -o or --stop    # Specify an STEP to end. It ends before running that step.
 ```

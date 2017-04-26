@@ -36,7 +36,7 @@ shift # past argument or value
 done
 
 #: DECLARE VARIABLES ===========================================================
-export fsl5=fsl5.0-
+export fsl5=""
 template="MNI152_1mm_uni+tlrc"
 atlas="ROI_MNI_V4.nii"
 
@@ -209,29 +209,29 @@ fi
 
 # Check of nifti files of the indicated Subjects
 echo
-echo "Searching for neuroimaging files:"
+echo "Searching for neuroimaging files specified in preproc.sbj:"
 a=0
 for v in ${VID[@]}; do 
 	echo -n "${v%%;*} V${v##*;}  ... " 
-	file=$(grep "${v}" $subs | cut -d ";" -f 3 | xargs find . -name)
+	file=$(grep "${v}" $subs | cut -d ";" -f 3 | xargs find . -name 2> /dev/null)
 	if [ ! -z "$file"  ]; then
 		printf "T1" 
 	else
 		printf "(T1 not found)"; a=$((a + 1))
 	fi
-	file=$(grep "${v}" $subs | cut -d ";" -f 4 | xargs find . -name)
+	file=$(grep "${v}" $subs | cut -d ";" -f 4 | xargs find . -name 2> /dev/null)
 	if [ ! -z "$file" ]; then 
 		printf " RS" 
 	else
 		printf " (RS not found)"; a=$((a + 1))
 	fi
-	file=$(grep "${v}" $subs | cut -d ";" -f 5 | xargs find . -name)
+	file=$(grep "${v}" $subs | cut -d ";" -f 5 | xargs find . -name 2> /dev/null)
 	if [ ! -z "$file" ]; then 
 		printf " log" 
 	else
 		printf " (log not found)"; a=$((a + 1))
 	fi
-	file=$(grep "${v}" $subs | cut -d ";" -f 6 | xargs find . -name)
+	file=$(grep "${v}" $subs | cut -d ";" -f 6 | xargs find . -name 2> /dev/null)
 	if [ ! -z "$file"  ]; then
 		printf " mask" 
 	else
@@ -242,8 +242,7 @@ done
 echo
 
 if [ ! $a -eq 0 ]; then
-    echo "Some images were not found. Aborting..." | fold -s ; echo
-    exit
+    echo "Some images were not found...." | fold -s ; echo
 fi
 
 # Search for the template in local folder
@@ -274,6 +273,7 @@ path=($PWD)
 
 # Create folder for the processing steps
 [ -d PREPROC ] || mkdir PREPROC
+
 
 
 #: DATA INPUT ====================================================================
@@ -941,8 +941,8 @@ for t in ${atlas[@]}; do
 			-inset ${in[2]} &>> $log
 		close.node
 	fi
-	[ ! -f "$PWD/template/$out" ] && cp $ppath/$out $PWD/template/$out  2>  /dev/null
-	[ ! -f "$PWD/template/${out[1]}" ] && cp $ppath/${out[1]} $PWD/template/${out[1]}  2>  /dev/null
+	[ ! -f "$PWD/template/resam/$out" ] && cp $ppath/$out $PWD/template/$out  2>  /dev/null
+	[ ! -f "$PWD/template/resam/${out[1]}" ] && cp $ppath/${out[1]} $PWD/template/${out[1]}  2>  /dev/null
 	echo
 
 # Start big loop
@@ -965,7 +965,7 @@ for v in ${VID[@]}; do
 	in[1]=censor_${file_rs2}+tlrc.BRIK
 	in[2]=../../template/resampled_${t%%.*}+tlrc.HEAD
 	in[3]=../../template/resampled_${t%%.*}+tlrc.BRIK
-	out=TS_${file_rs2}.txt
+	out=TS_${t##_}_${file_rs2}.txt
 	# Run modular script
 	echo -n "$id - $vis> "
 	open.node; 

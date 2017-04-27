@@ -477,35 +477,10 @@ for v in ${VID[@]}; do
 					continue 2
 				fi
 				;;
-			7 ) #: S7 - SSMASK =============================
+			7 ) #: S7 - DEOBLIQUE T1 =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
-				in=${file_t1}
-				in[1]=${file_mask}
-				out=SS_${file_t12}+orig.HEAD
-				out[1]=SS_${file_t12}+orig.BRIK
-				# Run modular script
-				echo -n "S7 - SSMASK> "
-				open.node;
-				if [ $? -eq 0 ]; then
-					3dcalc \
-						-verbose \
-						-a        ${in} \
-						-b        ${in[1]} \
-						-expr     'a*abs(b-1)' \
-						-prefix   ${out%%.*} &>> $log
-					close.node && S=8 || continue 2
-				elif [ $? -eq 1 ]; then
-					S=8
-				else
-					continue 2
-				fi
-				;;
-			8 ) #: S8 - DEOBLIQUE T1 =============================
-				# Declare inputs (array "in") and outputs (array "out")				
-				unset in out
-				in=SS_${file_t12}+orig.HEAD
-				in[1]=SS_${file_t12}+orig.BRIK
+				in=SS_${file_t1}
 				out=warp_${file_t12}+orig.HEAD
 				out[1]=warp_${file_t12}+orig.BRIK
 				# Run modular script
@@ -516,14 +491,14 @@ for v in ${VID[@]}; do
 						-deoblique \
 						-prefix  ${out%%.*} \
 						${in%%.*}  &>> $log
-					close.node && S=9 || continue 2
+					close.node && S=8 || continue 2
 				elif [ $? -eq 1 ]; then
-					S=9
+					S=8
 				else
 					continue 2
 				fi
 				;;
-			9 ) #: S9 - REORIENT T1 TO TEMPLATE =============================
+			8 ) #: S8 - REORIENT T1 TO TEMPLATE =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
 				in=warp_${file_t12}+orig.HEAD
@@ -538,14 +513,14 @@ for v in ${VID[@]}; do
 						-orient "RPI" \
 						-prefix ${out%%.*} \
 						-inset ${in%%.*} &>> $log
-					close.node && S=10 || continue 2
+					close.node && S=9 || continue 2
 				elif [ $? -eq 1 ]; then
-					S=10
+					S=9
 				else
 					continue 2
 				fi
 				;;
-			10 ) #: S10 - Align center T1 TO TEMPLATE =============================
+			9 ) #: S9 - Align center T1 TO TEMPLATE =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
 				in=resample_${file_t12}+orig.HEAD
@@ -561,14 +536,14 @@ for v in ${VID[@]}; do
 					   @Align_Centers \
 							-base ${in[2]} \
 							-dset ${in%%.*} &>> $log
-					close.node && S=11 || continue 2
+					close.node && S=10 || continue 2
 				elif [ $? -eq 1 ]; then
-					S=11
+					S=10
 				else
 					continue 2
 				fi
 				;;
-			11 ) #: S11 - Unifize T1 =============================
+			10 ) #: S10 - Unifize T1 =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
 				in=resample_${file_t12}_shft+orig.HEAD
@@ -582,14 +557,14 @@ for v in ${VID[@]}; do
 					   3dUnifize \
 							-prefix ${out%%.*} \
 							-input ${in%%.*}  &>> $log
-					close.node && S=12 || continue 2
+					close.node && S=11 || continue 2
 				elif [ $? -eq 1 ]; then
-					S=12
+					S=11
 				else
 					continue 2
 				fi
 				;;
-			12 ) #: S12 - ALIGN CENTER fMRI-T1 =============================
+			11 ) #: S11 - ALIGN CENTER fMRI-T1 =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
 				in=unifize_${file_t12}+orig.HEAD
@@ -606,14 +581,14 @@ for v in ${VID[@]}; do
 							-cm \
 							-base ${in%%.*} \
 							-dset ${in[2]%%.*}  &>> $log
-					close.node && S=13 || continue 2
+					close.node && S=12 || continue 2
 				elif [ $? -eq 1 ]; then
-					S=13
+					S=12
 				else
 					continue 2
 				fi
 				;;
-			13 ) #: S13 - COREGISTER fMRI-T1 =============================
+			12 ) #: S12 - COREGISTER fMRI-T1 =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
 				in=resample_${file_rs2}_shft+orig.HEAD
@@ -659,13 +634,13 @@ for v in ${VID[@]}; do
 					S=14
 					close.node || continue 1
 				elif [ $? -eq 1 ]; then
-					S=14
+					S=13
 				else
-					S=14
+					S=13
 					continue 1
 				fi
 				;;
-			14 ) #: S14 - NORMALIZE T1 to TEMP =============================
+			13 ) #: S13 - NORMALIZE T1 to TEMP =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
 				in=unifize_${file_t12}_al+orig.HEAD
@@ -687,14 +662,14 @@ for v in ${VID[@]}; do
 					  -base ${in[2]} \
 					  -allineate \
 					  -source ${in%%.*}  &>> $log
-					close.node && S=15 || continue 2
+					close.node && S=14 || continue 2
 				elif [ $? -eq 1 ]; then
-					S=15
+					S=14
 				else
 					continue 2
 				fi
 				;;
-			15 ) #: S15 - NORMALIZE fMRI to T1 WARP =============================
+			14 ) #: S14 - NORMALIZE fMRI to T1 WARP =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
 				in=resample_${file_rs2}_shft+orig.HEAD
@@ -743,13 +718,13 @@ for v in ${VID[@]}; do
 					S=16
 					close.node || continue 1
 				elif [ $? -eq 1 ]; then
-					S=16
+					S=15
 				else
-					S=16
+					S=15
 					continue 1
 				fi
 				;;
-			16 ) #: S16 - T1 SEGMENTATION =============================
+			15 ) #: S15 - T1 SEGMENTATION =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
  				in=unifize_${file_t12}_al+orig.HEAD
@@ -763,14 +738,14 @@ for v in ${VID[@]}; do
 				open.node; 
 				if [ $? -eq 0 ]; then
 					../../lib/seg-t1.sh ${in[@]} ${out[@]} &>> $log
-					close.node && S=17 || continue 2
+					close.node && S=16 || continue 2
 				elif [ $? -eq 1 ]; then
-					S=17
+					S=16
 				else
 					continue 2
 				fi
 				;;
-			17 ) #: S17 - RS SEGMENTATION  =============================
+			16 ) #: S16 - RS SEGMENTATION  =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
 				in=resample_${file_rs2}_shft+orig.HEAD
@@ -811,13 +786,13 @@ for v in ${VID[@]}; do
 					S=18
 					close.node || continue 1
 				elif [ $? -eq 1 ]; then
-					S=18
+					S=17
 				else
-					S=18
+					S=17
 					continue 1
 				fi
 				;;
-			18 ) #: S18 - RS FILTERING  =============================
+			17 ) #: S17 - RS FILTERING  =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
 				in=MNI_${file_rs2}+tlrc.HEAD
@@ -839,14 +814,14 @@ for v in ${VID[@]}; do
 					  -ort ${in[4]} \
 					  -prefix ${out%%.*} \
 					  -input ${in%%.*}  &>> $log
-					close.node && S=19 || continue 2
+					close.node && S=18 || continue 2
 				elif [ $? -eq 1 ]; then
-					S=19
+					S=18
 				else
 					continue 2
 				fi
 				;;
-			19 ) #: S19 - RS SMOOTHING =============================
+			18 ) #: S18 - RS SMOOTHING =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
 				in=bandpass_${file_rs2}+tlrc.HEAD
@@ -862,14 +837,14 @@ for v in ${VID[@]}; do
 						-doall \
 						-prefix ${out%%.*} \
 						${in%%.*} &>> $log
-					close.node && S=20 || continue 2
+					close.node && S=19 || continue 2
 				elif [ $? -eq 1 ]; then
-					S=20
+					S=19
 				else
 					continue 2
 				fi
 				;;
-			20 ) #: S20 - RS MOTIONCENSOR  =============================
+			19 ) #: S19 - RS MOTIONCENSOR  =============================
 				# Declare inputs (array "in") and outputs (array "out")				
 				unset in out
 				in=merge_${file_rs2}+tlrc.HEAD
@@ -883,9 +858,9 @@ for v in ${VID[@]}; do
 				open.node; 
 				if [ $? -eq 0 ]; then
 					../../lib/motioncensor.sh ${in[@]} ${out[@]} &>> $log
-					close.node && S=21 || continue 2
+					close.node && S=20 || continue 2
 				elif [ $? -eq 1 ]; then
-					S=21
+					S=20
 				else
 					continue 2
 				fi

@@ -28,7 +28,8 @@ output_dir='3d';
 dlmwrite('${out[2]}',aztecX);
 dlmwrite('meanHR.1D',mean_HR);
 dlmwrite('rangeHR.1D',range_HR);
-catch
+catch me
+me.message
 end
 quit
 EOF

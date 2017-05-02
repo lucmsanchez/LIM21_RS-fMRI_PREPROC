@@ -31,8 +31,8 @@ The main script "run_all.sh" requires:
 - txt file with input files filenames, Subject ID and Visit ID (named preproc.sbj, see example below)
 
 subjects.csv - File must be organized in the following way:  
-Each row must refers to one subject and one visit only
-All columns divided by ";"  
+Each row must refers to one subject and one visit only  
+All columns must be divided by ";"  
 1st Column - Subject ID (6 digits)  
 2nd Column - Visit ID (1 digit)  
 3rd Column - T1 filename  

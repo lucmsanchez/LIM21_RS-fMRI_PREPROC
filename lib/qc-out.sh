@@ -1,53 +1,26 @@
 #!/usr/bin/env bash
+set -x
+printf "\n\n==============================================\n\n"
+echo $0
 
-# $1 - volreg 1d
-# $2 - power censor
+# Inputs and outputs
+in=$1 		# 1D volreg file
+in[1]=$2	# 1D power censor
+out=		# enorm_file		
+out[1]=     # jpg - original volreg
+out[2]=		# jpg - volreg + censor
+out[3]=		# jpg
+out[4]=		# jpg
+out[5]=		# jpg
+out[6]=		# jpg
 
-# Censored TRs percent
-cen=`cat $2 | awk '$1 != 1 {print}' | wc -l`
-tt=`cat $2 | wc -l`
-rcen=`echo "scale=3; $cen / $tt * 100" | bc`
-echo $rcen
-echo
-ntr_censor=`cat $2 | grep 0 | wc -l`
-tt=`cat $2 | wc -l`
-frac=`ccalc $ntr_censor/$tt*100`
-echo "TRs censored              : $ntr_censor"
-echo "censor fraction           : $frac"
+## OUTLIERS
 
-# average motion (per TR)
-mmean=`3dTstat -prefix - -nzmean enorm_$1\\' 2> /dev/null | tail -n 1 `
-echo "average motion (per TR)   : $mmean"
+3dToutcount -automask -fraction -polort 3 -legendre ${in[2]} > ${out[7]}
 
-1deval -a enorm_$1 -b $2 -expr 'a*b' > rm.ec.1D
-cmean=`3dTstat -prefix - -nzmean rm.ec.1D\\' 2> /dev/null | tail -n 1`
-rm -f rm.ec*
-echo "average censored motion   : $cmean"
-
-disp=`1d_tool.py -infile $1 -show_max_displace -verb 0`
-echo "max motion displacement   : $disp"
-
-# compute the maximum motion displacement over all TR pairs
-cdisp=`1d_tool.py -infile $1 -show_max_displace -censor_infile $2 -verb 0`
-echo "max censored displacement : $cdisp"
 
 exit
 
-1d_tool.py -infile $1 -derivative  -collapse_cols euclidean_norm -write enorm_$1
-
-1dplot -one '1D: 200@0.3' enorm_$1
-# num TRs above mot limit
-mcount=`1deval -a enorm_$1 -expr "step(a-0.3)"| awk '$1 != 0 {print}' | wc -l`
-
-echo $mcount
-
-1dplot -volreg -censor $2 $1
-1dplot -censor $2 enorm_$1
-
-
-
-3dToutcount -automask -fraction -polort 3 -legendre                     \
-                pb00.$subj.r$run.tcat+orig > outcount.r$run.1D
 
     # censor outlier TRs per run, ignoring the first 0 TRs
     # - censor when more than 0.1 of automask voxels are outliers

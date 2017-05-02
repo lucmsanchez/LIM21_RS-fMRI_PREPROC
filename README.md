@@ -50,23 +50,16 @@ Also on the folder named Template, if no template were found by the script, save
 
 
 ```bash
-./run_all.sh
+./run_all.sh --subjects subjects.csv
 
 Options:
--a or --start   # Specify an STEP to begin
--o or --stop    # Specify an STEP to end. It ends before running that step.
+--parallel n   # Run n subjects in the background in parallel
 ```
 
 If there is a txt file named preproc.sbj on the same folder as the script you can run only:
 
 ```bash
-./preproc.sh 
-```
-
-If you want to run only steps 3 to 5 and have a file named subjects.txt, you have to run:
-
-```bash
-./preproc.sh -a 3 -o 6 --subs subjects.txt
+./run_all.sh 
 ```
 
 ## Bugs and Limitations 

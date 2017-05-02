@@ -299,32 +299,12 @@ case $S in
 				-Fourier \
 				-1Dfile ${out[2]} \
 				${in%%.*}   &>> $log
-			close.node && S=QC1 || exit
+			close.node && S=4 || exit
 		;;
 			1 ) 
-			S=QC1
+			S=4
 		;;
 			2 ) exit ;;
-		esac
-		;;
-	QC1 ) #: QC1 - MOTION CORRECTION =============================
-		# Declare inputs (array "in") and outputs (array "out")				
-		unset in out
-		in=volreg_${file_rs2}.1D
-		out=qc1_m1_${file_rs2}.jpg
-		# Run modular script
-		echo -n "QC1 - MC> "
-		open.node; 
-		case $? in
-			0 ) 
-			../../lib/qc-volreg.sh ${in[@]} ${out[@]} &>> $log
-			S=4
-			close.node || continue 1
-			;;
-			1 ) S=4 ;;
-			2 ) S=4
-			continue 1
-			;;
 		esac
 		;;
   	4 ) #: S4 - DEOBLIQUE =============================
@@ -545,30 +525,30 @@ case $S in
 				-volreg off \
 				-tshift off \
 				-deoblique off   &>> $log
-			close.node && S=QC2 || exit
+			close.node && S=QC1 || exit
 		;;
 			1 ) 
-			S=QC2
+			S=QC1
 		;;
 			2 ) exit ;;
 		esac
 		;;
-	QC2 ) #: QC2 - COREG QC  =============================
+	QC1 ) #: QC1 - COREG QC  =============================
 		# Declare inputs (array "in") and outputs (array "out")				
 		unset in out
 		in=resample_${file_rs2}_shft+orig.HEAD
 		in[1]=resample_${file_rs2}_shft+orig.BRIK
 		in[2]=unifize_${file_t12}_al+orig.HEAD
 		in[3]=unifize_${file_t12}_al+orig.BRIK
-		out=qc2_m1_${file_t12}.jpg
-		out[1]=qc2_m2_${file_t12}.jpg
+		out=qc1_m1_${file_t12}.jpg
+		out[1]=qc1_m2_${file_t12}.jpg
 		# Run modular script
-		echo -n "QC2 - COREG> "
+		echo -n "QC1 - COREG> "
 		open.node; 
 		case $? in
 			0 ) 
 			../../lib/qc-coreg.sh ${in[@]} ${out[@]} &>> $log
-			S=14
+			S=13
 			close.node || continue 1
 			;;
 			1 ) 
@@ -632,15 +612,15 @@ case $S in
 				-master ${in[4]} \
 				-newgrid 3 \
 				-prefix ${out%%.*} &>> $log
-			close.node && S=QC3 || exit
+			close.node && S=QC2 || exit
 		;;
 			1 ) 
-			S=QC3
+			S=QC2
 		;;
 			2 ) exit ;;
 		esac
 		;;
-	QC3 ) #: QC3 - NORMALIZATION =============================
+	QC2 ) #: QC2 - NORMALIZATION =============================
 		# Declare inputs (array "in") and outputs (array "out")				
 		unset in out
 		in=MNI_${file_rs2}+tlrc.HEAD
@@ -648,14 +628,14 @@ case $S in
 		in[2]=MNI_${file_t12}+tlrc.HEAD
 		in[3]=MNI_${file_t12}+tlrc.BRIK
 		in[4]=../../template/$template.BRIK.gz
-		out=qc3_m1_MNI_${file_t12}.jpg
-		out[1]=qc3_m2_MNI_${file_t12}.jpg
-		out[2]=qc3_m3_MNI_${file_t12}.jpg
-		out[3]=qc3_m4_MNI_${file_t12}.jpg
-		out[4]=qc3_m5_MNI_${file_t12}.jpg
-		out[5]=qc3_m6_MNI_${file_t12}.jpg
+		out=qc2_m1_MNI_${file_t12}.jpg
+		out[1]=qc2_m2_MNI_${file_t12}.jpg
+		out[2]=qc2_m3_MNI_${file_t12}.jpg
+		out[3]=qc2_m4_MNI_${file_t12}.jpg
+		out[4]=qc2_m5_MNI_${file_t12}.jpg
+		out[5]=qc2_m6_MNI_${file_t12}.jpg
 		# Run modular script
-		echo -n "QC3 - NORM> "
+		echo -n "QC2 - NORM> "
 		open.node; 
 		case $? in
 			0 ) 
@@ -710,15 +690,15 @@ case $S in
 		case $? in
 			0 ) 
 			../../lib/seg-rs.sh ${in[@]} ${out[@]} &>> $log
-			close.node && S=QC4 || exit
+			close.node && S=QC3 || exit
 		;;
 			1 ) 
-			S=QC4
+			S=QC3
 		;;
 			2 ) exit ;;
 		esac
 		;;
-	QC4 ) #: QC4 - SEGMENTATION  =============================
+	QC3 ) #: QC3 - SEGMENTATION  =============================
 		unset in out
 		in=unifize_${file_t12}_al+orig.HEAD
 		in[1]=unifize_${file_t12}_al+orig.BRIK
@@ -726,10 +706,10 @@ case $S in
 		in[3]=CSF_${file_t12}+orig.BRIK
 		in[4]=WM_${file_t12}+orig.HEAD
 		in[5]=WM_${file_t12}+orig.BRIK
-		out=qc4_m1_${file_t12}.jpg
-		out[1]=qc4_m2_${file_t12}.jpg
+		out=qc3_m1_${file_t12}.jpg
+		out[1]=qc3_m2_${file_t12}.jpg
 		# Run modular script
-		echo -n "QC4 - SEG> "
+		echo -n "QC3 - SEG> "
 		open.node; 
 		case $? in
 			0 ) 
@@ -755,7 +735,7 @@ case $S in
 		out=bandpass_${file_rs2}+tlrc.HEAD
 		out[1]=bandpass_${file_rs2}+tlrc.BRIK
 		# Run modular script
-		echo -n "S18 - BPASS> "
+		echo -n "S17 - BPASS> "
 		open.node;
 		case $? in
 			0 ) 
@@ -783,7 +763,7 @@ case $S in
 		out=merge_${file_rs2}+tlrc.HEAD
 		out[1]=merge_${file_rs2}+tlrc.BRIK
 		# Run modular script
-		echo -n "S19 - MERGE> "
+		echo -n "S18 - MERGE> "
 		open.node;
 		case $? in
 			0 ) 
@@ -809,18 +789,49 @@ case $S in
 		in[3]=${file_rs}
 		out=censor_${file_rs2}+tlrc.HEAD
 		out[1]=censor_${file_rs2}+tlrc.BRIK
+		out[2]=merge_${file_rs2}.powerCensorIntersection.1D
+		out[3]=merge_${file_rs2}.RS.deltamotion.FD.1D
+		out[4]=merge_${file_rs2}.RS.backdif2.avg.dvars.1D
 		# Run modular script
-		echo -n "S20 - CENSOR> "
+		echo -n "S19 - CENSOR> "
 		open.node; 
 		case $? in
 			0 ) 
 			../../lib/motioncensor.sh ${in[@]} ${out[@]} &>> $log
-			close.node && S=20 || exit
+			close.node && S=QC4 || exit
 		;;
 			1 ) 
-			S=20
+			S=QC4
 		;;
 			2 ) exit ;;
+		esac
+		;;
+	QC4 ) #: QC4 - MOTION QUALITY CONTROL  =============================
+		unset in out
+		in=volreg_${file_rs2}.1D 		# 1D volreg file
+		in[1]=merge_${file_rs2}.powerCensorIntersection.1D	# 1D power censor
+		out=enorm_volreg_${file_rs2}.1D		# enorm_file		
+		out[1]=qc4_m1_${file_rs2}.jpg     # jpg - original volreg
+		out[2]=qc4_m2_${file_rs2}.jpg		# jpg - volreg + censor
+		out[3]=qc4_m3_${file_rs2}.jpg		# jpg
+		out[4]=qc4_m4_${file_rs2}.jpg		# jpg
+		out[5]=qc4_m5_${file_rs2}.jpg		# jpg
+		out[6]=qc4_m6_${file_rs2}.jpg		# jpg
+		out[7]=motionstat_${file_rs2}.1D		# all variables (.1D)
+		# Run modular script
+		echo -n "QC4 - MOTION> "
+		open.node; 
+		case $? in
+			0 ) 
+			../../lib/qc-motion.sh ${in[@]} ${out[@]} &>> $log
+			S=20
+			close.node || continue 1
+		;;
+			1 ) 
+			S=20 ;;
+		2 )
+			S=20
+			continue 1 ;;
 		esac
 		;;
 esac

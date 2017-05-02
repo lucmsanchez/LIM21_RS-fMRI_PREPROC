@@ -6,14 +6,14 @@ echo $0
 # Inputs and outputs
 in=$1 		# 1D volreg file
 in[1]=$2	# 1D power censor
-out=		# enorm_file		
-out[1]=     # jpg - original volreg
-out[2]=		# jpg - volreg + censor
-out[3]=		# jpg
-out[4]=		# jpg
-out[5]=		# jpg
-out[6]=		# jpg
-out[7]=		# all variables (.1D)
+out=$3		# enorm_file		
+out[1]=$4     # jpg - original volreg
+out[2]=$5		# jpg - volreg + censor
+out[3]=$6		# jpg
+out[4]=$7		# jpg
+out[5]=$8		# jpg
+out[6]=$9		# jpg
+out[7]=${10}		# all variables (.1D)
 
 
 
@@ -63,5 +63,5 @@ echo "TRs above motion limit :$lcount"
 
 echo "$ntr_censor;$frac;$mmean;$cmean;$disp;$cdisp;$lcount" > ${out[7]}
 
-exit
+
 

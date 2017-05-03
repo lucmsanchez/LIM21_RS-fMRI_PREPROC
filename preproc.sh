@@ -740,7 +740,7 @@ case $S in
 		case $? in
 			0 ) 
 		    3dBandpass \
-			  -band 0.01 0.08 \
+			  -passband 0.01 0.08 \
 			  -despike \
 			  -ort ${in[2]} \
 			  -ort ${in[3]} \
@@ -824,6 +824,28 @@ case $S in
 		case $? in
 			0 ) 
 			../../lib/qc-motion.sh ${in[@]} ${out[@]} &>> $log
+			S=QC5
+			close.node || continue 1
+		;;
+			1 ) 
+			S=QC5 ;;
+		2 )
+			S=QC5
+			continue 1 ;;
+		esac
+		;;
+	QC5 ) #: QC4 - OUTLIERS  =============================
+		unset in out
+		in=${file_rs} 		# raw RS HEAD
+		out=out_${file_rs}.1D		# out raw 1D		
+		out[1]=qc5_m1_${file_rs}.jpg		# jpg - out raw
+		out[2]=outstats_${file_rs}.1D		# jpg - out final
+		# Run modular script
+		echo -n "QC5 - OUTLIERS> "
+		open.node; 
+		case $? in
+			0 ) 
+			../../lib/qc-out.sh ${in[@]} ${out[@]} &>> $log
 			S=20
 			close.node || continue 1
 		;;

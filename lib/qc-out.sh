@@ -4,41 +4,29 @@ printf "\n\n==============================================\n\n"
 echo $0
 
 # Inputs and outputs
-in=$1 		# 1D volreg file
-in[1]=$2	# 1D power censor
-out=		# enorm_file		
-out[1]=     # jpg - original volreg
-out[2]=		# jpg - volreg + censor
-out[3]=		# jpg
-out[4]=		# jpg
-out[5]=		# jpg
-out[6]=		# jpg
+in=$1 		# raw RS nii
+out=$4		# out raw 1D		
+out[1]=$6		# jpg - out raw
+out[2]=$7		# 1D out 
 
 ## OUTLIERS
+# raw ouliers
+3dToutcount -automask -fraction -polort 3 -legendre ${in} > ${out}
 
-3dToutcount -automask -fraction -polort 3 -legendre ${in[2]} > ${out[7]}
+rmean=`3dTstat -prefix - -mean ${out}\\' | & tail -n 1`
+echo "average outlier frac (TR) : $rmean"
+rcount=`1deval -a ${out} -expr "step(a-0.1)" | awk '$1 != 0 {print}' | wc -l`
+echo "num TRs above out limit   : $rcount"
 
+
+1dplot -jpg ${out[2]} -one '1D: 200@0.07' ${out}
+1dplot -jpg ${out[3]} -one '1D: 200@0.07' ${out[1]}
+
+echo "$rmean;$fmean;$rcount;$fcount" > ${out[2]}
 
 exit
 
-
-    # censor outlier TRs per run, ignoring the first 0 TRs
-    # - censor when more than 0.1 of automask voxels are outliers
-    # - step() defines which TRs to remove via censoring
-    1deval -a outcount.r$run.1D -expr "1-step(a-0.1)" > rm.out.cen.r$run.1D
-
-1dplot -one '1D: 450@0.07' outcount.rall.1D
-1deval -a outcount.rall.1D -expr 't*step(a-0.05)' | grep -v ' 0'
-
-set mmean = `3dTstat -prefix - -mean $outlier_dset\\' | & tail -n 1`
-echo "average outlier frac (TR) : $mmean"
-
-set mcount = `1deval -a $outlier_dset -expr "step(a-$out_limit)"      \\
-                        | awk '$1 != 0 {print}' | wc -l`
-echo "num TRs above out limit   : $mcount"
-
-
-3dAutomask -dilate 1 -prefix rm.mask_r$run pb04.$subj.r$run.blur+tlrc
+3dAutomask -dilate 1 -prefix rm.mask_${in[2]%%.*} ${in[2]%%.*}
 
 # --------------------------------------------------
 # create a temporal signal to noise ratio dataset 

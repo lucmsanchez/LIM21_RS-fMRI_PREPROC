@@ -9,6 +9,9 @@ in[2]=$3
 in[3]=$4
 out=$5
 out[1]=$6
+out[2]=$7
+out[3]=$8
+out[4]=$9
 
 ### take the temporal derivative of each vector (done as first backward difference)
 1d_tool.py \
@@ -25,11 +28,11 @@ out[1]=$6
     -e c."${in%%+*}"_RS.deltamotion.1D'[4]' \
     -f c."${in%%+*}"_RS.deltamotion.1D'[5]' \
     -expr '100*sind(abs(a)/2) + 100*sind(abs(b)/2) + 100*sind(abs(c)/2) + abs(d) + abs(e) + abs(f)' \
-    > c."${in%%+*}"_RS.deltamotion.FD.1D
+    > ${out[3]}
 
     ### create temporal mask (1 = extreme motion)
     1d_tool.py \
-    -infile c."${in%%+*}"_RS.deltamotion.FD.1D \
+    -infile ${out[3]} \
     -extreme_mask -1 0.5 \
     -write c."${in%%+*}"_RS.deltamotion.FD.extreme0.5.1D
 
@@ -90,10 +93,10 @@ out[1]=$6
     1deval \
     -a c."${in%%+*}"_RS.backdif2.avg.1D \
     -expr 'sqrt(a)' \
-    > c."${in%%+*}"_RS.backdif2.avg.dvars.1D
+    > ${out[4]}
     ### mask extreme (1 = extreme motion)
     1d_tool.py \
-    -infile c."${in%%+*}"_RS.backdif2.avg.dvars.1D \
+    -infile ${out[4]} \
     -extreme_mask -1 5 \
     -write c."${in%%+*}"_RS.backdif2.avg.dvars.extreme5.1D
     ### mask extreme (0 = extreme motion)
@@ -129,9 +132,9 @@ out[1]=$6
     -a c."${in%%+*}"_RS.deltamotion.FD.moderate0.5.n.n.n.1D \
     -b c."${in%%+*}"_RS.backdif2.avg.dvars.moderate5.n.n.n.1D \
     -expr 'or(a, b)' \
-    > "${in%%+*}".powerCensorIntersection.1D 
+    > "${out[2]}"
 
 ### Apply censor file in the final preprocessed image (after temporal filtering and spatial blurring)
-afni_restproc.py -apply_censor ${in%%.*} ${in%%+*}.powerCensorIntersection.1D ${out%%.*}  
+afni_restproc.py -apply_censor ${in%%.*} ${out[2]} ${out%%.*}  
     
 rm c.*

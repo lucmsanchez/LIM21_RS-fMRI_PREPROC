@@ -159,9 +159,11 @@ end
 
 %finally, insert "Inf" in the diagonal
 p_age_FC_square_matrix(logical(eye(size(p_age_FC_square_matrix)))) = Inf;
-5.5 Threshold the results so that only the significant one appear.
-5.5.1 Let’s start without any corrections for multiple testing
-Consider all connections presenting a p-value < 0.05 (uncorrected) significantly correlated with age.
+
+
+%5.5 Threshold the results so that only the significant one appear.
+%5.5.1 Let’s start without any corrections for multiple testing
+%Consider all connections presenting a p-value < 0.05 (uncorrected) significantly correlated with age.
 uncorr_thr = 0.05; % set uncorrected threshold
 uncorr_binary_matrix = p_age_FC_square_matrix < uncorr_thr; % binarize
 uncorr_p_age_FC_square_matrix = Inf(num_roi,num_roi); % container

@@ -1,8 +1,0 @@
- #!/usr/bin/env bash
-
-ts=`find PREPROC -name TS_fconn*` > ts.1D
-nroi=`awk -F' ' '{print NF; exit}' ${ts[0]}` > nroi.1D
-
-[ -d PROC ] || mkdir PROC
-
-

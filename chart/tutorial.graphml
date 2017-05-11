@@ -34,7 +34,7 @@
           <y:Geometry height="64.0" width="64.0" x="469.9504719645767" y="119.83420288000002"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="sandwich" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="124.0" x="-30.0" y="68.0">Continuous variable
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" horizontalTextPosition="center" iconTextGap="4" modelName="sandwich" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="68.62890625" x="-2.314453125" y="68.0">DATABASE
 VAR</y:NodeLabel>
           <y:Image alphaImage="true" refid="2"/>
         </y:ImageNode>

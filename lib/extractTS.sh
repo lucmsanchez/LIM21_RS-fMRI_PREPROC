@@ -4,7 +4,7 @@
 #: PARSE ARGUMENTS ====================================================
 usage() {
     echo "ARGUMENTS:"
-    echo " $0 --id <id> --vist <visit code> --finalrs <HEAD> <BRIK>" 
+    echo " $0 --id <id> --finalrs <HEAD> <BRIK>" 
     echo 
 
 }
@@ -25,10 +25,6 @@ case $key in
 	;;
 	--id )
     ident="$2"
-    shift # past argument
-    ;;
-	--visit )
-    visit="$2"
     shift # past argument
     ;;
     *)
@@ -120,12 +116,11 @@ close.node () {
 }
 
 #: START =======================================================================
-fold -s <<-EOF
- 
-RS-fMRI Extracting time series
---------------------------------
-
-EOF
+co=0
+for c in bash 3dTshift; do
+[ ! $(command -v $c) ] && co=$((co + 1))
+done
+if [ ! $co -eq 0 ];then
 
 # Check if all required softwares are installed on $PATH
 fold -s <<-EOF
@@ -137,12 +132,6 @@ AFNI               ...$(check 3dTshift)
 WARNING: Any missing required software will cause the script to stop!
 EOF
 
-
-co=0
-for c in bash 3dTshift; do
-[ ! $(command -v $c) ] && co=$((co + 1))
-done
-if [ ! $co -eq 0 ];then
 	exit
 fi
 
@@ -163,21 +152,19 @@ for t in ${atlas[@]}; do
     	echo "Atlas $t not found"
     	exit
 	fi
-	echo
-	echo Atlas $t
-	echo
+
+	echo Subject $ident Atlas $t
 
 	# Resample the atlas to preproc images
 	# Create loop variables
 
 	
 	id=${ident}
-	vis=${visit}
 	ppath=$path/PREPROC/$id
 	file_finalrs1=${frs1}
 	file_finalrs2=${frs2}
 	file_log=${log}
-	log=preproc_${id}_${vis}.log
+	log=preproc_${id}.log
 
 
 	[ -d template/resam ] || mkdir template/resam
@@ -217,7 +204,6 @@ for t in ${atlas[@]}; do
 				1 ) S=1 ;;
 				2 ) exit ;;
 		esac
-		echo
 		;;
 		1 )
 		unset in out

@@ -127,7 +127,7 @@ node () {
 #: START =======================================================================
 fold -s <<-EOF
 
-RS-fMRI Processing pipeline
+RS-fMRI Preprocessing pipeline
 --------------------------------------
 
 RUNTIME: $(date)
@@ -159,9 +159,9 @@ oldIFS="$IFS"
 IFS=$'\n' pID=($(<${subs}))
 IFS="$oldIFS"
 for j in ${!pID[@]}; do
-	VID[$j]=$(echo ${pID[$j]} | cut -d ";" -f-2)
+	VID[$j]=$(echo ${pID[$j]} | cut -d ";" -f 1)
 done
-#echo ${VID[@]}
+# echo ${VID[@]}
 
 
 # Check of nifti files of the indicated Subjects
@@ -169,20 +169,20 @@ echo
 echo "Searching for neuroimaging files specified in preproc.sbj:"
 a=0
 for v in ${VID[@]}; do 
-	echo -n "${v%%;*} V${v##*;}  ... " 
-	file=$(grep "${v}" $subs | cut -d ";" -f 3 | xargs find . -name 2> /dev/null)
+	echo -n "${v}  ... " 
+	file=$(grep "${v}" $subs | cut -d ";" -f 2 | xargs find . -name 2> /dev/null)
 	if [ ! -z "$file"  ]; then
 		printf "T1" 
 	else
 		printf "(T1 not found)"; a=$((a + 1))
 	fi
-	file=$(grep "${v}" $subs | cut -d ";" -f 4 | xargs find . -name 2> /dev/null)
+	file=$(grep "${v}" $subs | cut -d ";" -f 3 | xargs find . -name 2> /dev/null)
 	if [ ! -z "$file" ]; then 
 		printf " RS" 
 	else
 		printf " (RS not found)"; a=$((a + 1))
 	fi
-	file=$(grep "${v}" $subs | cut -d ";" -f 5 | xargs find . -name 2> /dev/null)
+	file=$(grep "${v}" $subs | cut -d ";" -f 4 | xargs find . -name 2> /dev/null)
 	if [ ! -z "$file" ]; then 
 		printf " log" 
 	else
@@ -207,30 +207,26 @@ if [ ! $N -eq 1 ]; then
 	# Start big loop
 	for v in ${VID[@]}; do
 		echo
-		echo "Running subject ${v%%;*}.${v##*;} in parallel(background), see the output with cat PREPROC/out.${v%%;*}.${v##*;}.log" | fold -s
+		echo "Running subject ${v} in parallel(background), see the output with cat PREPROC/out.${v}.log" | fold -s
 		echo
 		((i=i%N)); ((i++==0)) && wait
-		./preproc.sh 													\
-			--id ${v%%;*}												\
-			--visit ${v##*;}											\
-			--t1 $(grep "${v}" $subs | cut -d ";" -f 3 2> /dev/null)	\
-			--rs $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null)	\
-			--log $(grep "${v}" $subs | cut -d ";" -f 5 2>  /dev/null) > $path/PREPROC/out.${v%%;*}.${v##*;}.log	& 
+		./lib/preproc.sh 													\
+			--id ${v}												\
+			--t1 $(grep "${v}" $subs | cut -d ";" -f 2 2> /dev/null)	\
+			--rs $(grep "${v}" $subs | cut -d ";" -f 3 2>  /dev/null)	\
+			--log $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null) > $path/PREPROC/out.${v}.log	& 
 	done
 	wait
 else
 	# Start big loop
 	for v in ${VID[@]}; do
-		./preproc.sh 													\
-			--id ${v%%;*}												\
-			--visit ${v##*;}											\
-			--t1 $(grep "${v}" $subs | cut -d ";" -f 3 2> /dev/null)	\
-			--rs $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null)	\
-			--log $(grep "${v}" $subs | cut -d ";" -f 5 2>  /dev/null) | tee $path/PREPROC/out.${v%%;*}.${v##*;}.log 
+		./lib/preproc.sh 													\
+			--id ${v}												\
+			--t1 $(grep "${v}" $subs | cut -d ";" -f 2 2> /dev/null)	\
+			--rs $(grep "${v}" $subs | cut -d ";" -f 3 2>  /dev/null)	\
+			--log $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null) | tee $path/PREPROC/out.${v}.log 
 	done
 fi
-
-echo
 
 #: ============================================================================================================
 #: ============================================================================================================
@@ -240,15 +236,20 @@ censor=`find PREPROC -name censor* | wc -l`
 ndone=$((censor/2))
 [ ! $ndone -ge $nruns ] && echo "Preprocessing not completed" && exit
 
+fold -s <<-EOF
+ 
+RS-fMRI Extracting time series
+--------------------------------
+
+EOF
 
 # Start big loop
 for v in ${VID[@]}; do
-	rs=$(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null)
+	rs=$(grep "${v}" $subs | cut -d ";" -f 3 2>  /dev/null)
 	lib/extractTS.sh 												\
-		--id ${v%%;*}												\
-		--visit ${v##*;}											\
+		--id ${v}												\
 		--finalh censor_${rs%%.*}+tlrc.HEAD							\
-		--finalb censor_${rs%%.*}+tlrc.BRIK | tee $path/PREPROC/out.${v%%;*}.${v##*;}.log 
+		--finalb censor_${rs%%.*}+tlrc.BRIK | tee -a $path/PREPROC/out.${v}.log 
 done
 
 

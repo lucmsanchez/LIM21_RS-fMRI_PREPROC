@@ -3,13 +3,11 @@
 #: PARSE ARGUMENTS ====================================================
 usage() {
     echo "ARGUMENTS:"
-    echo " $0 --id <id> --vist <visit code> --t1 <imagem t1> --rs <imagem rs> --log <physlog file>>" 
+    echo " $0 --id <id> --t1 <imagem t1> --rs <imagem rs> --log <physlog file>>" 
     echo 
 
 }
 
-#startS=1
-#stopS=12
 while [[ $# -gt 0 ]]
 do
 key="$1"
@@ -28,10 +26,6 @@ case $key in
     ;;
 	--id )
     ident="$2"
-    shift # past argument
-    ;;
-	--visit )
-    visit="$2"
     shift # past argument
     ;;
     --start )
@@ -129,15 +123,16 @@ close.node () {
 }
 
 #: START =======================================================================
-fold -s <<-EOF
- 
-
-RS-fMRI Preprocessing pipeline
---------------------------------
-
-EOF
 
 # Check if all required softwares are installed on $PATH
+
+
+co=0
+for c in bash 3dTshift "$fsl5"fast python convert avconv Xvfb perl sed; do
+[ ! $(command -v $c) ] && co=$((co + 1))
+done
+if [ ! $co -eq 0 ];then
+
 fold -s <<-EOF
 
 Required Software and Packages:
@@ -154,11 +149,6 @@ MATLAB             ...$(check matlab)
 WARNING: Any missing required software will cause the script to stop!
 EOF
 
-co=0
-for c in bash 3dTshift "$fsl5"fast python convert avconv Xvfb perl sed; do
-[ ! $(command -v $c) ] && co=$((co + 1))
-done
-if [ ! $co -eq 0 ];then
 	exit
 fi
 
@@ -196,14 +186,13 @@ path=($PWD)
 #: DATA INPUT ====================================================================
 
 id=${ident}
-vis=${visit}
 ppath=$path/PREPROC/$id
 file_t1=${t1}
 file_t12=${file_t1%%.nii}
 file_rs=${rs}
 file_rs2=${file_rs%%.nii}
 file_log=${log}
-log=preproc_${id}_${vis}.log
+log=preproc_${id}.log
 
 # Create folders
 [ -d $ppath ] || mkdir $ppath
@@ -213,7 +202,6 @@ cd $ppath
 echo
 echo "==================================================================="
 echo SUBJECT $id
-echo VISIT $vis
 echo "==================================================================="
 echo 
 
@@ -253,7 +241,7 @@ case $S in
 			2 ) exit ;;
 		esac 
 		;;
-	2 ) #: SLICE TIMING CORRECTION =============================
+	2 ) #: S2 - SLICE TIMING CORRECTION =============================
 		# Declare inputs (array "in") and outputs (array "out")				
 		unset in out
 		in=aztec_${file_rs2}+orig.HEAD
@@ -278,7 +266,7 @@ case $S in
 			2 ) exit ;;
 		esac
 		;;
-	3 ) #: MOTION CORRECTION =============================
+	3 ) #: S3 - MOTION CORRECTION =============================
 		# Declare inputs (array "in") and outputs (array "out")				
 		unset in out
 		in=tshift_${file_rs2}+orig.HEAD
@@ -331,7 +319,7 @@ case $S in
 			2 ) exit ;;
 		esac
 		;;
-	5 ) #: S4 - HOMOGENIZE RS =============================
+	5 ) #: S5 - HOMOGENIZE RS =============================
 		# Declare inputs (array "in") and outputs (array "out")				
 		unset in out
 		in=warp_${file_rs2}+orig.HEAD
@@ -388,7 +376,7 @@ case $S in
 		out=warp_${file_t12}+orig.HEAD
 		out[1]=warp_${file_t12}+orig.BRIK
 		# Run modular script
-		echo -n "S8 - DEOB> "
+		echo -n "S7 - DEOB> "
 		open.node;
 		case $? in
 			0 ) 
@@ -412,7 +400,7 @@ case $S in
 		out=resample_${file_t12}+orig.HEAD
 		out[1]=resample_${file_t12}+orig.BRIK
 		# Run modular script
-		echo -n "S9 - RESAM> "
+		echo -n "S8 - RESAM> "
 		open.node;
 		case $? in
 			0 ) 
@@ -438,7 +426,7 @@ case $S in
 		out[1]=resample_${file_t12}_shft+orig.BRIK
 		out[2]=resample_${file_t12}_shft.1D
 		# Run modular script
-		echo -n "S10 - ALT1TEMP> "
+		echo -n "S9 - ALT1TEMP> "
 		open.node;
 		case $? in
 			0 ) 
@@ -461,7 +449,7 @@ case $S in
 		out=unifize_${file_t12}+orig.HEAD
 		out[1]=unifize_${file_t12}+orig.BRIK
 		# Run modular script
-		echo -n "S11 - UNIFIZE> "
+		echo -n "S10 - UNIFIZE> "
 		open.node;
 		case $? in
 			0 ) 
@@ -486,7 +474,7 @@ case $S in
 		out=resample_${file_rs2}_shft+orig.HEAD
 		out[1]=resample_${file_rs2}_shft+orig.HEAD
 		# Run modular script
-		echo -n "S12 - ALRST1> "
+		echo -n "S11 - ALRST1> "
 		open.node;
 		case $? in
 			0 ) 
@@ -513,7 +501,7 @@ case $S in
 		out[1]=unifize_${file_t12}_al+orig.BRIK
 		out[2]=unifize_${file_t12}_al_mat.aff12.1D
 		# Run modular script
-		echo -n "S13 - COREG> "
+		echo -n "S12 - COREG> "
 		open.node;
 		case $? in
 			0 ) 
@@ -573,7 +561,7 @@ case $S in
 		out[4]=MNI_${file_t12}_Allin.aff12.1D
 		out[5]=MNI_${file_t12}_Allin.nii
 		# Run modular script
-		echo -n "S14 - NORMT1> "
+		echo -n "S13 - NORMT1> "
 		open.node;
 		case $? in
 			0 ) 
@@ -602,7 +590,7 @@ case $S in
 		out=MNI_${file_rs2}+tlrc.HEAD
 		out[1]=MNI_${file_rs2}+tlrc.BRIK
 		# Run modular script
-		echo -n "S15 - NORMRS> "
+		echo -n "S14 - NORMRS> "
 		open.node;
 		case $? in
 			0 ) 
@@ -640,7 +628,7 @@ case $S in
 		case $? in
 			0 ) 
 			../../lib/qc-norm.sh ${in[@]} ${out[@]} &>> $log
-			S=16
+			S=15
 			close.node || continue 1
 		;;
 			1 ) 
@@ -660,7 +648,7 @@ case $S in
 		out[2]=WM_${file_t12}+orig.HEAD
 		out[3]=WM_${file_t12}+orig.BRIK
 		# Run modular script
-		echo -n "S16 - T1SEG> "
+		echo -n "S15 - T1SEG> "
 		open.node; 
 		case $? in
 			0 ) 
@@ -685,7 +673,7 @@ case $S in
 		out=CSF_${file_t12}.signal.1D
 		out[1]=WM_${file_t12}.signal.1D
 		# Run modular script
-		echo -n "S17 - RSSEG> "
+		echo -n "S16 - RSSEG "
 		open.node; 
 		case $? in
 			0 ) 
@@ -714,7 +702,7 @@ case $S in
 		case $? in
 			0 ) 
 			../../lib/qc-seg.sh ${in[@]} ${out[@]} &>> $log
-			S=18
+			S=17
 			close.node || continue 1
 		;;
 			1 ) 
@@ -740,7 +728,7 @@ case $S in
 		case $? in
 			0 ) 
 		    3dBandpass \
-			  -passband 0.01 0.08 \
+			  -band 0.01 0.08 \
 			  -despike \
 			  -ort ${in[2]} \
 			  -ort ${in[3]} \
@@ -839,7 +827,7 @@ case $S in
 		in=${file_rs} 		# raw RS HEAD
 		out=out_${file_rs}.1D		# out raw 1D		
 		out[1]=qc5_m1_${file_rs}.jpg		# jpg - out raw
-		out[2]=outstats_${file_rs}.1D		# jpg - out final
+		out[2]=outstats_${file_rs}.1D
 		# Run modular script
 		echo -n "QC5 - OUTLIERS> "
 		open.node; 

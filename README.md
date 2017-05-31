@@ -1,6 +1,6 @@
-# RS-fMRI automated processing pipeline
+# RS-fMRI automated Preprocessing pipeline
 
-This is the initial page of the repository of scripts for RS-fMRI automated processing pipeline of the LIM 21. We designed scripts in BASH SHELL to run a processing pipeline of functional Magnetic Ressonance Imaging (Resting State Modality) for adult humans and specialy for group analysis. 
+This is the initial page of the repository of scripts for RS-fMRI automated preprocessing pipeline of the LIM 21. We designed scripts in BASH SHELL to run a processing pipeline of functional Magnetic Ressonance Imaging (Resting State Modality) for adult humans and specialy for group analysis. 
 
 This pipeline is still under development
 
@@ -21,20 +21,19 @@ This repository of scripts can be downloaded via web interface on a zip file or 
 Also to run as an executable file, file permissions need to be changed. 
   
 ```bash
-git clone https://lucmsanchez@gitlab.com/LIM21/RS-fMRI_PROC.git RS-fMRI_PROC # Your user password will be asked to access the repository
-cd RS-fMRI_PROC
-chmod a+x preproc.sh run_all.sh
+git clone https://lucmsanchez@gitlab.com/LIM21/RS-fMRI_PREPROC.git RS-fMRI_PROC # Your user password will be asked to access the repository
+cd RS-fMRI_PREPROC
+chmod a+x run_all_subs.sh
 chmod a+x -r /lib
 ```
 The main script "run_all.sh" requires:
 - All input files saved inside local folder (T1, RS and Physlog)
-- txt file with input files filenames, Subject ID and Visit ID (named preproc.sbj, see example below)
+- txt file with input files filenames ans Subject ID (named subjects.csv, see example below)
 
 subjects.csv - File must be organized in the following way:  
 Each row must refers to one subject and one visit only  
 All columns must be divided by ";"  
-1st Column - Subject ID (6 digits)  
-2nd Column - Visit ID (1 digit)  
+1st Column - Subject ID 
 3rd Column - T1 filename  
 4th Column - RS filename  
 5th Column - Physlog File filename  
@@ -50,16 +49,16 @@ Also on the folder named Template, if no template were found by the script, save
 
 
 ```bash
-./run_all.sh --subjects subjects.csv
+./run_all_subs.sh --subjects subjects.csv
 
 Options:
 --parallel n   # Run n subjects in the background in parallel
 ```
 
-If there is a txt file named preproc.sbj on the same folder as the script you can run only:
+If there is a txt file named subjects.csv on the same folder as the script you can run only:
 
 ```bash
-./run_all.sh 
+./run_all_subs.sh 
 ```
 
 ## Bugs and Limitations 
@@ -73,9 +72,9 @@ If there is a txt file named preproc.sbj on the same folder as the script you ca
   
 ## Shortcuts
   
-- [Repository](https://gitlab.com/LIM21/RS-fMRI_PROC/tree/master)
-- [Manual](https://gitlab.com/LIM21/RS-fMRI_PROC/wikis/home)
-- [Bugs/Issues](https://gitlab.com/LIM21/RS-fMRI_PROC/issues)
+- [Repository](https://gitlab.com/LIM21/RS-fMRI_PREPROC/tree/master)
+- [Manual](https://gitlab.com/LIM21/RS-fMRI_PREPROC/wikis/home)
+- [Bugs/Issues](https://gitlab.com/LIM21/RS-fMRI_PREPROC/issues)
 
 
 

@@ -615,7 +615,8 @@ case $S in
 		in[1]=MNI_${file_rs2}+tlrc.BRIK
 		in[2]=MNI_${file_t12}+tlrc.HEAD
 		in[3]=MNI_${file_t12}+tlrc.BRIK
-		in[4]=../../template/$template.BRIK.gz
+		in[4]=../../template/${template}.BRIK.gz
+		in[5]=../../template/${template}.HEAD
 		out=qc2_m1_MNI_${file_t12}.jpg
 		out[1]=qc2_m2_MNI_${file_t12}.jpg
 		out[2]=qc2_m3_MNI_${file_t12}.jpg
@@ -798,6 +799,8 @@ case $S in
 		unset in out
 		in=volreg_${file_rs2}.1D 		# 1D volreg file
 		in[1]=merge_${file_rs2}.powerCensorIntersection.1D	# 1D power censor
+		in[2]=merge_${file_rs2}.RS.backdif2.avg.dvars.1D	# 1D power censor
+		in[3]=merge_${file_rs2}.RS.deltamotion.FD.1D	# 1D power censor
 		out=enorm_volreg_${file_rs2}.1D		# enorm_file		
 		out[1]=qc4_m1_${file_rs2}.jpg     # jpg - original volreg
 		out[2]=qc4_m2_${file_rs2}.jpg		# jpg - volreg + censor

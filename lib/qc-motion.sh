@@ -6,14 +6,17 @@ echo $0
 # Inputs and outputs
 in=$1 		# 1D volreg file
 in[1]=$2	# 1D power censor
-out=$3		# enorm_file		
-out[1]=$4     # jpg - original volreg
-out[2]=$5		# jpg - volreg + censor
-out[3]=$6		# jpg
-out[4]=$7		# jpg
-out[5]=$8		# jpg
-out[6]=$9		# jpg
-out[7]=${10}		# all variables (.1D)
+
+in[2]=$3
+in[3]=$4
+out=$5		# enorm_file		
+out[1]=$6     # jpg - original volreg
+out[2]=$7		# jpg - volreg + censor
+out[3]=$8		# jpg
+out[4]=$9		# jpg
+out[5]=${10}		# jpg
+out[6]=${11}		# jpg
+out[7]=${12}		# all variables (.1D)
 
 
 
@@ -61,7 +64,15 @@ echo "TRs above motion limit :$lcount"
 1dplot -jpg "${out[5]}" -one '1D: 200@0.3' ${in}
 1dplot -jpg "${out[6]}" -one '1D: 200@0.3' ${out}
 
-echo "$ntr_censor;$frac;$mmean;$cmean;$disp;$cdisp;$lcount" > ${out[7]}
+# average dvars
+dvars=`3dTstat -prefix - -nzmean ${in[2]}\\' 2> /dev/null | tail -n 1 `
+echo "average DVARS   : $dvars"
+
+# average fd
+fd=`3dTstat -prefix - -nzmean ${in[3]}\\' 2> /dev/null | tail -n 1 `
+echo "average fd   : $fd"
+
+echo "$ntr_censor;$frac;$mmean;$cmean;$disp;$cdisp;$lcount;$dvars;$fd" > ${out[7]}
 
 
 

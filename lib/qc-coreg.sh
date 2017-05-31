@@ -10,7 +10,6 @@ in[2]=$3	# image HEAD
 in[3]=$4	# image BRIK
 out=$5		# image HEAD 
 out[1]=$6   # jpg 1
-out[2]=$7	# jpg 2
 
 3dedge3 -input ${in%%.*} -prefix e_${in%%.*}
 
@@ -38,13 +37,14 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:20 geom=1200x800" \
 
 sleep 20
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:20 geom=1200x800" \
--com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:20 geom=1200x800" \
--com "OPEN_WINDOW A.coronalimage opacity=6 mont=1x3:20 geom=1200x800" \
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:20 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage opacity=5 mont=1x3:20 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage opacity=5 mont=1x3:20 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $under" \
 -com "SWITCH_OVERLAY $over2" \
 -com "SET_DICOM_XYZ A 0 30 40" \
+-com "SET_PBAR_NUMBER A.15" \
 -com "SAVE_JPEG A.axialimage imx2.${in%%.*}.jpg" \
 -com "SAVE_JPEG A.sagitalimage imy2.${in%%.*}.jpg" \
 -com "SAVE_JPEG A.coronalimage imz2.${in%%.*}.jpg" \

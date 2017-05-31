@@ -10,25 +10,32 @@ in[1]=$2	# image BRIK
 in[2]=$3	# image HEAD
 in[3]=$4	# image BRIK
 in[4]=$5	# template
-out=$6		# jpg 
-out[1]=$7	# jpg 
-out[2]=$8	# jpg 
-out[3]=$9	# jpg 
-out[4]=${10} # jpg 
-out[5]=${11} # jpg 
+in[5]=$6	# template
+out=$7		# jpg 
+out[1]=$8	# jpg 
+out[2]=$9	# jpg 
+out[3]=${10}	# jpg 
+out[4]=${11} # jpg 
+out[5]=${12} # jpg 
+
+temp=${in[5]##*/}
+temp_e=e_${in[5]##*/}
+
+cp ${in[4]} c_${in[4]##*/}
+cp ${in[5]} c_${in[5]##*/}
 
 3dedge3 -input ${in%%.*} -prefix e_${in%%.*}
-3dedge3 -input ${in[4]} -prefix e_${in[4]}
+3dedge3 -input c_${in[4]##*/} -prefix ${temp_e%%.*}
   
 overa2=${in%%.*}
 overa=e_${in%%.*}
 undera=${in[2]%%.*}
 
 underb=${in[2]%%.*}
-overb=e_${in[4]}
-overb2=${in[4]}
+overb=${temp_e%%.*}
+overb2=c_${temp%%.*}
 
-underc=${in[4]}
+underc=c_${temp%%.*}
 overc=e_${in%%.*}
 overc2=${in%%.*}
 
@@ -43,7 +50,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:25 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $undera" \
 -com "SWITCH_OVERLAY $overa" \
--com "SET_DICOM_XYZ A 0 20 15" \
+-com "SET_DICOM_XYZ A 0 22 15" \
 -com "SET_THRESHOLD A.3500 3" \
 -com "SAVE_JPEG A.axialimage imx.a.${in%%.*}.jpg" \
 -com "SAVE_JPEG A.sagitalimage imy.a.${in%%.*}.jpg" \
@@ -52,13 +59,14 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:25 geom=1200x800" \
 
 sleep 20
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:25 geom=1200x800" \
--com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:25 geom=1200x800" \
--com "OPEN_WINDOW A.coronalimage opacity=6 mont=1x3:25 geom=1200x800" \
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage opacity=5 mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage opacity=5 mont=1x3:25 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $undera" \
 -com "SWITCH_OVERLAY $overa2" \
--com "SET_DICOM_XYZ A 0 20 15" \
+-com "SET_DICOM_XYZ A 0 22 15" \
+-com "SET_PBAR_NUMBER A.15" \
 -com "SAVE_JPEG A.axialimage imx2.a.${in%%.*}.jpg" \
 -com "SAVE_JPEG A.sagitalimage imy2.a.${in%%.*}.jpg" \
 -com "SAVE_JPEG A.coronalimage imz2.a.${in%%.*}.jpg" \
@@ -72,7 +80,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:25 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $underb" \
 -com "SWITCH_OVERLAY $overb" \
--com "SET_DICOM_XYZ A 0 20 15" \
+-com "SET_DICOM_XYZ A 0 22 15" \
 -com "SET_THRESHOLD A.3500 3" \
 -com "SAVE_JPEG A.axialimage imx.b.${in%%.*}.jpg" \
 -com "SAVE_JPEG A.sagitalimage imy.b.${in%%.*}.jpg" \
@@ -81,13 +89,13 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:25 geom=1200x800" \
 
 sleep 20
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:25 geom=1200x800" \
--com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:25 geom=1200x800" \
--com "OPEN_WINDOW A.coronalimage opacity=6 mont=1x3:25 geom=1200x800" \
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage opacity=5 mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage opacity=5 mont=1x3:25 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $underb" \
 -com "SWITCH_OVERLAY $overb2" \
--com "SET_DICOM_XYZ A 0 20 15" \
+-com "SET_DICOM_XYZ A 0 22 15" \
 -com "SAVE_JPEG A.axialimage imx2.b.${in%%.*}.jpg" \
 -com "SAVE_JPEG A.sagitalimage imy2.b.${in%%.*}.jpg" \
 -com "SAVE_JPEG A.coronalimage imz2.b.${in%%.*}.jpg" \
@@ -101,7 +109,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:25 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $underc" \
 -com "SWITCH_OVERLAY $overc" \
--com "SET_DICOM_XYZ A 0 20 15" \
+-com "SET_DICOM_XYZ A 0 22 15" \
 -com "SET_THRESHOLD A.3500 3" \
 -com "SAVE_JPEG A.axialimage imx.c.${in%%.*}.jpg" \
 -com "SAVE_JPEG A.sagitalimage imy.c.${in%%.*}.jpg" \
@@ -110,13 +118,14 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:25 geom=1200x800" \
 
 sleep 20
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:25 geom=1200x800" \
--com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:25 geom=1200x800" \
--com "OPEN_WINDOW A.coronalimage opacity=6 mont=1x3:25 geom=1200x800" \
+DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.sagitalimage opacity=5 mont=1x3:25 geom=1200x800" \
+-com "OPEN_WINDOW A.coronalimage opacity=5 mont=1x3:25 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $underc" \
 -com "SWITCH_OVERLAY $overc2" \
--com "SET_DICOM_XYZ A 0 20 15" \
+-com "SET_DICOM_XYZ A 0 22 15" \
+-com "SET_PBAR_NUMBER A.15" \
 -com "SAVE_JPEG A.axialimage imx2.c.${in%%.*}.jpg" \
 -com "SAVE_JPEG A.sagitalimage imy2.c.${in%%.*}.jpg" \
 -com "SAVE_JPEG A.coronalimage imz2.c.${in%%.*}.jpg" \
@@ -135,7 +144,7 @@ convert +append imx2.b.* imy2.b.* imz2.b.* ${out[3]}
 convert +append imx.c.* imy.c.* imz.c.* ${out[4]}
 convert +append imx2.c.* imy2.c.* imz2.c.* ${out[5]}
 
-rm im* e_*  
+rm im* e_* c_*  
 
 
 

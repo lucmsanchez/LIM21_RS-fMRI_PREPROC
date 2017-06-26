@@ -190,7 +190,7 @@ path=($PWD)
 #: DATA INPUT ====================================================================
 
 id=${ident}
-ppath=$path/PREPROC/$id
+ppath=$path/PREPROC_KOBUTI/$id
 file_t1=${t1}
 file_t12=${file_t1%%.nii}
 file_rs=${rs}

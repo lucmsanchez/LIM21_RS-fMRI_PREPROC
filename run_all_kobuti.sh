@@ -266,7 +266,7 @@ fi
 #: ============================================================================================================
 
 nruns=`grep -c . subjects.csv`
-censor=`find PREPROC -name censor* | wc -l`
+censor=`find PREPROC_KOBUTI -name censor* | wc -l`
 ndone=$((censor/2))
 [ ! $ndone -ge $nruns ] && echo "Preprocessing not completed" && exit
 

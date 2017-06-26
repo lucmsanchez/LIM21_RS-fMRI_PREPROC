@@ -196,6 +196,7 @@ file_t12=${file_t1%%.nii}
 file_rs=${rs}
 file_rs2=${file_rs%%.nii}
 file_log=${log}
+file_mask=$mask
 log=preproc_${id}.log
 
 # Create folders
@@ -215,7 +216,7 @@ case $S in
 	0 ) #: S0 - PREPARE ==========================================
 		# Copy input files to processing folder
 		echo "Copying input files to $ppath"
-		for ii in $file_t1 $file_rs $file_log; do
+		for ii in $file_t1 $file_rs $file_log $file_mask; do
 			echo "		$ii" 
 			[ ! -f $ppath/$ii ] && \
 			wp=$(find $path -name $ii 2> /dev/null) && \

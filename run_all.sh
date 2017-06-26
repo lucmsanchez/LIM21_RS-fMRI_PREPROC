@@ -134,6 +134,32 @@ RUNTIME: $(date)
 
 EOF
 
+
+co=0
+for c in bash 3dTshift "$fsl5"fast python convert avconv Xvfb perl sed; do
+[ ! $(command -v $c) ] && co=$((co + 1))
+done
+if [ ! $co -eq 0 ];then
+
+fold -s <<-EOF
+
+Required Software and Packages:
+GNU bash           ...$(check bash)
+AFNI               ...$(check 3dTshift)
+FSL                ...$(check "$fsl5"fast)
+Python             ...$(check python)
+ImageMagick        ...$(check convert)
+Xvfb               ...$(check Xvfb)
+MATLAB             ...$(check matlab)
+  SPM5
+  aztec
+
+WARNING: Any missing required software will cause the script to stop!
+EOF
+
+	exit
+fi
+
 # Check existence of the --subjects argument
 # Next step: check for consistency
 if [ ! -z $subs ]; then  

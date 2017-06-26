@@ -134,8 +134,34 @@ RUNTIME: $(date)
 
 EOF
 
+co=0
+for c in bash 3dTshift "$fsl5"fast python convert avconv Xvfb perl sed; do
+[ ! $(command -v $c) ] && co=$((co + 1))
+done
+if [ ! $co -eq 0 ];then
+
+fold -s <<-EOF
+
+Required Software and Packages:
+GNU bash           ...$(check bash)
+AFNI               ...$(check 3dTshift)
+FSL                ...$(check "$fsl5"fast)
+Python             ...$(check python)
+ImageMagick        ...$(check convert)
+Xvfb               ...$(check Xvfb)
+MATLAB             ...$(check matlab)
+  SPM5
+  aztec
+
+WARNING: Any missing required software will cause the script to stop!
+EOF
+
+	exit
+fi
+
+
 # Check existence of the --subjects argument
-# Next step: check for consistency
+# To do: check for consistency
 if [ ! -z $subs ]; then  
   if [ ! -f $subs ]; then
     echo "Subjects ID file not found"
@@ -188,6 +214,12 @@ for v in ${VID[@]}; do
 	else
 		printf " (log not found)"; a=$((a + 1))
 	fi
+	file=$(grep "${v}" $subs | cut -d ";" -f 5 | xargs find . -name 2> /dev/null)
+	if [ ! -z "$file" ]; then 
+		printf " mask" 
+	else
+		printf " (mask not found)"; a=$((a + 1))
+	fi
 	printf "\n"
 done
 echo
@@ -210,21 +242,23 @@ if [ ! $N -eq 1 ]; then
 		echo "Running subject ${v} in parallel(background), see the output with cat PREPROC/out.${v}.log" | fold -s
 		echo
 		((i=i%N)); ((i++==0)) && wait
-		./lib/preproc.sh 													\
+		./lib/preproc_kobuti.sh 													\
 			--id ${v}												\
 			--t1 $(grep "${v}" $subs | cut -d ";" -f 2 2> /dev/null)	\
 			--rs $(grep "${v}" $subs | cut -d ";" -f 3 2>  /dev/null)	\
-			--log $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null) > $path/PREPROC/out.${v}.log	& 
+			--log $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null)  \
+			--mask $(grep "${v}" $subs | cut -d ";" -f 5 2>  /dev/null)  > $path/PREPROC/out.${v}.log	& 
 	done
 	wait
 else
 	# Start big loop
 	for v in ${VID[@]}; do
-		./lib/preproc.sh 													\
+		./lib/preproc_kobuti.sh 													\
 			--id ${v}												\
 			--t1 $(grep "${v}" $subs | cut -d ";" -f 2 2> /dev/null)	\
 			--rs $(grep "${v}" $subs | cut -d ";" -f 3 2>  /dev/null)	\
-			--log $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null) | tee $path/PREPROC/out.${v}.log 
+			--log $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null) \
+			--mask $(grep "${v}" $subs | cut -d ";" -f 5 2>  /dev/null)  | tee $path/PREPROC/out.${v}.log 
 	done
 fi
 

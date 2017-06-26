@@ -11,6 +11,7 @@ doc/
 template/resam/
 PREPROC.manual/
 PROC/
+PREPROC_KOBUTI/
 
 log
 run

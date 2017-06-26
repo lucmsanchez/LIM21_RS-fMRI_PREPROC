@@ -247,7 +247,7 @@ if [ ! $N -eq 1 ]; then
 			--t1 $(grep "${v}" $subs | cut -d ";" -f 2 2> /dev/null)	\
 			--rs $(grep "${v}" $subs | cut -d ";" -f 3 2>  /dev/null)	\
 			--log $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null)  \
-			--mask $(grep "${v}" $subs | cut -d ";" -f 5 2>  /dev/null)  > $path/PREPROC/out.${v}.log	& 
+			--mask $(grep "${v}" $subs | cut -d ";" -f 5 2>  /dev/null)  > $path/PREPROC_KOBUTI/out.${v}.log	& 
 	done
 	wait
 else
@@ -258,7 +258,7 @@ else
 			--t1 $(grep "${v}" $subs | cut -d ";" -f 2 2> /dev/null)	\
 			--rs $(grep "${v}" $subs | cut -d ";" -f 3 2>  /dev/null)	\
 			--log $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null) \
-			--mask $(grep "${v}" $subs | cut -d ";" -f 5 2>  /dev/null)  | tee $path/PREPROC/out.${v}.log 
+			--mask $(grep "${v}" $subs | cut -d ";" -f 5 2>  /dev/null)  | tee $path/PREPROC_KOBUTI/out.${v}.log 
 	done
 fi
 

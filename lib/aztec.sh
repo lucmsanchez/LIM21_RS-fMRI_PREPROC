@@ -39,7 +39,7 @@ printf "$textf" > scriptaztec.m
 if [ ! -d "3d" ]; then mkdir 3d; fi
 
 # Split 4d image to 3d images
-fsl5.0-fslsplit ${in} 3d/3d_${in}- -t && \
+${fsl5}fslsplit ${in} 3d/3d_${in}- -t && \
 gunzip -f 3d/3d_${in}-*.nii.gz
 
 # Run aztec script

@@ -136,7 +136,7 @@ EOF
 
 
 co=0
-for c in bash 3dTshift "$fsl5"fast python convert avconv Xvfb perl sed; do
+for c in bash 3dTshift "$fsl5"fast python convert Xvfb perl sed; do
 [ ! $(command -v $c) ] && co=$((co + 1))
 done
 if [ ! $co -eq 0 ];then

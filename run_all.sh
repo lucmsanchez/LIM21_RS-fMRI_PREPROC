@@ -192,7 +192,7 @@ done
 
 # Check of nifti files of the indicated Subjects
 echo
-echo "Searching for neuroimaging files specified in preproc.sbj:"
+echo "Searching for neuroimaging:"
 a=0
 for v in ${VID[@]}; do 
 	echo -n "${v}  ... " 
@@ -257,7 +257,7 @@ fi
 #: ============================================================================================================
 #: ============================================================================================================
 
-nruns=`grep -c . subjects.csv`
+nruns=`grep -c . $subs`
 censor=`find PREPROC -name censor* | wc -l`
 ndone=$((censor/2))
 [ ! $ndone -ge $nruns ] && echo "Preprocessing not completed" && exit

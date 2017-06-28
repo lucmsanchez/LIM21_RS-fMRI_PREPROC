@@ -191,7 +191,7 @@ done
 
 # Check of nifti files of the indicated Subjects
 echo
-echo "Searching for neuroimaging files specified in preproc.sbj:"
+echo "Searching for neuroimaging files:"
 a=0
 for v in ${VID[@]}; do 
 	echo -n "${v}  ... " 
@@ -264,7 +264,7 @@ fi
 #: ============================================================================================================
 #: ============================================================================================================
 
-nruns=`grep -c . subjects.csv`
+nruns=`grep -c . $subs`
 censor=`find PREPROC_KOBUTI -name censor* | wc -l`
 ndone=$((censor/2))
 [ ! $ndone -ge $nruns ] && echo "Preprocessing not completed" && exit
@@ -279,10 +279,10 @@ EOF
 # Start big loop
 for v in ${VID[@]}; do
 	rs=$(grep "${v}" $subs | cut -d ";" -f 3 2>  /dev/null)
-	lib/extractTS.sh 												\
+	lib/extractTS_kobuti.sh 												\
 		--id ${v}												\
 		--finalh censor_${rs%%.*}+tlrc.HEAD							\
-		--finalb censor_${rs%%.*}+tlrc.BRIK | tee -a $path/PREPROC/out.${v}.log 
+		--finalb censor_${rs%%.*}+tlrc.BRIK | tee -a $path/PREPROC_KOBUTI/out.${v}.log 
 done
 
 

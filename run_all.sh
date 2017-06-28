@@ -15,7 +15,7 @@ do
 key="$1"
 case $key in
     --subjects )
-    sub="$2"
+    subs="$2"
     shift # past argument
 	;;
 	--parallel )
@@ -160,6 +160,7 @@ EOF
 	exit
 fi
 
+echo $subs
 # Check existence of the --subjects argument
 # Next step: check for consistency
 if [ ! -z $subs ]; then  
@@ -180,7 +181,6 @@ fi
 
 # Create the variables ID and index using Subjects ID file
 # ID;visit;t1_file;rs_file;log_file;mask_file
-subs=subjects.csv
 oldIFS="$IFS"
 IFS=$'\n' pID=($(<${subs}))
 IFS="$oldIFS"

@@ -553,8 +553,8 @@ case $S in
 		unset in out
 		in=resample_${file_rs2}_shft+orig.HEAD
 		in[1]=resample_${file_rs2}_shft+orig.BRIK
-		in[2]=unifize_${file_t12}_al+orig.HEAD
-		in[3]=unifize_${file_t12}_al+orig.BRIK
+		in[2]=ss_${file_t12}_al+orig.HEAD
+		in[3]=ss_${file_t12}_al+orig.BRIK
 		out=qc1_m1_${file_t12}.jpg
 		out[1]=qc1_m2_${file_t12}.jpg
 		# Run modular script
@@ -578,8 +578,8 @@ case $S in
 	13 ) #: S13 - NORMALIZE T1 to TEMP =============================
 		# Declare inputs (array "in") and outputs (array "out")				
 		unset in out
-		in=unifize_${file_t12}_al+orig.HEAD
-		in[1]=unifize_${file_t12}_al+orig.BRIK
+		in=ss_${file_t12}_al+orig.HEAD
+		in[1]=ss_${file_t12}_al+orig.BRIK
 		in[2]=../../template/$template.BRIK.gz
 		out=MNI_${file_t12}+tlrc.HEAD
 		out[1]=MNI_${file_t12}+tlrc.BRIK
@@ -669,8 +669,8 @@ case $S in
 	15 ) #: S15 - T1 SEGMENTATION =============================
 		# Declare inputs (array "in") and outputs (array "out")				
 		unset in out
-		in=unifize_${file_t12}_al+orig.HEAD
-		in[1]=unifize_${file_t12}_al+orig.BRIK
+		in=ss_${file_t12}_al+orig.HEAD
+		in[1]=ss_${file_t12}_al+orig.BRIK
 		out=CSF_${file_t12}+orig.HEAD
 		out[1]=CSF_${file_t12}+orig.BRIK
 		out[2]=WM_${file_t12}+orig.HEAD
@@ -716,8 +716,8 @@ case $S in
 		;;
 	QC3 ) #: QC3 - SEGMENTATION  =============================
 		unset in out
-		in=unifize_${file_t12}_al+orig.HEAD
-		in[1]=unifize_${file_t12}_al+orig.BRIK
+		in=ss_${file_t12}_al+orig.HEAD
+		in[1]=ss_${file_t12}_al+orig.BRIK
 		in[2]=CSF_${file_t12}+orig.HEAD
 		in[3]=CSF_${file_t12}+orig.BRIK
 		in[4]=WM_${file_t12}+orig.HEAD

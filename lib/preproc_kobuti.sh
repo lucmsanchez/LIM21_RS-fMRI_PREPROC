@@ -522,11 +522,11 @@ case $S in
 		unset in out
 		in=resample_${file_rs2}_shft+orig.HEAD
 		in[1]=resample_${file_rs2}_shft+orig.HEAD
-		in[2]=unifize_${file_t12}+orig.HEAD
-		in[3]=unifize_${file_t12}+orig.BRIK
-		out=unifize_${file_t12}_al+orig.HEAD
-		out[1]=unifize_${file_t12}_al+orig.BRIK
-		out[2]=unifize_${file_t12}_al_mat.aff12.1D
+		in[2]=ss_${file_t12}+orig.HEAD
+		in[3]=ss_${file_t12}+orig.BRIK
+		out=ss_${file_t12}_al+orig.HEAD
+		out[1]=ss_${file_t12}_al+orig.BRIK
+		out[2]=ss_${file_t12}_al_mat.aff12.1D
 		# Run modular script
 		echo -n "S12 - COREG> "
 		open.node;

@@ -35,7 +35,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:10 geom=1200x800" \
 -com "SAVE_JPEG A.coronalimage imz.${in%%.*}.jpg" \
 -com "QUIT"
 
-sleep 20
+sleep 40
 
 DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:10 geom=1200x800" \
 -com "OPEN_WINDOW A.sagitalimage opacity=6 mont=1x3:10 geom=1200x800" \
@@ -49,9 +49,9 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=6 mont=1x3:10 geom=1200x8
 -com "SAVE_JPEG A.coronalimage imz2.${in%%.*}.jpg" \
 -com "QUIT"
 
-sleep 20
+sleep 40
 
-killall Xvfb
+
 
 convert +append imx.* imy.* imz.* ${out}
 convert +append imx2.* imy2.* imz2.* ${out[1]}

@@ -17,10 +17,10 @@ over2=${in%%.*}
 over=e_${in%%.*}
 under=${in[2]%%.*}
 
- Xvfb :1 -screen 0 1200x800x24 &
+export AFNI_NOSPLASH=YES
+export AFNI_SPLASH_MELT=NO
 
- export AFNI_NOSPLASH=YES
- export AFNI_SPLASH_MELT=NO
+Xvfb :1 -screen 0 1200x800x24 &
 
 DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:20 geom=1200x800" \
 -com "OPEN_WINDOW A.sagitalimage mont=1x3:20 geom=1200x800" \
@@ -35,7 +35,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:20 geom=1200x800" \
 -com "SAVE_JPEG A.coronalimage imz.${in%%.*}.jpg" \
 -com "QUIT"
 
-sleep 20
+sleep 40
 
 DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:20 geom=1200x800" \
 -com "OPEN_WINDOW A.sagitalimage opacity=5 mont=1x3:20 geom=1200x800" \
@@ -50,9 +50,8 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:20 geom=1200x8
 -com "SAVE_JPEG A.coronalimage imz2.${in%%.*}.jpg" \
 -com "QUIT"
 
-sleep 20
+sleep 40
 
-killall Xvfb
 
 convert +append imx.* imy.* imz.* ${out}
 convert +append imx2.* imy2.* imz2.* ${out[1]}

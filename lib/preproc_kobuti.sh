@@ -219,7 +219,7 @@ case $S in
 		for ii in $file_t1 $file_rs $file_log $file_mask; do
 			echo "		$ii" 
 			[ ! -f $ppath/$ii ] && \
-			wp=$(find $path -name $ii 2> /dev/null) && \
+			wp=($(find $path -name $ii 2> /dev/null)) && \
 			rp=$ppath/$ii && \
 			cp $wp $rp 2> /dev/null
 	 	done
@@ -363,7 +363,7 @@ case $S in
 		case $? in
 			0 ) 
 			3dresample \
-				-orient "RPI" \
+				-orient rpi \
 				-prefix ${out%%.*} \
 				-inset ${in%%.*} &>> $log
 			close.node && S=7 || exit
@@ -410,7 +410,7 @@ case $S in
 		case $? in
 			0 ) 
 			3dresample \
-				-orient "RPI" \
+				-orient rpi \
 				-prefix ${out%%.*} \
 				-inset ${in%%.*} &>> $log
 			close.node && S=9 || exit
@@ -864,16 +864,36 @@ case $S in
 		case $? in
 			0 ) 
 			../../lib/qc-out.sh ${in[@]} ${out[@]} &>> $log
-			S=20
+			S=NII
 			close.node || continue 1
 		;;
 			1 ) 
-			S=20 ;;
+			S=NII ;;
 		2 )
-			S=20
+			S=NII
 			continue 1 ;;
 		esac
 		;;
+		NII ) #: NIFTI - NIFTI OUTPUT  =============================
+		unset in out
+		in=censor_${file_rs2}+tlrc.HEAD
+		in[1]=censor_${file_rs2}+tlrc.BRIK
+		out=final_${file_rs2}.nii		# out raw 1D		
+		# Run modular script
+		echo -n "NII - NIFTI OUTPUT> "
+		open.node; 
+		case $? in
+			0 ) 
+			3dAFNItoNIFTI \
+				-prefix ${out%%.*} \
+				${in%%.*} &>> $log
+			close.node && S=20 || exit
+		;;
+		1 ) S=20 ;;
+		2 ) exit ;;
+		esac
+		;;
+
 esac
 done  
 

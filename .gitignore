@@ -12,6 +12,8 @@ template/resam/
 PREPROC.manual/
 PROC/
 PREPROC_KOBUTI/
+PREPROC_LYSSANDRA/
+
 
 log
 run

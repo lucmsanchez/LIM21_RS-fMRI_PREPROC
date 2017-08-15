@@ -40,9 +40,13 @@ done
 #fsl5=""
 template="MNI152_1mm_uni+tlrc"
 atlas="AAL_ROI_MNI_V4.nii"
-atlas[1]="fconn_atlas_150_1mm.nii"
-
-
+atlas[1]="shen_fconn_atlas_150_1mm.nii"
+atlas[2]="shenfinn_1mm_268_parcellation.nii"
+atlas[3]="power_PP264_all_ROIs_combined.nii"
+atlas[4]="gordon_Parcels_MNI_111.nii"
+atlas[5]="CC200.nii"
+atlas[6]="BN_Atlas_246_1mm.nii"
+atlas[7]="AICHA.nii"
 
 #: DECLARE FUNCTIONS ===========================================================
 check () {

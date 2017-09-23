@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+#set -x
 
 #: PARSE ARGUMENTS ====================================================
 usage() {
@@ -259,31 +260,12 @@ killall Xvfb &> /dev/null
 
 #: ============================================================================================================
 #: ============================================================================================================
-
+echo
 nruns=`grep -c . $subs`
-censor=`find PREPROC -name censor* | wc -l`
-ndone=$((censor/2))
+ts=`find PREPROC -name TS* | wc -l`
+ndone=$((ts/8))
 [ ! $ndone -ge $nruns ] && echo "Preprocessing not completed" && exit
-
-fold -s <<-EOF
- 
-RS-fMRI Extracting time series
---------------------------------
-
-EOF
-
-# Start big loop
-for v in ${VID[@]}; do
-	rs=$(grep "${v}" $subs | cut -d ";" -f 3 2>  /dev/null)
-	lib/extractTS.sh 												\
-		--id ${v}												\
-		--finalh censor_${rs%%.*}+tlrc.HEAD							\
-		--finalb censor_${rs%%.*}+tlrc.BRIK | tee -a $path/PREPROC/out.${v}.log 
-done
-
-
-#: ============================================================================================================
-#: ============================================================================================================
+[ $ndone -ge $nruns ] && echo "Preprocessing completed !"
 
 
 

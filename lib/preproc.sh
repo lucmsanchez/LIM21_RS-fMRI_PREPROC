@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #set -x
+
 #: PARSE ARGUMENTS ====================================================
 usage() {
     echo "ARGUMENTS:"
@@ -48,8 +49,14 @@ done
 #: DECLARE VARIABLES ===========================================================
 #fsl5=""
 template="MNI152_1mm_uni+tlrc"
-
-
+atlas="AAL_ROI_MNI_V4.nii"
+atlas[1]="shen_fconn_atlas_150_1mm.nii"
+atlas[2]="shenfinn_1mm_268_parcellation.nii"
+atlas[3]="power_PP264_all_ROIs_combined.nii"
+atlas[4]="gordon_Parcels_MNI_111.nii"
+atlas[5]="CC200.nii"
+atlas[6]="BN_Atlas_246_1mm.nii"
+atlas[7]="AICHA.nii"
 
 #: DECLARE FUNCTIONS ===========================================================
 check () {
@@ -176,6 +183,16 @@ else
     exit
   fi
 fi
+
+for t in ${atlas[@]}; do
+	temp=$(find . -name $t)
+	if [ -z "$temp" ];then
+	echo
+    	echo "Atlas $t not found"
+    	exit
+	fi
+done
+
 
 path=($PWD)
 
@@ -860,6 +877,30 @@ case $S in
 			3dAFNItoNIFTI \
 				-prefix ${out%%.*} \
 				${in%%.*} &>> $log
+			close.node && S=TS || exit
+		;;
+		1 ) S=TS ;;
+		2 ) exit ;;
+		esac
+		;;
+	TS ) #: TS - EXTRACT ROI TS  =============================
+		unset in out
+		in=censor_${file_rs2}+tlrc.HEAD
+		in[1]=censor_${file_rs2}+tlrc.BRIK
+		out=TS_${atlas[0]%%_*}_${file_rs2}.txt
+		out[1]=TS_${atlas[1]%%_*}_${file_rs2}.txt
+		out[2]=TS_${atlas[2]%%_*}_${file_rs2}.txt
+		out[3]=TS_${atlas[3]%%_*}_${file_rs2}.txt
+		out[4]=TS_${atlas[4]%%_*}_${file_rs2}.txt
+		out[5]=TS_${atlas[5]%%_*}_${file_rs2}.txt
+		out[6]=TS_${atlas[6]%%_*}_${file_rs2}.txt
+		out[7]=TS_${atlas[7]%%_*}_${file_rs2}.txt
+		# Run modular script
+		echo -n "TS - EXTRACT TS> "
+		open.node; 
+		case $? in
+			0 ) 
+			../../lib/extractTS.sh ${in[@]} ${out[@]} ${atlas[@]} &>> $log
 			close.node && S=20 || exit
 		;;
 		1 ) S=20 ;;

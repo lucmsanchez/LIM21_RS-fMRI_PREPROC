@@ -831,6 +831,26 @@ case $S in
 			close.node || continue 1
 		;;
 			1 ) 
+			S=QC41 ;;
+		2 )
+			S=QC41
+			continue 1 ;;
+		esac
+		;;
+	QC41 ) #: QC4.1 - MOTION QUALITY CONTROL 2 =============================
+		unset in out
+		in=volreg_${file_rs2}.1D 		# 1D volreg file
+		out=delt_volreg_${file_rs2}.txt		# enorm_file		
+		# Run modular script
+		echo -n "QC4.1 - MOTION2> "
+		open.node; 
+		case $? in
+			0 ) 
+			../../lib/qc-motion2.sh ${in} ${out} &>> $log
+			S=QC5
+			close.node || continue 1
+		;;
+			1 ) 
 			S=QC5 ;;
 		2 )
 			S=QC5

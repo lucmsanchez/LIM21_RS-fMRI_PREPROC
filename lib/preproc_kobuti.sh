@@ -553,10 +553,9 @@ case $S in
 		unset in out
 		in=resample_${file_rs2}_shft+orig.HEAD
 		in[1]=resample_${file_rs2}_shft+orig.BRIK
-		in[2]=ss_${file_t12}_al+orig.HEAD
-		in[3]=ss_${file_t12}_al+orig.BRIK
+		in[2]=unifize_${file_t12}_al+orig.HEAD
+		in[3]=unifize_${file_t12}_al+orig.BRIK
 		out=qc1_m1_${file_t12}.jpg
-		out[1]=qc1_m2_${file_t12}.jpg
 		# Run modular script
 		echo -n "QC1 - COREG> "
 		open.node; 
@@ -644,12 +643,9 @@ case $S in
 		in[3]=MNI_${file_t12}+tlrc.BRIK
 		in[4]=../../template/${template}.BRIK.gz
 		in[5]=../../template/${template}.HEAD
-		out=qc2_m1_MNI_${file_t12}.jpg
+		out[0]=qc2_m1_MNI_${file_t12}.jpg
 		out[1]=qc2_m2_MNI_${file_t12}.jpg
 		out[2]=qc2_m3_MNI_${file_t12}.jpg
-		out[3]=qc2_m4_MNI_${file_t12}.jpg
-		out[4]=qc2_m5_MNI_${file_t12}.jpg
-		out[5]=qc2_m6_MNI_${file_t12}.jpg
 		# Run modular script
 		echo -n "QC2 - NORM> "
 		open.node; 
@@ -834,14 +830,33 @@ case $S in
 		out[3]=qc4_m3_${file_rs2}.jpg		# jpg
 		out[4]=qc4_m4_${file_rs2}.jpg		# jpg
 		out[5]=qc4_m5_${file_rs2}.jpg		# jpg
-		out[6]=qc4_m6_${file_rs2}.jpg		# jpg
-		out[7]=motionstat_${file_rs2}.1D		# all variables (.1D)
+		out[6]=motionstat_${file_rs2}.1D		# all variables (.1D)
 		# Run modular script
 		echo -n "QC4 - MOTION> "
 		open.node; 
 		case $? in
 			0 ) 
 			../../lib/qc-motion.sh ${in[@]} ${out[@]} &>> $log
+			S=QC5
+			close.node || continue 1
+		;;
+			1 ) 
+			S=QC41 ;;
+		2 )
+			S=QC41
+			continue 1 ;;
+		esac
+		;;
+	QC41 ) #: QC4.1 - MOTION QUALITY CONTROL 2 =============================
+		unset in out
+		in=volreg_${file_rs2}.1D 		# 1D volreg file
+		out=delt_volreg_${file_rs2}.txt		# enorm_file		
+		# Run modular script
+		echo -n "QC4.1 - MOTION2> "
+		open.node; 
+		case $? in
+			0 ) 
+			../../lib/qc-motion2.sh ${in} ${out} &>> $log
 			S=QC5
 			close.node || continue 1
 		;;
@@ -874,7 +889,7 @@ case $S in
 			continue 1 ;;
 		esac
 		;;
-		NII ) #: NIFTI - NIFTI OUTPUT  =============================
+	NII ) #: NIFTI - NIFTI OUTPUT  =============================
 		unset in out
 		in=censor_${file_rs2}+tlrc.HEAD
 		in[1]=censor_${file_rs2}+tlrc.BRIK
@@ -887,6 +902,30 @@ case $S in
 			3dAFNItoNIFTI \
 				-prefix ${out%%.*} \
 				${in%%.*} &>> $log
+			close.node && S=TS || exit
+		;;
+		1 ) S=TS ;;
+		2 ) exit ;;
+		esac
+		;;
+	TS ) #: TS - EXTRACT ROI TS  =============================
+		unset in out
+		in=censor_${file_rs2}+tlrc.HEAD
+		in[1]=censor_${file_rs2}+tlrc.BRIK
+		out=TS_${atlas[0]%%_*}_${file_rs2}.txt
+		out[1]=TS_${atlas[1]%%_*}_${file_rs2}.txt
+		out[2]=TS_${atlas[2]%%_*}_${file_rs2}.txt
+		out[3]=TS_${atlas[3]%%_*}_${file_rs2}.txt
+		out[4]=TS_${atlas[4]%%_*}_${file_rs2}.txt
+		out[5]=TS_${atlas[5]%%_*}_${file_rs2}.txt
+		out[6]=TS_${atlas[6]%%_*}_${file_rs2}.txt
+		out[7]=TS_${atlas[7]%%_*}_${file_rs2}.txt
+		# Run modular script
+		echo -n "TS - EXTRACT TS> "
+		open.node; 
+		case $? in
+			0 ) 
+			../../lib/extractTS.sh ${in[@]} ${out[@]} ${atlas[@]} &>> $log
 			close.node && S=20 || exit
 		;;
 		1 ) S=20 ;;

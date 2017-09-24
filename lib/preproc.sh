@@ -546,7 +546,6 @@ case $S in
 		in[2]=unifize_${file_t12}_al+orig.HEAD
 		in[3]=unifize_${file_t12}_al+orig.BRIK
 		out=qc1_m1_${file_t12}.jpg
-		out[1]=qc1_m2_${file_t12}.jpg
 		# Run modular script
 		echo -n "QC1 - COREG> "
 		open.node; 
@@ -634,12 +633,9 @@ case $S in
 		in[3]=MNI_${file_t12}+tlrc.BRIK
 		in[4]=../../template/${template}.BRIK.gz
 		in[5]=../../template/${template}.HEAD
-		out=qc2_m1_MNI_${file_t12}.jpg
+		out[0]=qc2_m1_MNI_${file_t12}.jpg
 		out[1]=qc2_m2_MNI_${file_t12}.jpg
 		out[2]=qc2_m3_MNI_${file_t12}.jpg
-		out[3]=qc2_m4_MNI_${file_t12}.jpg
-		out[4]=qc2_m5_MNI_${file_t12}.jpg
-		out[5]=qc2_m6_MNI_${file_t12}.jpg
 		# Run modular script
 		echo -n "QC2 - NORM> "
 		open.node; 
@@ -824,8 +820,7 @@ case $S in
 		out[3]=qc4_m3_${file_rs2}.jpg		# jpg
 		out[4]=qc4_m4_${file_rs2}.jpg		# jpg
 		out[5]=qc4_m5_${file_rs2}.jpg		# jpg
-		out[6]=qc4_m6_${file_rs2}.jpg		# jpg
-		out[7]=motionstat_${file_rs2}.1D		# all variables (.1D)
+		out[6]=motionstat_${file_rs2}.1D		# all variables (.1D)
 		# Run modular script
 		echo -n "QC4 - MOTION> "
 		open.node; 

@@ -15,8 +15,7 @@ out[2]=$7		# jpg - volreg + censor
 out[3]=$8		# jpg
 out[4]=$9		# jpg
 out[5]=${10}		# jpg
-out[6]=${11}		# jpg
-out[7]=${12}		# all variables (.1D)
+out[6]=${11}		# all variables (.1D)
 
 
 
@@ -49,7 +48,7 @@ cdisp=`1d_tool.py -infile ${in} -show_max_displace -censor_infile ${in[1]} -verb
 echo "max censored displacement : $cdisp"
 
 # num TRs above mot limit
-lcount=`1deval -a ${out} -expr "step(a-0.3)"| awk '$1 != 0 {print}' | wc -l`
+lcount=`1deval -a ${out} -expr "step(a-3)"| awk '$1 != 0 {print}' | wc -l`
 echo "TRs above motion limit :$lcount"
 
 # PLOTS
@@ -61,8 +60,8 @@ echo "TRs above motion limit :$lcount"
 1dplot -jpg "${out[3]}" ${out}
 1dplot -jpg "${out[4]}" -censor ${in[1]} ${out}
 # com linha limite
-1dplot -jpg "${out[5]}" -one '1D: 200@0.3' ${in}
-1dplot -jpg "${out[6]}" -one '1D: 200@0.3' ${out}
+1dplot -jpg "${out[5]}" ${in}
+
 
 # average dvars
 dvars=`3dTstat -prefix - -nzmean ${in[2]}\\' 2> /dev/null | tail -n 1 `

@@ -8,13 +8,10 @@ in=$1 		# image HEAD
 in[1]=$2	# image BRIK
 in[2]=$3	# image HEAD
 in[3]=$4	# image BRIK
-out=$5		# image HEAD 
-out[1]=$6   # jpg 1
+out[0]=$5   # jpg 1
 
-3dedge3 -input ${in%%.*} -prefix e_${in%%.*}
 
 over2=${in%%.*}
-over=e_${in%%.*}
 under=${in[2]%%.*}
 
 export AFNI_NOSPLASH=YES
@@ -22,20 +19,6 @@ export AFNI_SPLASH_MELT=NO
 
 Xvfb :1 -screen 0 1200x800x24 &
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage mont=1x3:20 geom=1200x800" \
--com "OPEN_WINDOW A.sagitalimage mont=1x3:20 geom=1200x800" \
--com "OPEN_WINDOW A.coronalimage mont=1x3:20 geom=1200x800" \
--com "SET_XHAIRS OFF" \
--com "SWITCH_UNDERLAY $under" \
--com "SWITCH_OVERLAY $over" \
--com "SET_DICOM_XYZ A 0 30 40" \
--com "SET_THRESHOLD A.3500 3" \
--com "SAVE_JPEG A.axialimage imx.${in%%.*}.jpg" \
--com "SAVE_JPEG A.sagitalimage imy.${in%%.*}.jpg" \
--com "SAVE_JPEG A.coronalimage imz.${in%%.*}.jpg" \
--com "QUIT"
-
-sleep 40
 
 DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:20 geom=1200x800" \
 -com "OPEN_WINDOW A.sagitalimage opacity=5 mont=1x3:20 geom=1200x800" \
@@ -53,7 +36,6 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:20 geom=1200x8
 sleep 40
 
 
-convert +append imx.* imy.* imz.* ${out}
-convert +append imx2.* imy2.* imz2.* ${out[1]}
+convert +append imx2.* imy2.* imz2.* ${out}
 
 rm im*  

@@ -15,20 +15,24 @@ out=$7		# jpg
 out[1]=$8	# jpg 
 out[2]=$9	# jpg 
 
-temp=${in[5]##*/}
-temp_e=e_${in[5]##*/}
-
 cp ${in[4]} c_${in[4]##*/}
 cp ${in[5]} c_${in[5]##*/}
 
-overa2=${in%%.*}
-undera=${in[2]%%.*}
+temp=${in[5]##*/}
+temp_e=e_${in[5]##*/}
 
+3dedge3 -prefix e_c_${temp%%.*} -input c_${temp%%.*}
+3dedge3 -prefix e_${in[2]%%.*} -input ${in[2]%%.*}
+
+overa=e_${in[2]%%.*}
+undera=${in%%.*}
+
+overb=e_c_${temp%%.*}
 underb=${in[2]%%.*}
-overb2=c_${temp%%.*}
 
-underc=c_${temp%%.*}
-overc2=${in%%.*}
+overc=e_c_${temp%%.*}
+underc=${in%%.*}
+
 
  export AFNI_NOSPLASH=YES
  export AFNI_SPLASH_MELT=NO
@@ -40,7 +44,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:25 geom=1200x8
 -com "OPEN_WINDOW A.coronalimage opacity=5 mont=1x3:25 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $undera" \
--com "SWITCH_OVERLAY $overa2" \
+-com "SWITCH_OVERLAY $overa" \
 -com "SET_DICOM_XYZ A 0 22 15" \
 -com "SET_PBAR_NUMBER A.15" \
 -com "SAVE_JPEG A.axialimage imx2.a.${in%%.*}.jpg" \
@@ -55,7 +59,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:25 geom=1200x8
 -com "OPEN_WINDOW A.coronalimage opacity=5 mont=1x3:25 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $underb" \
--com "SWITCH_OVERLAY $overb2" \
+-com "SWITCH_OVERLAY $overb" \
 -com "SET_DICOM_XYZ A 0 22 15" \
 -com "SAVE_JPEG A.axialimage imx2.b.${in%%.*}.jpg" \
 -com "SAVE_JPEG A.sagitalimage imy2.b.${in%%.*}.jpg" \
@@ -69,7 +73,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:25 geom=1200x8
 -com "OPEN_WINDOW A.coronalimage opacity=5 mont=1x3:25 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $underc" \
--com "SWITCH_OVERLAY $overc2" \
+-com "SWITCH_OVERLAY $overc" \
 -com "SET_DICOM_XYZ A 0 22 15" \
 -com "SET_PBAR_NUMBER A.15" \
 -com "SAVE_JPEG A.axialimage imx2.c.${in%%.*}.jpg" \
@@ -85,7 +89,7 @@ convert +append imx2.b.* imy2.b.* imz2.b.* ${out[1]}
 
 convert +append imx2.c.* imy2.c.* imz2.c.* ${out[2]}
 
-rm im* e_* c_*  
+#rm im* e_* c_*  
 
 
 

@@ -13,26 +13,35 @@ out[4]=$7
 out[5]=$8
 out[6]=$9
 out[7]=${10}
-atlas=${11}
-atlas[1]=${12}
-atlas[2]=${13}
-atlas[3]=${14}
-atlas[4]=${15}
-atlas[5]=${16}
-atlas[6]=${17}
-atlas[7]=${18}
+out[8]=${11}
+out[9]=${12}
+out[10]=${13}
+out[11]=${14}
+out[12]=${15}
+out[13]=${16}
+out[14]=${17}
+out[15]=${18}
+atlas=${19}
+atlas[1]=${20}
+atlas[2]=${21}
+atlas[3]=${22}
+atlas[4]=${23}
+atlas[5]=${24}
+atlas[6]=${25}
+atlas[7]=${26}
 
 a=0
+b=8
 for t in ${atlas[@]}; do
 
 	echo Atlas $t
 
-	3dresample -master ${in%%.*} -prefix resampled_${t%%.*}+tlrc -inset ../../template/${t}
+	3dresample -master ${in%%.*} -prefix ${out[$b]} -inset ../../template/${t}
 
-	3dROIstats -quiet -mask resampled_${t%%.*}+tlrc ${in%%.*} > ${out[$a]}
-
+	3dROIstats -quiet -mask ${out[$b]} ${in%%.*} > ${out[$a]}
+	
+	b=$((b+1))
 	a=$((a+1))
 done
-
 
 

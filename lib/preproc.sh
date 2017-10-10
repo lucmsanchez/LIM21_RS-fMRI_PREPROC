@@ -883,15 +883,15 @@ case $S in
 		unset in out
 		in=censor_${file_rs2}+tlrc.HEAD
 		in[1]=censor_${file_rs2}+tlrc.BRIK
-		out=final_${file_rs2}.nii		# out raw 1D		
+		out=final_${file_rs2}.nii		# out raw 1D	
+		out[1]=automask_final_${file_rs2}.nii		# out raw 1D
 		# Run modular script
 		echo -n "NII - NIFTI OUTPUT> "
 		open.node; 
 		case $? in
 			0 ) 
-			3dAFNItoNIFTI \
-				-prefix ${out%%.*} \
-				${in%%.*} &>> $log
+			3dAFNItoNIFTI -prefix ${out} ${in%%.*} &>> $log /
+			3dAutomask -prefix ${out[1]} ${in%%.*} &>> $log
 			close.node && S=TS || exit
 		;;
 		1 ) S=TS ;;
@@ -910,6 +910,14 @@ case $S in
 		out[5]=TS_${atlas[5]%%_*}_${file_rs2}.txt
 		out[6]=TS_${atlas[6]%%_*}_${file_rs2}.txt
 		out[7]=TS_${atlas[7]%%_*}_${file_rs2}.txt
+		out[8]=TS_${atlas[0]%%_*}_${file_rs2}.nii
+		out[9]=resampled_${atlas[1]%%_*}_${file_rs2}.nii
+		out[10]=resampled_${atlas[2]%%_*}_${file_rs2}.nii
+		out[11]=resampled_${atlas[3]%%_*}_${file_rs2}.nii
+		out[12]=resampled_${atlas[4]%%_*}_${file_rs2}.nii
+		out[13]=resampled_${atlas[5]%%_*}_${file_rs2}.nii
+		out[14]=resampled_${atlas[6]%%_*}_${file_rs2}.nii
+		out[15]=resampled_${atlas[7]%%_*}_${file_rs2}.nii
 		# Run modular script
 		echo -n "TS - EXTRACT TS> "
 		open.node; 

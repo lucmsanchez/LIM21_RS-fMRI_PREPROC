@@ -10,9 +10,10 @@ in[2]=$3	# image HEAD
 in[3]=$4	# image BRIK
 out[0]=$5   # jpg 1
 
+3dedge3 -prefix e_${in[2]%%.*} -input ${in[2]%%.*}
 
-over2=${in%%.*}
-under=${in[2]%%.*}
+over=e_${in[2]%%.*}
+under=${in%%.*}
 
 export AFNI_NOSPLASH=YES
 export AFNI_SPLASH_MELT=NO
@@ -25,7 +26,7 @@ DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:20 geom=1200x8
 -com "OPEN_WINDOW A.coronalimage opacity=5 mont=1x3:20 geom=1200x800" \
 -com "SET_XHAIRS OFF" \
 -com "SWITCH_UNDERLAY $under" \
--com "SWITCH_OVERLAY $over2" \
+-com "SWITCH_OVERLAY $over" \
 -com "SET_DICOM_XYZ A 0 30 40" \
 -com "SET_PBAR_NUMBER A.15" \
 -com "SAVE_JPEG A.axialimage imx2.${in%%.*}.jpg" \
@@ -38,4 +39,4 @@ sleep 40
 
 convert +append imx2.* imy2.* imz2.* ${out}
 
-rm im*  
+#rm im* e_* 

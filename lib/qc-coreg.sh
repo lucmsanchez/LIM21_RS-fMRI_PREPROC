@@ -10,33 +10,24 @@ in[2]=$3	# image HEAD
 in[3]=$4	# image BRIK
 out[0]=$5   # jpg 1
 
-3dedge3 -prefix e_${in[2]%%.*} -input ${in[2]%%.*}
-
-over=e_${in[2]%%.*}
+over=${in[2]%%.*}
 under=${in%%.*}
 
-export AFNI_NOSPLASH=YES
-export AFNI_SPLASH_MELT=NO
+3dAFNItoNIFTI $under[100] -verb -prefix ${under%%+*}.nii
+3dAFNItoNIFTI $over -verb -prefix ${over%%+*}.nii
 
-Xvfb :1 -screen 0 1200x800x24 &
+under=${under%%+*}.nii
+over=${over%%+*}.nii
 
+3dresample -master $over -inset ${under} -prefix r_${under}
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:20 geom=1200x800" \
--com "OPEN_WINDOW A.sagitalimage opacity=5 mont=1x3:20 geom=1200x800" \
--com "OPEN_WINDOW A.coronalimage opacity=5 mont=1x3:20 geom=1200x800" \
--com "SET_XHAIRS OFF" \
--com "SWITCH_UNDERLAY $under" \
--com "SWITCH_OVERLAY $over" \
--com "SET_DICOM_XYZ A 0 30 40" \
--com "SET_PBAR_NUMBER A.15" \
--com "SAVE_JPEG A.axialimage imx2.${in%%.*}.jpg" \
--com "SAVE_JPEG A.sagitalimage imy2.${in%%.*}.jpg" \
--com "SAVE_JPEG A.coronalimage imz2.${in%%.*}.jpg" \
--com "QUIT"
+${fsl5}slicer r_$under $over -x 0.4 x1.ppm -y 0.45 y1.ppm -z 0.45 z1.ppm
+${fsl5}slicer r_$under $over -x 0.5 x2.ppm -y 0.5 y2.ppm -z 0.5 z2.ppm
+${fsl5}slicer r_$under $over -x 0.6 x3.ppm -y 0.55 y3.ppm -z 0.55 z3.ppm
 
-sleep 40
+convert -append x3* x2* x1* x.ppm
+convert -append y* y.ppm
+convert -append z3* z2* z1* z.ppm
+convert +append z.ppm y.ppm x.ppm $out
 
-
-convert +append imx2.* imy2.* imz2.* ${out}
-
-#rm im* e_* 
+rm x* y* z* r_* $under $over

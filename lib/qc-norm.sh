@@ -19,77 +19,88 @@ cp ${in[4]} c_${in[4]##*/}
 cp ${in[5]} c_${in[5]##*/}
 
 temp=${in[5]##*/}
-temp_e=e_${in[5]##*/}
 
-3dedge3 -prefix e_c_${temp%%.*} -input c_${temp%%.*}
-3dedge3 -prefix e_${in[2]%%.*} -input ${in[2]%%.*}
+### FIRST IMAGE
 
-overa=e_${in[2]%%.*}
-undera=${in%%.*}
+overa=${in%%.*}
+undera=${in[2]%%.*}
 
-overb=e_c_${temp%%.*}
+under=$undera
+over=$overa
+
+3dAFNItoNIFTI $under[100] -verb -prefix ${under%%+*}.nii
+3dAFNItoNIFTI $over -verb -prefix ${over%%+*}.nii
+
+under=${under%%+*}.nii
+over=${over%%+*}.nii
+
+3dresample -master $over -inset ${under} -prefix r_${under}
+
+${fsl5}slicer r_$under $over -x 0.4 x1.ppm -y 0.45 y1.ppm -z 0.45 z1.ppm
+${fsl5}slicer r_$under $over -x 0.5 x2.ppm -y 0.5 y2.ppm -z 0.5 z2.ppm
+${fsl5}slicer r_$under $over -x 0.6 x3.ppm -y 0.55 y3.ppm -z 0.55 z3.ppm
+
+convert -append x3* x2* x1* x.ppm
+convert -append y* y.ppm
+convert -append z3* z2* z1* z.ppm
+convert +append z.ppm y.ppm x.ppm $out
+
+rm x* y* z* r_* $under $over
+
+## SECOND IMAGE
+
+overb=c_${temp%%.*}
 underb=${in[2]%%.*}
 
-overc=e_c_${temp%%.*}
+under=$underb
+over=$overb
+
+3dAFNItoNIFTI $under[100] -verb -prefix ${under%%+*}.nii
+3dAFNItoNIFTI $over -verb -prefix ${over%%+*}.nii
+
+under=${under%%+*}.nii
+over=${over%%+*}.nii
+
+3dresample -master $over -inset ${under} -prefix r_${under}
+
+${fsl5}slicer r_$under $over -x 0.4 x1.ppm -y 0.45 y1.ppm -z 0.45 z1.ppm
+${fsl5}slicer r_$under $over -x 0.5 x2.ppm -y 0.5 y2.ppm -z 0.5 z2.ppm
+${fsl5}slicer r_$under $over -x 0.6 x3.ppm -y 0.55 y3.ppm -z 0.55 z3.ppm
+
+convert -append x3* x2* x1* x.ppm
+convert -append y* y.ppm
+convert -append z3* z2* z1* z.ppm
+convert +append z.ppm y.ppm x.ppm ${out[1]}
+
+rm x* y* z* r_* $under $over
+
+## THIRD IMAGE
+
+
+overc=c_${temp%%.*}
 underc=${in%%.*}
 
 
- export AFNI_NOSPLASH=YES
- export AFNI_SPLASH_MELT=NO
+under=$underc
+over=$overc
 
-Xvfb :1 -screen 0 1200x800x24 &
+3dAFNItoNIFTI $under[100] -verb -prefix ${under%%+*}.nii
+3dAFNItoNIFTI $over -verb -prefix ${over%%+*}.nii
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:25 geom=1200x800" \
--com "OPEN_WINDOW A.sagitalimage opacity=5 mont=1x3:25 geom=1200x800" \
--com "OPEN_WINDOW A.coronalimage opacity=5 mont=1x3:25 geom=1200x800" \
--com "SET_XHAIRS OFF" \
--com "SWITCH_UNDERLAY $undera" \
--com "SWITCH_OVERLAY $overa" \
--com "SET_DICOM_XYZ A 0 22 15" \
--com "SET_PBAR_NUMBER A.15" \
--com "SAVE_JPEG A.axialimage imx2.a.${in%%.*}.jpg" \
--com "SAVE_JPEG A.sagitalimage imy2.a.${in%%.*}.jpg" \
--com "SAVE_JPEG A.coronalimage imz2.a.${in%%.*}.jpg" \
--com "QUIT"
+under=${under%%+*}.nii
+over=${over%%+*}.nii
 
-sleep 40
+3dresample -master $over -inset ${under} -prefix r_${under}
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:25 geom=1200x800" \
--com "OPEN_WINDOW A.sagitalimage opacity=5 mont=1x3:25 geom=1200x800" \
--com "OPEN_WINDOW A.coronalimage opacity=5 mont=1x3:25 geom=1200x800" \
--com "SET_XHAIRS OFF" \
--com "SWITCH_UNDERLAY $underb" \
--com "SWITCH_OVERLAY $overb" \
--com "SET_DICOM_XYZ A 0 22 15" \
--com "SAVE_JPEG A.axialimage imx2.b.${in%%.*}.jpg" \
--com "SAVE_JPEG A.sagitalimage imy2.b.${in%%.*}.jpg" \
--com "SAVE_JPEG A.coronalimage imz2.b.${in%%.*}.jpg" \
--com "QUIT"
+${fsl5}slicer r_$under $over -x 0.4 x1.ppm -y 0.45 y1.ppm -z 0.45 z1.ppm
+${fsl5}slicer r_$under $over -x 0.5 x2.ppm -y 0.5 y2.ppm -z 0.5 z2.ppm
+${fsl5}slicer r_$under $over -x 0.6 x3.ppm -y 0.55 y3.ppm -z 0.55 z3.ppm
 
-sleep 40
+convert -append x3* x2* x1* x.ppm
+convert -append y* y.ppm
+convert -append z3* z2* z1* z.ppm
+convert +append z.ppm y.ppm x.ppm ${out[2]}
 
-DISPLAY=:1 afni -com "OPEN_WINDOW A.axialimage opacity=5 mont=1x3:25 geom=1200x800" \
--com "OPEN_WINDOW A.sagitalimage opacity=5 mont=1x3:25 geom=1200x800" \
--com "OPEN_WINDOW A.coronalimage opacity=5 mont=1x3:25 geom=1200x800" \
--com "SET_XHAIRS OFF" \
--com "SWITCH_UNDERLAY $underc" \
--com "SWITCH_OVERLAY $overc" \
--com "SET_DICOM_XYZ A 0 22 15" \
--com "SET_PBAR_NUMBER A.15" \
--com "SAVE_JPEG A.axialimage imx2.c.${in%%.*}.jpg" \
--com "SAVE_JPEG A.sagitalimage imy2.c.${in%%.*}.jpg" \
--com "SAVE_JPEG A.coronalimage imz2.c.${in%%.*}.jpg" \
--com "QUIT"
-
-sleep 40
-
-convert +append imx2.a.* imy2.a.* imz2.a.* ${out}
-
-convert +append imx2.b.* imy2.b.* imz2.b.* ${out[1]}
-
-convert +append imx2.c.* imy2.c.* imz2.c.* ${out[2]}
-
-#rm im* e_* c_*  
-
+rm x* y* z* r_* $under $over
 
 

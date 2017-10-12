@@ -555,7 +555,7 @@ case $S in
 		in[1]=resample_${file_rs2}_shft+orig.BRIK
 		in[2]=unifize_${file_t12}_al+orig.HEAD
 		in[3]=unifize_${file_t12}_al+orig.BRIK
-		out=qc1_m1_${file_t12}.jpg
+		out=qc1_m1_${file_t12}.ppm
 		# Run modular script
 		echo -n "QC1 - COREG> "
 		open.node; 
@@ -643,9 +643,9 @@ case $S in
 		in[3]=MNI_${file_t12}+tlrc.BRIK
 		in[4]=../../template/${template}.BRIK.gz
 		in[5]=../../template/${template}.HEAD
-		out[0]=qc2_m1_MNI_${file_t12}.jpg
-		out[1]=qc2_m2_MNI_${file_t12}.jpg
-		out[2]=qc2_m3_MNI_${file_t12}.jpg
+		out[0]=qc2_m1_MNI_${file_t12}.ppm
+		out[1]=qc2_m2_MNI_${file_t12}.ppm
+		out[2]=qc2_m3_MNI_${file_t12}.ppm
 		# Run modular script
 		echo -n "QC2 - NORM> "
 		open.node; 
@@ -702,38 +702,12 @@ case $S in
 		case $? in
 			0 ) 
 			../../lib/seg-rs.sh ${in[@]} ${out[@]} &>> $log
-			close.node && S=QC3 || exit
+			close.node && S=17 || exit
 		;;
 			1 ) 
-			S=QC3
+			S=17
 		;;
 			2 ) exit ;;
-		esac
-		;;
-	QC3 ) #: QC3 - SEGMENTATION  =============================
-		unset in out
-		in=ss_${file_t12}_al+orig.HEAD
-		in[1]=ss_${file_t12}_al+orig.BRIK
-		in[2]=CSF_${file_t12}+orig.HEAD
-		in[3]=CSF_${file_t12}+orig.BRIK
-		in[4]=WM_${file_t12}+orig.HEAD
-		in[5]=WM_${file_t12}+orig.BRIK
-		out=qc3_m1_${file_t12}.jpg
-		out[1]=qc3_m2_${file_t12}.jpg
-		# Run modular script
-		echo -n "QC3 - SEG> "
-		open.node; 
-		case $? in
-			0 ) 
-			../../lib/qc-seg.sh ${in[@]} ${out[@]} &>> $log
-			S=17
-			close.node || continue 1
-		;;
-			1 ) 
-			S=17 ;;
-		2 )
-			S=17
-			continue 1 ;;
 		esac
 		;;
 	17 ) #: S17 - RS FILTERING  =============================
@@ -893,15 +867,17 @@ case $S in
 		unset in out
 		in=censor_${file_rs2}+tlrc.HEAD
 		in[1]=censor_${file_rs2}+tlrc.BRIK
-		out=final_${file_rs2}.nii		# out raw 1D		
+		in[2]=MNI_${file_rs2}+tlrc.HEAD
+		in[3]=MNI_${file_rs2}+tlrc.BRIK
+		out=final_${file_rs2}.nii		# out raw 1D	
+		out[1]=automask_mni_${file_rs2}.nii		# out raw 1D
 		# Run modular script
 		echo -n "NII - NIFTI OUTPUT> "
 		open.node; 
 		case $? in
 			0 ) 
-			3dAFNItoNIFTI \
-				-prefix ${out%%.*} \
-				${in%%.*} &>> $log
+			3dAFNItoNIFTI -prefix ${out} ${in%%.*} &>> $log /
+			3dAutomask -prefix ${out[1]} ${in[2]%%.*} &>> $log
 			close.node && S=TS || exit
 		;;
 		1 ) S=TS ;;
@@ -920,6 +896,14 @@ case $S in
 		out[5]=TS_${atlas[5]%%_*}_${file_rs2}.txt
 		out[6]=TS_${atlas[6]%%_*}_${file_rs2}.txt
 		out[7]=TS_${atlas[7]%%_*}_${file_rs2}.txt
+		out[8]=TS_${atlas[0]%%_*}_${file_rs2}.nii
+		out[9]=resampled_${atlas[1]%%_*}_${file_rs2}.nii
+		out[10]=resampled_${atlas[2]%%_*}_${file_rs2}.nii
+		out[11]=resampled_${atlas[3]%%_*}_${file_rs2}.nii
+		out[12]=resampled_${atlas[4]%%_*}_${file_rs2}.nii
+		out[13]=resampled_${atlas[5]%%_*}_${file_rs2}.nii
+		out[14]=resampled_${atlas[6]%%_*}_${file_rs2}.nii
+		out[15]=resampled_${atlas[7]%%_*}_${file_rs2}.nii
 		# Run modular script
 		echo -n "TS - EXTRACT TS> "
 		open.node; 

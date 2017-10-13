@@ -71,7 +71,7 @@ echo "average DVARS   : $dvars"
 fd=`3dTstat -prefix - -nzmean ${in[3]}\\' 2> /dev/null | tail -n 1 `
 echo "average fd   : $fd"
 
-echo "$ntr_censor;$frac;$mmean;$cmean;$disp;$cdisp;$lcount;$dvars;$fd" > ${out[7]}
+echo "$ntr_censor;$frac;$mmean;$cmean;$disp;$cdisp;$lcount;$dvars;$fd" > ${out[6]}
 
 
 

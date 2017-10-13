@@ -1,8 +1,6 @@
-# RS-fMRI automated Preprocessing pipeline
+# RS-fMRI automated Preprocessing pipeline v1.2
 
 This is the initial page of the repository of scripts for RS-fMRI automated preprocessing pipeline of the LIM 21. We designed scripts in BASH SHELL to run a processing pipeline of functional Magnetic Ressonance Imaging (Resting State Modality) for adult humans and specialy for group analysis. 
-
-This pipeline is still under development
 
 ## Required Software
   
@@ -23,7 +21,7 @@ Also to run as an executable file, file permissions need to be changed.
 ```bash
 git clone https://lucmsanchez@gitlab.com/LIM21/RS-fMRI_PREPROC.git RS-fMRI_PROC # Your user password will be asked to access the repository
 cd RS-fMRI_PREPROC
-chmod a+x run_all_subs.sh
+chmod a+x run_all.sh
 chmod a+x -r /lib
 ```
 The main script "run_all.sh" requires:
@@ -33,15 +31,15 @@ The main script "run_all.sh" requires:
 subjects.csv - File must be organized in the following way:  
 Each row must refers to one subject and one visit only  
 All columns must be divided by ";"  
-1st Column - Subject ID 
-3rd Column - T1 filename  
-4th Column - RS filename  
-5th Column - Physlog File filename  
+1st Column - Subject ID  
+2nd Column - T1 filename  
+3rd Column - RS filename  
+4th Column - Physlog File filename  
 
 
 ```
-000917;1;rd3_CRACK_000917_1_1.nii;rd3_CRACK_000917_1_2.nii;rd3_CRACK_000917_1_2.log
-001543;1;rd3_CRACK_001543_1_1.nii;rd3_CRACK_001543_1_2.nii;rd3_CRACK_001543_1_2.log
+P000917;1;rd3_CRACK_000917_1_1.nii;rd3_CRACK_000917_1_2.nii;rd3_CRACK_000917_1_2.log
+P001543;1;rd3_CRACK_001543_1_1.nii;rd3_CRACK_001543_1_2.nii;rd3_CRACK_001543_1_2.log
 
 ```
 
@@ -49,16 +47,17 @@ Also on the folder named Template, if no template were found by the script, save
 
 
 ```bash
-./run_all_subs.sh --subjects subjects.csv
+./run_all.sh --subjects subjects.csv
 
 Options:
 --parallel n   # Run n subjects in the background in parallel
+--no_aztec  # Run without the aztec step
 ```
 
 If there is a txt file named subjects.csv on the same folder as the script you can run only:
 
 ```bash
-./run_all_subs.sh 
+./run_all.sh 
 ```
 
 ## Bugs and Limitations 

@@ -4,15 +4,21 @@
 #: PARSE ARGUMENTS ====================================================
 usage() {
     echo "ARGUMENTS:"
-    echo " $0 --id <id> --t1 <imagem t1> --rs <imagem rs> --log <physlog file>>" 
+    echo " $0 --id <id> --t1 <imagem t1> --rs <imagem rs> --log <physlog file>> --no_aztec" 
     echo 
 
 }
+
+aztec=1
 
 while [[ $# -gt 0 ]]
 do
 key="$1"
 case $key in
+	--no_aztec )
+    aztec=0
+    shift # past argument
+	;;
     --t1 )
     t1="$2"
     shift # past argument
@@ -236,7 +242,11 @@ case $S in
 			cp $wp $rp 2> /dev/null
 	 	done
 		echo
-		S=1
+		if [ $aztec -eq 1 ]; then 
+			S=1
+		else
+			S=NAZ
+		fi
 		;;
 	1 ) #: S1 - AZTEC ==========================================
 		# Declare inputs (array "in") and outputs (array "out")
@@ -275,6 +285,30 @@ case $S in
 			  	-prefix ${out%%.*} \
 			  	-Fourier \
 			  	${in%%.*} &>> $log
+			close.node && S=3 || exit
+		;;
+			1 ) 
+			S=3
+		;;
+			2 ) exit ;;
+		esac
+		;;
+	NAZ ) #: S2 - SLICE TIMING CORRECTION =============================
+		# Declare inputs (array "in") and outputs (array "out")				
+		unset in out
+		in=$file_rs
+		out=tshift_${file_rs2}+orig.HEAD
+		out[1]=tshift_${file_rs2}+orig.BRIK
+		# Run modular script
+		echo -n "S2 - STC> "
+		open.node; 
+		case $? in
+			0 ) 
+			3dTshift \
+				-tpattern seq+z \
+			  	-prefix ${out%%.*} \
+			  	-Fourier \
+			  	${in} &>> $log
 			close.node && S=3 || exit
 		;;
 			1 ) 
@@ -489,7 +523,7 @@ case $S in
 		in[2]=resample_${file_rs2}+orig.HEAD
 		in[3]=resample_${file_rs2}+orig.BRIK
 		out=resample_${file_rs2}_shft+orig.HEAD
-		out[1]=resample_${file_rs2}_shft+orig.HEAD
+		out[1]=resample_${file_rs2}_shft+orig.BRIK
 		# Run modular script
 		echo -n "S11 - ALRST1> "
 		open.node;
@@ -511,7 +545,7 @@ case $S in
 		# Declare inputs (array "in") and outputs (array "out")				
 		unset in out
 		in=resample_${file_rs2}_shft+orig.HEAD
-		in[1]=resample_${file_rs2}_shft+orig.HEAD
+		in[1]=resample_${file_rs2}_shft+orig.BRIK
 		in[2]=unifize_${file_t12}+orig.HEAD
 		in[3]=unifize_${file_t12}+orig.BRIK
 		out=unifize_${file_t12}_al+orig.HEAD
@@ -774,71 +808,71 @@ case $S in
 		case $? in
 			0 ) 
 			../../lib/motioncensor.sh ${in[@]} ${out[@]} &>> $log
-			close.node && S=QC4 || exit
+			close.node && S=QC3 || exit
 		;;
 			1 ) 
-			S=QC4
+			S=QC3
 		;;
 			2 ) exit ;;
 		esac
 		;;
-	QC4 ) #: QC4 - MOTION QUALITY CONTROL  =============================
+	QC3 ) #: QC3 - MOTION QUALITY CONTROL  =============================
 		unset in out
 		in=volreg_${file_rs2}.1D 		# 1D volreg file
 		in[1]=merge_${file_rs2}.powerCensorIntersection.1D	# 1D power censor
 		in[2]=merge_${file_rs2}.RS.backdif2.avg.dvars.1D	# 1D power censor
 		in[3]=merge_${file_rs2}.RS.deltamotion.FD.1D	# 1D power censor
 		out=enorm_volreg_${file_rs2}.1D		# enorm_file		
-		out[1]=qc4_m1_${file_rs2}.jpg     # jpg - original volreg
-		out[2]=qc4_m2_${file_rs2}.jpg		# jpg - volreg + censor
-		out[3]=qc4_m3_${file_rs2}.jpg		# jpg
-		out[4]=qc4_m4_${file_rs2}.jpg		# jpg
-		out[5]=qc4_m5_${file_rs2}.jpg		# jpg
+		out[1]=qc3_m1_${file_rs2}.jpg     # jpg - original volreg
+		out[2]=qc3_m2_${file_rs2}.jpg		# jpg - volreg + censor
+		out[3]=qc3_m3_${file_rs2}.jpg		# jpg
+		out[4]=qc3_m4_${file_rs2}.jpg		# jpg
+		out[5]=qc3_m5_${file_rs2}.jpg		# jpg
 		out[6]=motionstat_${file_rs2}.1D		# all variables (.1D)
 		# Run modular script
-		echo -n "QC4 - MOTION> "
+		echo -n "QC3 - MOTION> "
 		open.node; 
 		case $? in
 			0 ) 
 			../../lib/qc-motion.sh ${in[@]} ${out[@]} &>> $log
-			S=QC5
+			S=QC31
 			close.node || continue 1
 		;;
 			1 ) 
-			S=QC41 ;;
+			S=QC31 ;;
 		2 )
-			S=QC41
+			S=QC31
 			continue 1 ;;
 		esac
 		;;
-	QC41 ) #: QC4.1 - MOTION QUALITY CONTROL 2 =============================
+	QC31 ) #: QC3.1 - MOTION QUALITY CONTROL 2 =============================
 		unset in out
 		in=volreg_${file_rs2}.1D 		# 1D volreg file
 		out=delt_volreg_${file_rs2}.txt		# enorm_file		
 		# Run modular script
-		echo -n "QC4.1 - MOTION2> "
+		echo -n "QC3.1 - MOTION2> "
 		open.node; 
 		case $? in
 			0 ) 
 			../../lib/qc-motion2.sh ${in} ${out} &>> $log
-			S=QC5
+			S=QC4
 			close.node || continue 1
 		;;
 			1 ) 
-			S=QC5 ;;
+			S=QC4 ;;
 		2 )
-			S=QC5
+			S=QC4
 			continue 1 ;;
 		esac
 		;;
-	QC5 ) #: QC4 - OUTLIERS  =============================
+	QC4 ) #: QC4 - OUTLIERS  =============================
 		unset in out
 		in=${file_rs} 		# raw RS HEAD
 		out=out_${file_rs}.1D		# out raw 1D		
-		out[1]=qc5_m1_${file_rs}.jpg		# jpg - out raw
+		out[1]=qc4_m1_${file_rs}.jpg		# jpg - out raw
 		out[2]=outstats_${file_rs}.1D
 		# Run modular script
-		echo -n "QC5 - OUTLIERS> "
+		echo -n "QC4 - OUTLIERS> "
 		open.node; 
 		case $? in
 			0 ) 
@@ -886,7 +920,7 @@ case $S in
 		out[5]=TS_${atlas[5]%%_*}_${file_rs2}.txt
 		out[6]=TS_${atlas[6]%%_*}_${file_rs2}.txt
 		out[7]=TS_${atlas[7]%%_*}_${file_rs2}.txt
-		out[8]=TS_${atlas[0]%%_*}_${file_rs2}.nii
+		out[8]=resampled_${atlas[0]%%_*}_${file_rs2}.nii
 		out[9]=resampled_${atlas[1]%%_*}_${file_rs2}.nii
 		out[10]=resampled_${atlas[2]%%_*}_${file_rs2}.nii
 		out[11]=resampled_${atlas[3]%%_*}_${file_rs2}.nii

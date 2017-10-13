@@ -5,17 +5,21 @@
 #: PARSE ARGUMENTS ====================================================
 usage() {
     echo "ARGUMENTS:"
-    echo " $0 --subjects <subs csv> --parallel <num de cores>" 
+    echo " $0 --subjects <subs csv> --parallel <num de cores> --no_aztec" 
     echo 
 
 }
 
-#startS=1
-#stopS=12
+aztec=1
+
 while [[ $# -gt 0 ]]
 do
 key="$1"
 case $key in
+    --no_aztec )
+    aztec=0
+    shift # past argument
+	;;
     --subjects )
     subs="$2"
     shift # past argument
@@ -182,7 +186,7 @@ else
 fi  
 
 # Create the variables ID and index using Subjects ID file
-# ID;visit;t1_file;rs_file;log_file;mask_file
+# ID;t1_file;rs_file;log_file;mask_file
 oldIFS="$IFS"
 IFS=$'\n' pID=($(<${subs}))
 IFS="$oldIFS"
@@ -224,6 +228,12 @@ if [ ! $a -eq 0 ]; then
     echo "Some images were not found...." | fold -s ; echo
 fi
 
+if [ $aztec -eq 1 ]; then
+	no_aztec=""
+else
+	no_aztec="--no_aztec"
+fi
+
 path=($PWD)
 
 N=${par:-1}
@@ -242,7 +252,8 @@ if [ ! $N -eq 1 ]; then
 			--id ${v}												\
 			--t1 $(grep "${v}" $subs | cut -d ";" -f 2 2> /dev/null)	\
 			--rs $(grep "${v}" $subs | cut -d ";" -f 3 2>  /dev/null)	\
-			--log $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null) > $path/PREPROC/out.${v}.log	& 
+			--log $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null) \
+			$no_aztec > $path/PREPROC/out.${v}.log	& 
 	done
 	wait
 else
@@ -252,11 +263,11 @@ else
 			--id ${v}												\
 			--t1 $(grep "${v}" $subs | cut -d ";" -f 2 2> /dev/null)	\
 			--rs $(grep "${v}" $subs | cut -d ";" -f 3 2>  /dev/null)	\
-			--log $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null) | tee $path/PREPROC/out.${v}.log 
+			--log $(grep "${v}" $subs | cut -d ";" -f 4 2>  /dev/null) \
+			$no_aztec | tee $path/PREPROC/out.${v}.log 
 	done
 fi
 
-killall Xvfb &> /dev/null
 
 #: ============================================================================================================
 #: ============================================================================================================

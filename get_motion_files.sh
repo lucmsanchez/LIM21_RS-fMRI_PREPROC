@@ -82,10 +82,10 @@ for v in ${VID[@]}; do
 	file_rs=${rs}
 	file_rs2=${file_rs%%.nii}
 
-final=$(find $PWD -name "final_${file_rs2}.nii" 2> /dev/null)
-mask=$(find $PWD -name "automask_mni_${file_rs2}.nii" 2> /dev/null)
+motion=$(find $PWD -name "motionstat_${file_rs2}.1D" 2> /dev/null)
 
-echo "$v;$final;$mask" >> preproc_files.csv
+printf "$v;" >> motion_files.csv 
+cat $motion >> motion_files.csv
 done
 
 

@@ -86,16 +86,8 @@ for v in ${VID[@]}; do
 
 final=$(find $PWD -name "final_${file_rs2}.nii" 2> /dev/null)
 mask=$(find $PWD -name "automask_mni_${file_rs2}.nii" 2> /dev/null)
-at1=$(find $PWD -name "resampled_${atlas[0]%%_*}_${file_rs2}.nii" 2> /dev/null)
-at2=$(find $PWD -name "resampled_${atlas[1]%%_*}_${file_rs2}.nii" 2> /dev/null)
-at3=$(find $PWD -name "resampled_${atlas[2]%%_*}_${file_rs2}.nii" 2> /dev/null)
-at4=$(find $PWD -name "resampled_${atlas[3]%%_*}_${file_rs2}.nii" 2> /dev/null)
-at5=$(find $PWD -name "resampled_${atlas[4]%%_*}_${file_rs2}.nii" 2> /dev/null)
-at6=$(find $PWD -name "resampled_${atlas[5]%%_*}_${file_rs2}.nii" 2> /dev/null)
-at7=$(find $PWD -name "resampled_${atlas[6]%%_*}_${file_rs2}.nii" 2> /dev/null)
-at8=$(find $PWD -name "resampled_${atlas[7]%%_*}_${file_rs2}.nii" 2> /dev/null)
 
-echo "$v;$final;$mask;$at1;$at2;$at3;$at4;$at5;$at6;$at7;$at8" >> preproc_files.csv
+echo "$v;$final;$mask" >> preproc_files.csv
 done
 
 
